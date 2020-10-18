@@ -92,7 +92,6 @@
 
 
     <ItemGroup>
-      <Folder Include="Data\Zarnica" />
       <Folder Include="Migrations" />
       <Folder Include="wwwroot\lib" />
       <Folder Include="wwwroot\lib\bootstrap\dist" />
@@ -214,6 +213,7 @@
       <Content Update="wwwroot\img\logo.png">
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </Content>
+      <Content Remove="wwwroot\img\8.svg" />
     </ItemGroup>
 
 </Project>

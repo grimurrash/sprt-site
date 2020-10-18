@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewSprt.Data.App;
+using NewSprt.Data.Zarnica;
 using NewSprt.Models.Requirements;
 
 namespace NewSprt
@@ -39,6 +40,8 @@ namespace NewSprt
             /*DataBase Connections*/
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ZarnicaDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("ZarnicaConnection")));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
