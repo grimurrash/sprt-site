@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewSprt.Data.App;
+using NewSprt.Models.Requirements;
 
 namespace NewSprt
 {
@@ -33,13 +35,29 @@ namespace NewSprt
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-            
+
             /*DataBase Connections*/
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options => options.LoginPath = new PathString("/Login"));
+                .AddCookie(options =>
+                {
+                    options.LoginPath = new PathString("/Account/Login");
+                    options.AccessDeniedPath = new PathString("/Account/Login");
+                });
+
+            services.AddTransient<IAuthorizationHandler, PermissionHandler>();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("VVK",
+                    p => p.Requirements.Add(new PermissionRequirement("VVK")));
+                options.AddPolicy("Dactyloscopy", 
+                    p => p.Requirements.Add(new PermissionRequirement("Dactyloscopy")));
+                options.AddPolicy("PersonalGuidance",
+                    p => p.Requirements.Add(new PermissionRequirement("PersonalGuidance")));
+            });
+
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -55,7 +73,7 @@ namespace NewSprt
             app.UseCookiePolicy();
 
             app.UseAuthentication();
-            
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

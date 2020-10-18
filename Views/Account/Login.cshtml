@@ -1,0 +1,71 @@
+﻿@model LoginModel
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Сборный пункт</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css"/>
+    <style>
+            body, html {
+                margin: 0;
+                height: 100%;
+            }
+            .form-box {
+                background: #fff;
+                padding: 3.75rem 2.5rem;
+                overflow: hidden;
+                color: #444;
+                border-radius: .25rem;
+                border-top: solid .3125rem #329ef7;
+                box-shadow: 0 .3125rem .875rem 0 rgba(129,129,129,.7) !important;
+            }
+    </style>
+</head>
+<body>
+<div class="d-flex justify-content-center h-100 align-items-center">
+    <div class="container" style="min-height: 450px">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-7 col-xl-5 text-center">
+                <form asp-action="Login" asp-controller="Account" asp-antiforgery="true" class="form-box">
+                    <div class="row">
+                        <div class="col">
+                            <h1>Вход</h1>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <label asp-for="Login" class="col">
+                            <input type="text" asp-for="Login" class="form-control" placeholder="Логин">
+                        </label>
+                    </div>
+                    <span class="text-danger" asp-validation-for="Login"></span>
+                    <div class="row mt-4">
+                        <label asp-for="Password" class="col">
+                            <input type="password" asp-for="Password" class="form-control mb-1" placeholder="Пароль">
+                        </label>
+                    </div>
+                    <span class="text-danger" asp-validation-for="Password"></span>
+                    <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <input type="submit" class="btn btn-outline-primary px-4" value="Войти"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+<script src="~/lib/fontawesome/js/all.min.js"></script>
+</body>
+</html>

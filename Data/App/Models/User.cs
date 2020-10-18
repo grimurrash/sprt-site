@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NewSprt.Data.App.Models
 {
@@ -10,5 +13,12 @@ namespace NewSprt.Data.App.Models
         public string Password { get; set; }
         public string Fio { get; set; }
         public int DepartmentId { get; set; }
+        [ForeignKey(nameof(DepartmentId))]
+        public Department Department { get; set; }
+        public List<UserPermission> UserPermissions { get; set; }
+        public User()
+        {
+            UserPermissions = new List<UserPermission>();
+        }
     }
 }

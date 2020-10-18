@@ -1,0 +1,39 @@
+﻿<nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-light">
+    <div class="container">
+        <a href="" class="navbar-brand">
+            <img src="~/img/logo.png" alt="" width="44" height="30"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="userNameDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                    @User.Identity.Name.ToUpper()
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="userNameDropdown">    
+                    <li><a class="dropdown-item" href="#">Админ панель</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <a asp-controller="Account" asp-action="Logout" class="dropdown-item">Выход</a>
+                </ul>
+            </div>
+            <ul class="navbar-nav flex-grow-1">
+                @* Пункт меню *@
+                @if ((await AuthorizationService.AuthorizeAsync(User, "PersonalGuidance")).Succeeded)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="PersonalGuidanceMenuLink" role="button" data-toggle="dropdown" aria-expanded="false">
+                            Персональщики
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="PersonalGuidanceMenuLink">
+                            <li><a class="dropdown-item" href="#">Список персональщиков</a></li>
+                            <li><a class="dropdown-item" href="#">Таблица по в/ч</a></li>
+                            <li><a class="dropdown-item" href="#">Поиск дубликатов</a></li>
+                            <li><a class="dropdown-item" href="#">Удаление персональщиков</a></li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
