@@ -1,0 +1,69 @@
+﻿@model IGridPager
+@{
+    var totalPages = Model.TotalPages;
+    var currentPage = Model.CurrentPage;
+    var firstDisplayPage = Model.FirstDisplayPage;
+    var pageSizes = Model.PageSizes;
+}
+
+<div class="mvc-grid-pager mvc-grid-extended-pager @Model.CssClasses" data-show-page-sizes="@Model.ShowPageSizes">
+    @if (totalPages > 0)
+    {
+        <div class="mvc-grid-pager-extension">Показано @((currentPage - 1) * Model.RowsPerPage + 1)-@(Math.Min(currentPage * Model.RowsPerPage, Model.TotalRows)) из @Model.TotalRows</div>
+
+        <div>
+            @if (currentPage > 1)
+            {
+                <button type="button" data-page="1">«</button>
+                <button type="button" data-page="@(currentPage - 1)">‹</button>
+            }
+            else
+            {
+                <button type="button" class="disabled" tabindex="-1">«</button>
+                <button type="button" class="disabled" tabindex="-1">‹</button>
+            }
+            @for (Int32 page = firstDisplayPage; page <= totalPages && page < firstDisplayPage + Model.PagesToDisplay; page++)
+            {
+                if (page == currentPage)
+                {
+                    <button type="button" class="active" data-page="@(page)">@(page)</button>
+                }
+                else
+                {
+                    <button type="button" data-page="@(page)">@(page)</button>
+                }
+            }
+            @if (currentPage < totalPages)
+            {
+                <button type="button" data-page="@(currentPage + 1)">›</button>
+                <button type="button" data-page="@totalPages">»</button>
+            }
+            else
+            {
+                <button type="button" class="disabled" tabindex="-1">›</button>
+                <button type="button" class="disabled" tabindex="-1">»</button>
+            }
+
+            <div class="mvc-grid-page-sizes">
+                <select class="mvc-grid-pager-rows">
+                    
+                    @foreach (var pageSiz in pageSizes)
+                    {
+                        if (Model.RowsPerPage == pageSiz.Key)
+                        {
+                            <option value = "@pageSiz.Key" selected="selected">@pageSiz.Value </option>
+                        }
+                        else
+                        {
+                            <option value = "@pageSiz.Key">@pageSiz.Value </option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+    }
+    else
+    {
+        <input class="mvc-grid-pager-rows" type="hidden" value="@Model.RowsPerPage" />
+    }
+</div>

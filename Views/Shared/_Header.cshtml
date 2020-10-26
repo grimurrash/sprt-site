@@ -1,15 +1,16 @@
 ﻿<nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-light">
     <div class="container">
         <a href="" class="navbar-brand">
-            <img src="~/img/logo.png" alt="" width="44" height="30"></a>
+            <img src="~/img/logo.png" alt="" width="44" height="30">
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
             <div class="dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="userNameDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
-                    @User.Identity.Name.ToUpper()
+                <a class="nav-link dropdown-toggle text-dark" href="#" id="userNameDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                    <b>@User.Identity.Name.ToUpper()</b>
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="userNameDropdown">    
                     <li><a class="dropdown-item" href="#">Админ панель</a></li>
@@ -26,7 +27,7 @@
                             Персональщики
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="PersonalGuidanceMenuLink">
-                            <li><a class="dropdown-item" href="#">Список персональщиков</a></li>
+                            <li><a class="dropdown-item" asp-controller="PersonalGuidance" asp-action="List">Список персональщиков</a></li>
                             <li><a class="dropdown-item" href="#">Таблица по в/ч</a></li>
                             <li><a class="dropdown-item" href="#">Поиск дубликатов</a></li>
                             <li><a class="dropdown-item" href="#">Удаление персональщиков</a></li>

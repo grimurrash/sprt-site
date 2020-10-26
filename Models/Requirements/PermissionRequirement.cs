@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace NewSprt.Models.Requirements
+namespace NewSprt.ViewModels.Requirements
 {
     public class PermissionRequirement : IAuthorizationRequirement
     {

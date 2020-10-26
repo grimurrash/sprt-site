@@ -1,6 +1,6 @@
 using System;
 
-namespace NewSprt.Models
+namespace NewSprt.ViewModels
 {
     public class ErrorViewModel
     {
