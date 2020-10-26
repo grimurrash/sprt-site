@@ -7,10 +7,12 @@ namespace NewSprt.Data.Zarnica.Models
     [Table("dir_zap")]
     public class SpecialPersonToRequirement
     {
-        [Column("id_05")] public int PersonId { get; set; }
+        [Column("id_05")] public int SpecialPersonId { get; set; }
         [Column("id")] public int RequirementId { get; set; }
         
-        [ForeignKey(nameof(PersonId))] public SpecialPerson Person { get; set; }
-        [ForeignKey(nameof(RequirementId))] public Requirement Requirement { get; set; }
+        [ForeignKey(nameof(SpecialPersonId))] 
+        public SpecialPerson Person { get; set; }
+        [ForeignKey(nameof(RequirementId))] 
+        public Requirement Requirement { get; set; }
     }
 }

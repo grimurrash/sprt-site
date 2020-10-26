@@ -8,7 +8,7 @@ namespace NewSprt.Data.Zarnica.Models
     [Table("vbilet")]
     public class AdditionalData
     {
-        [Key] [Column("id")] public int Id { get; set; }
+        [Column("id")] public int Id { get; set; }
         [Column("p012")] public string BirthPlace { get; set; }
         [Column("ulica")] public string Street { get; set; }
         [Column("p070")] public string House { get; set; }

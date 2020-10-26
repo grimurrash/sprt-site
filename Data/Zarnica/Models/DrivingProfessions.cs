@@ -7,7 +7,7 @@ namespace NewSprt.Data.Zarnica.Models
     [Table("r4054")]
     public class DrivingProfessions
     {
-        [Key] [Column("p00")] public string Id { get; set; }
+        [Column("p00")] public string Id { get; set; }
         [Column("p02")] public string Name { get; set; }
     }
 }

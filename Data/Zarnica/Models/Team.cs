@@ -28,9 +28,10 @@ namespace NewSprt.Data.Zarnica.Models
         [Column("r4076_g7")] public string FormId { get; set; }
         
         [ForeignKey(nameof(MilitaryUnitCode))] public MilitaryUnit MilitaryUnit { get; set; }
-        [ForeignKey(nameof(Id))] public TeamCount TeamCount { get; set; }
         [ForeignKey(nameof(ArmyTypeId))] public ArmyType ArmyType { get; set; }
-
+        //[ForeigKey(nameof(Id))] невозможно указать явно
+        public TeamCount TeamCount { get; set; }
+        
         [ForeignKey(nameof(MilitaryDistrictCode))]
         public MilitaryDistrict MilitaryDistrict { get; set; }
 

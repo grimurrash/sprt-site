@@ -7,7 +7,7 @@ namespace NewSprt.Data.Zarnica.Models
     [Table("predstav")]
     public class Predstav
     {
-        [Key] [Column("id")] public int Id { get; set; }
+        [Column("id")] public int Id { get; set; }
         [Column("vchast")] public string MilitaryUnitId { get; set; }
         [Column("address")] public string Address { get; set; }
         [Column("fio")] public string FullName { get; set; }

@@ -8,6 +8,8 @@ namespace NewSprt.Data.Zarnica.Models
     public class RequirementType
     {
         [Key] [Column("id")] public int Id { get; set; }
-        [Column("psevd")] public string FullName { get; set; }
+        [Column("psevd")] public string Name { get; set; }
+        
+        [NotMapped] public const int VkrtRequirement = 2;
     }
 }

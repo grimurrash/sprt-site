@@ -11,11 +11,11 @@ namespace NewSprt.Data.Zarnica.Models
     public class Recruit
     {
         [Column("id")] public int Id { get; set; }
-        [Column("pnom")] public new string Code { get; set; }
-        [Column("p005")] public new string FirstName { get; set; }
-        [Column("p006")] public new string LastName { get; set; }
-        [Column("p007")] public new string Patronymic { get; set; }
-        [Column("k001")] public new DateTime BirthDate { get; set; }
+        [Column("pnom")] public string Code { get; set; }
+        [Column("p005")] public string FirstName { get; set; }
+        [Column("p006")] public string LastName { get; set; }
+        [Column("p007")] public string Patronymic { get; set; }
+        [Column("k001")] public DateTime BirthDate { get; set; }
         [Column("r8012")] public string MilitaryComissariatId { get; set; }
         [Column("p097")] public string MobileCode { get; set; }
         [Column("p098")] public string MobileNumber { get; set; }

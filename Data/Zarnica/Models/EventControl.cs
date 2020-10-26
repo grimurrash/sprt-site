@@ -9,7 +9,7 @@ namespace NewSprt.Data.Zarnica.Models
     [Table("gsp18_ev")]
     public class EventControl
     {
-        [Key] [Column("id")] public int Id { get; set; }
+        [Column("id")] public int Id { get; set; }
         [Column("id_object")] public int RecruitId { get; set; }
         [Column("zapr_code")] public int EventCode { get; set; }
         [Column("sdate")] public DateTime Date { get; set; }

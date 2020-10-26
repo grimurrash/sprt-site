@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using NewSprt.Data.Zarnica.Models;
 
 namespace NewSprt.Data.Zarnica
@@ -16,7 +17,7 @@ namespace NewSprt.Data.Zarnica
         public DbSet<SpecialPersonToRequirement> SpecialPersonToRequirements { get; set; }
         public DbSet<Requirement> Requirements { get; set; }
         public DbSet<RequirementType> RequirementTypes { get; set; }
-        public DbSet<DirectivesType> DirectivesTypes { get; set; }
+        public DbSet<DirectiveType> DirectivesTypes { get; set; }
         
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamCount> TeamCounts { get; set; }
@@ -29,10 +30,23 @@ namespace NewSprt.Data.Zarnica
         public DbSet<Predstav> Predstavs { get; set; }
         public DbSet<ArmyType> ArmyTypes { get; set; }
         
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SpecialPersonToRecruit>()
+                .HasKey(m => new {m.SpecialPersonId, m.RecruitId});
+            modelBuilder.Entity<SpecialPersonToRequirement>()
+                .HasKey(m => new {m.SpecialPersonId, m.RequirementId});
+
+            modelBuilder.Entity<SpecialPerson>()
+                .Property(m => m.Id)
+                .HasColumnName("id")
+                .HasDefaultValueSql("nextval('public.gsp05_d_id_seq'::text)");
+        }
+
         public ZarnicaDbContext(DbContextOptions<ZarnicaDbContext> options) : base(options)
         {
             Database.EnsureCreated();
         }
-        
     }
 }

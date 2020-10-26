@@ -8,10 +8,12 @@ namespace NewSprt.Data.Zarnica.Models
     [Table("vchast")]
     public class MilitaryUnit
     {
-        [Key] [Column("p00")] public string Id { get; set; }
+        [Column("p00")] public string Id { get; set; }
         [Column("p01")] public string Name { get; set; }
 
         public List<Predstav> Predstavs { get; set; }
+
+        public override string ToString() => Id == "По указанию" ? "По указанию" : $"{Id} ({Name})";
 
         public MilitaryUnit()
         {

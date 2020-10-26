@@ -8,12 +8,12 @@ namespace NewSprt.Data.Zarnica.Models
     [Table("r8012")]
     public class MilitaryComissariat
     {
-        [Key] [Column("p00")] public string Id { get; set; }
+        [Column("p00")] public string Id { get; set; }
         [Column("p01")] public string Name { get; set; }
         [Column("sp")] public string IsEmpty { get; set; }
         [Column("p06")] public string ShortName { get; set; }
         
-        //Татарстан 1192000000
+        [NotMapped] public const string CurrentRegion = "1192000000";
         [Column("p03")] public string Region { get; set; }
         
         public List<Recruit> Recruits { get; set; }

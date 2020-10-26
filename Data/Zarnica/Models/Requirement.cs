@@ -9,8 +9,8 @@ namespace NewSprt.Data.Zarnica.Models
     [Table("zapiski")]
     public class Requirement
     {
-        [Key] [Column("id")] public int Id { get; set; }
-        [Column("dir_type")] public int DirectivesTypeId { get; set; }
+        [Column("id")] public int Id { get; set; }
+        [Column("dir_type")] public int DirectiveTypeId { get; set; }
         [Column("num")] public string DocumentNumber { get; set; }
         [Column("nach")] public int RequirementTypeId { get; set; }
         [Column("vchast")] public string MilitaryUnitCode { get; set; }
@@ -23,7 +23,7 @@ namespace NewSprt.Data.Zarnica.Models
         [Column("p102")] public int? Amount { get; set; }
 
         [ForeignKey(nameof(MilitaryUnitCode))] public MilitaryUnit MilitaryUnit { get; set; }
-        [ForeignKey(nameof(DirectivesTypeId))] public DirectivesType DirectivesType { get; set; }
+        [ForeignKey(nameof(DirectiveTypeId))] public DirectiveType DirectiveType { get; set; }
         [ForeignKey(nameof(ArmyTypeCode))] public ArmyType ArmyType { get; set; }
 
         [ForeignKey(nameof(RequirementTypeId))]
@@ -35,5 +35,7 @@ namespace NewSprt.Data.Zarnica.Models
         {
             SpecialPersonsInRequirement = new List<SpecialPersonToRequirement>();
         }
+
+        public override string ToString() => $"{DirectiveType.ViewName} №{DocumentNumber} от {RequirementType.Name}";
     }
 }
