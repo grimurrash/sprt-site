@@ -1,0 +1,33 @@
+﻿@model IEnumerable<SpecialPerson>
+
+@{
+    Pagination paging = ViewBag.Pagination;
+}
+
+@(Html.Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add(model => model.Id).Titled("Номер").Named("id").Hidden();
+        columns.Add().RenderedAs((model, row) => paging.Rows * paging.CurrentPage - paging.Rows + row + 1).Titled("#");
+        columns.Add(model => model.FullName).Titled("ФИО").Sortable(true);
+        columns.Add(model => model.BirthYear).Titled("Год рождения").Css("w-px-100");
+        columns.Add(model => model.MilitaryComissariat.ShortName).Titled("Военный комиссариат");
+        columns.Add(model => model.MilitaryUnitInfo).Titled("в/ч").Css("w-px-120");
+        columns.Add(model => model.RequirementInfo).Titled("Требование").Css("w-px-180");
+        columns.Add(model => model.SendDateString).Titled("Дата отправки").Css("w-px-m-200").Filterable(true);
+        columns.Add(model => $"<button class='btn btn-success btnEditPerson' onclick=\"editPerson('{@Url.Action("EditModal", "PersonalGuidance", new {id = model.Id})}')\"><i class='fad fa-edit'></i></button>").Encoded(false);
+    })
+    .Css("table-striped")
+    .AppendCss("table-hover")
+    .RowAttributed(model => new {@class = model.IsMark ? "table-warning" : null})
+    .Empty("Призывников по директивным указаниям не найдены")
+    .Pageable(pager =>
+    {
+        pager.PartialViewName = "_ExtendedPager";
+        pager.PageSizes = new Dictionary<int, string> {{0, "Все"}, {10, "10"}, {20, "20"}, {50, "50"}, {100, "100"}};
+        pager.ShowPageSizes = true;
+        pager.PagesToDisplay = 5;
+        pager.CurrentPage = paging.CurrentPage;
+        pager.RowsPerPage = paging.Rows;
+    })
+    .Using(GridFilterMode.Excel))

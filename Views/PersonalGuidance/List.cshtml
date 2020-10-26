@@ -1,0 +1,187 @@
+﻿@model object
+@{
+    FilterViewModel filterViewModel = ViewBag.FilterData;
+}
+<section class="container">
+    <h2 >Список призывников находящихся в директивных указаниях</h2>
+
+    <div class="row mt-2">
+        <div class="col-lg-4">
+            @Html.Label("DirectiveTypeIdFilter", "Вид директивного указания:", new {@class="col-form-label"})
+            @Html.DropDownList("DirectiveTypeIdFilter", 
+                new SelectList(filterViewModel.DirectiveTypes, "Id", "Name", 0),
+                "Все",
+                new {@id="DirectiveTypeIdFilter", @class="form-control border-info"})
+        </div>
+        <div class="col-lg-4">
+            @Html.Label("RequirementTypeIdFilter", "Требование от:", new {@class="col-form-label"})
+            @Html.DropDownList("RequirementTypeIdFilter", 
+                new SelectList(filterViewModel.RequirementTypes, "Id", "Name", 0),
+                "Все",
+                new {@id="RequirementTypeIdFilter", @class="form-control border-info"})
+        </div>
+        <div class="col-lg-4">
+            @Html.Label("MilitaryUnitIdFilter", "Воинская часть:", new {@class="col-form-label"})
+            @Html.DropDownList("MilitaryUnitIdFilter", 
+                new SelectList(filterViewModel.MilitaryUnits.Select(m => new
+                {
+                    Value = m.Id,
+                    Text = $"{m.Id} ({m.Name})"
+                }), "Value", "Text", 0),
+                "Все",
+                new {@id="MilitaryUnitIdFilter", @class="form-control border-info"})
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-lg-4">
+            @Html.Label("MilitaryComissariatIdFilter", "Военный комиссариат (районный):", new {@class="col-form-label"})
+            @Html.DropDownList("MilitaryComissariatIdFilter", 
+                new SelectList(filterViewModel.MilitaryComissariats, "Id", "ShortName", 0),
+                "Все",
+                new {@id="MilitaryComissariatIdFilter", @class="form-control border-info"})
+        </div>
+        <div class="col-lg-7">
+            @Html.Label("Search", "Поиск (учитываются ранее выбранные фильтры):", new {@class="col-form-label"})
+            @Html.TextBox("Search", "", new {@id="Search", @class="form-control border-info", @placeholder="Поиск"})
+        </div>
+        <div class="col-lg-1 custom-control custom-switch">
+            @Html.CheckBox("IsMark", false, new {@id="IsMark", @autocomplete="off", @class="custom-control-input input-warning"})
+            @Html.Label("IsMark", "Ошибки", new {@class="custom-control-label"})
+        </div>
+    </div>
+</section>
+
+<section class="container">
+    <div class="row mt-4 mb-2 align-items-end">
+        <div class="col-lg-7">
+            <h5>Всего по директивным указаниям: <b>@ViewBag.AllCount</b> чел.</h5>
+        </div>
+        <div class="col-lg-5 text-right">
+            <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fad fa-user-plus"></i> Добавить</a>
+        </div>
+    </div>
+</section>
+
+<section class="container">
+    @Html.AjaxGrid(Url.Action("ListGrid", new {exitMode = true}))
+</section>
+
+<div id="modalContainer"></div>
+
+@section Scripts {
+    <script>
+        function reloadTable() {
+            var grid = new MvcGrid(document.querySelector('.mvc-grid'))
+            grid.url.searchParams.set('exitMode', false)
+            
+            let select = document.getElementById('DirectiveTypeIdFilter')
+            grid.url.searchParams.set('directorTypeId', select.value)
+            
+            select = document.getElementById('RequirementTypeIdFilter')
+            grid.url.searchParams.set('requirementTypeId', select.value)
+            
+            select = document.getElementById('MilitaryUnitIdFilter')
+            grid.url.searchParams.set('militaryUnitId', select.value)
+            
+            select = document.getElementById('MilitaryComissariatIdFilter')
+            grid.url.searchParams.set('militaryComissariatId', select.value)
+            
+            select = document.getElementById('Search')
+            grid.url.searchParams.set('search', select.value)
+            
+            select = document.getElementById('IsMark')
+            grid.url.searchParams.set('isMark', select.checked)
+            
+            grid.url.searchParams.set('page', 1)
+            
+            grid.reload();
+        }
+        
+        
+            
+        
+        function editPerson(url) {
+            $('.btnEditPerson').attr('disabled','');
+            $("#modalContainer").load(url, function (responseText, textStatus, req) {
+                if (textStatus == "error") {
+                    $('.btnEditPerson').removeAttr('disabled');
+                    alert("Не удалось загрузить Персональщика")
+                } else {
+                    $("#editModal").modal('toggle');
+                    $("#editModal").on('hidden.bs.modal', function (e) {
+                        reloadTable()
+                        $("#modalContainer").html("")
+                    })
+                }  
+            })
+        }
+    
+        $(document).ready(function() {
+            if (localStorage.getItem('DirectiveTypeIdFilter')){
+                document.getElementById('DirectiveTypeIdFilter').value = localStorage.getItem('DirectiveTypeIdFilter')
+            }
+            if (localStorage.getItem('RequirementTypeIdFilter')){
+                document.getElementById('RequirementTypeIdFilter').value = localStorage.getItem('RequirementTypeIdFilter')
+            }
+            if (localStorage.getItem('MilitaryUnitIdFilter')){
+                document.getElementById('MilitaryUnitIdFilter').value = localStorage.getItem('MilitaryUnitIdFilter')
+            }
+            if (localStorage.getItem('MilitaryComissariatIdFilter')){
+                document.getElementById('MilitaryComissariatIdFilter').value = localStorage.getItem('MilitaryComissariatIdFilter')
+            }
+            document.getElementById("Search").addEventListener('keyup', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+            document.getElementById("DirectiveTypeIdFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                let select = document.getElementById('DirectiveTypeIdFilter')
+                localStorage.setItem('DirectiveTypeIdFilter',select.value)
+                reloadTable()
+            })
+            document.getElementById("RequirementTypeIdFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                let select = document.getElementById('RequirementTypeIdFilter')
+                localStorage.setItem('RequirementTypeIdFilter',select.value)
+                reloadTable()
+            })
+            document.getElementById("MilitaryUnitIdFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                let select = document.getElementById('MilitaryUnitIdFilter')
+                localStorage.setItem('MilitaryUnitIdFilter',select.value)
+                reloadTable()
+            })
+            document.getElementById("MilitaryComissariatIdFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                let select = document.getElementById('MilitaryComissariatIdFilter')
+                localStorage.setItem('MilitaryComissariatIdFilter',select.value)
+                reloadTable()
+            })
+            document.getElementById('IsMark').addEventListener('change', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+            
+            document.getElementById('createModalBtn').addEventListener('click', function(e) {
+                e.preventDefault()
+                let url = $(this).attr('href')
+                
+                $("#modalContainer").load(url, function (responseText, textStatus, req) {
+                    if (textStatus == "error") {
+                        alert("Не удалось загрузить Персональщика")
+                    } else {
+                        $("#createModal").modal('toggle');
+                        $("#createModal").on('hidden.bs.modal', function (e) {
+                            reloadTable()
+                            $("#modalContainer").html("")
+                        })
+                    }  
+                })
+            })
+                  
+                    
+            reloadTable()
+        })
+               
+    </script>
+}

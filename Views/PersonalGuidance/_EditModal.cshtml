@@ -1,0 +1,167 @@
+﻿@model SpecialPersonViewModel
+
+@{
+    FilterViewModel filterViewModel = ViewBag.FilterData;
+    var sendDates = ViewBag.SendDates;
+}
+
+<div class="modal fade" data-backdrop="static" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактирование персональщика</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+               @using (Html.BeginForm(
+                   "Edit",
+                   "PersonalGuidance",
+                   null,
+                   FormMethod.Post,
+                   true,
+                   new {@class = "form-horizontal needs-validation", id="editForm", @novalidate = "", role = "form"}))
+               {
+                    @Html.AntiForgeryToken()
+                   <div class="form-group">
+                       @Html.HiddenFor(m => m.Id)
+                   </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.LastName, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.LastName, new {@class = "form-control"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.FirstName, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.FirstName, new {@class = "form-control"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Patronymic, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.Patronymic, new {@class = "form-control"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BirthYear, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.BirthYear, new {@class = "form-control", @type = "number"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.MilitaryComissariatId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.MilitaryComissariatId, 
+                            new SelectList(filterViewModel.MilitaryComissariats, "Id", "ShortName", 0), 
+                            new {@class = "form-control"})
+                    </div>
+                    <hr/>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DirectiveTypeId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.DirectiveTypeId, 
+                            new SelectList(filterViewModel.DirectiveTypes, "Id", "ViewName"), 
+                            new {@class = "form-control", @disabled = ""})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RequirementTypeId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.RequirementTypeId,
+                            new SelectList(filterViewModel.RequirementTypes, "Id", "Name"), 
+                            new {@class = "form-control"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.MilitaryUnitId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.MilitaryUnitId, 
+                            new SelectList(filterViewModel.MilitaryUnits.Select(m => new {Value = m.Id, Text = $"{m.Id} ({m.Name})"}), "Value", "Text"), 
+                            new {@class = "form-control"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SendDate, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.SendDate, 
+                            new SelectList(sendDates, "Value", "Text"),
+                            new {@class = "form-control"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Notice, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.Notice, new {@class = "form-control"})
+                    </div>
+                   <input type="submit" hidden="hidden" id="editSpecialPersonBtn"/>
+               }
+            </div>
+            <div class="modal-footer d-flex justify-content-sm-between">
+                <button class="btn btn btn-success" onclick="document.getElementById('editSpecialPersonBtn').click()">Сохранить</button>
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        $("#editForm").on('submit', function(e) {
+            e.preventDefault()
+            let form = $(this)
+            let url = form.attr('action')
+            $.ajax({
+                type: 'post',
+                url: url,
+                data: form.serialize(),
+                success: function(data) {
+                    $('.invalid-feedback.feedback-text').remove();
+                    $(".is-invalid").removeClass('is-invalid')
+                    if (data.isSucceeded) {
+                        $("#editModal").modal('toggle')
+                    } else {
+                        $("#modalBody").scrollTop(0);
+                        $.each(data.errors, function(index, value) {
+                            $("#" + index).addClass('is-invalid')
+                            $("#" + index).parent().append("<div class='invalid-feedback feedback-text'>" + value[0] + "</div>");
+                        })
+                    }
+                },
+                error: function(data) {
+                    alert('Не удалось сохранить изменения')
+                }
+            })
+        })
+        $("#RequirementTypeId").select2({
+            theme: 'bootstrap4',
+            dropdownParent: $('#editModal')
+        })
+        $("#MilitaryComissariatId").select2({
+            theme: 'bootstrap4',
+            dropdownParent: $('#editModal')
+        })
+        $("#MilitaryUnitId").select2({
+            theme: 'bootstrap4',
+            dropdownParent: $('#editModal')
+        })
+        $('#MilitaryUnitId').on('change', function(e) {
+            let id = document.getElementById('MilitaryUnitId').value
+            $.ajax({
+                url: '@Url.Action("SendDateJsonList","MilitaryUnit")',
+                data: {id: id},
+                type: 'get',
+                success: function(data) {
+                    $('#SendDate').html("<option value='-'>-</option>");
+                    if (data.isSucceeded) {
+                        data.result.forEach((item) => {
+                            $('#SendDate').append(`<option value="${item.value}">${item.text}</option>`)
+                        })
+                    } else {
+                        alert('Не удалось загрузить время отправки')
+                    }
+                }
+            })
+        })
+       
+          window.addEventListener('load', function() {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function(form) {
+              form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+              }, false);
+            });
+          }, false);
+    })
+</script>

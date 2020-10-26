@@ -36,6 +36,7 @@ namespace NewSprt.Controllers
                 var user = await _appDb.Users
                     .Include(m => m.UserPermissions)
                     .ThenInclude(m => m.Permission)
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(u =>
                     u.Login == model.Login && u.Password == model.Password);
                 if (user != null)
