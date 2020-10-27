@@ -11,5 +11,6 @@ namespace NewSprt.Data.Zarnica.Models
         [Column("psevd")] public string Name { get; set; }
         
         [NotMapped] public const int VkrtRequirement = 2;
+        [NotMapped] public const int TcpRequirement = 60;
     }
 }

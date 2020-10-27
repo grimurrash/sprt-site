@@ -58,22 +58,5 @@ namespace NewSprt.Data.Zarnica.Models
         }
     }
     
-    public class ChildrenTeamInfo
-    {
-        public string Title { get; set; }
-        public int? Amount { get; set; }
-        public int? PersonsCount { get; set; }
-
-        public int? PatronageCount { get; set; }
-
-        public int? RemainCount { get; set; }
-
-        public List<SpecialPerson> Persons { get; set; }
-
-
-        public ChildrenTeamInfo()
-        {
-            Persons = new List<SpecialPerson>();
-        }
-    }
+    
 }

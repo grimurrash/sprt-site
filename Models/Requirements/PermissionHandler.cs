@@ -2,9 +2,8 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using NewSprt.ViewModels.Requirements;
 
-namespace NewSprt.ViewModels.Requirements
+namespace NewSprt.Models.Requirements
 {
     public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
     {

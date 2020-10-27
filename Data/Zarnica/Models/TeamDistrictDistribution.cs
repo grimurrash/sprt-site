@@ -17,14 +17,14 @@ namespace NewSprt.Data.Zarnica.Models
         [Column("r7703_g7")] public string Education { get; set; }
         [Column("p113_g7")] public string City { get; set; }
         [Column("p264_g7")] public int? TeamId { get; set; }
-        [Column("r8012_g7")] public string MilitaryComissariatId { get; set; }
+        [Column("r8012_g7")] public string MilitaryComissariatCode { get; set; }
         [Column("p105_time")] public DateTime SendDate { get; set; }
         [Column("p107_g7")] public string MilitaryUnitCode { get; set; }
         [Column("r4054_g7")] public string TrainingId { get; set; }
         [Column("r1016_g7")] public string ProfessionId { get; set; }
         [Column("r7147_g7")] public string CategoryId { get; set; }
 
-        [ForeignKey("MilitaryComissariatId")] public MilitaryComissariat MilitaryComissariat { get; set; }
-        [ForeignKey("MilitaryUnitCode")] public MilitaryUnit MilitaryUnit { get; set; }
+        [ForeignKey(nameof(MilitaryComissariatCode))] public MilitaryComissariat MilitaryComissariat { get; set; }
+        [ForeignKey(nameof(MilitaryUnitCode))] public MilitaryUnit MilitaryUnit { get; set; }
     }
 }

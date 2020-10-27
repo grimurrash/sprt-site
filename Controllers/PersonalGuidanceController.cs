@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.Zarnica;
 using NewSprt.Data.Zarnica.Models;
 using NewSprt.ViewModels;
+using NewSprt.ViewModels.SpecialGuidance;
+using NewSprt.ViewModels.FormModels;
 using Npgsql;
 
 namespace NewSprt.Controllers
@@ -25,15 +27,140 @@ namespace NewSprt.Controllers
         }
 
         //Таблица в/ч
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return Content("В разработке");
+            var specialMilitaryUnits = new List<string>() {"5561"};
+
+            var persons = await _zarnicaDb.SpecialPersons
+                .Where(m => m.SpecialPersonToRequirements.Any(s =>
+                    s.Requirement.DirectiveTypeId == DirectiveType.PersonalPerson ||
+                    s.Requirement.DirectiveTypeId == DirectiveType.FamilyPerson ||
+                    s.Requirement.RequirementTypeId == RequirementType.TcpRequirement))
+                .Include(m => m.SpecialPersonToRequirements)
+                .ThenInclude(m => m.Requirement)
+                .ThenInclude(m => m.RequirementType)
+                .Include(m => m.MilitaryComissariat)
+                .OrderBy(m => m.LastName).AsNoTracking().ToListAsync();
+            var requirements = persons.Select(m => m.Requirement).ToList();
+            var militaryUnits = requirements.Select(m => m.MilitaryUnitCode).Distinct().ToList();
+            var militaryComissariats = await _zarnicaDb.MilitaryComissariats
+                .Where(m => m.Region == MilitaryComissariat.CurrentRegion && m.IsEmpty == "0")
+                .OrderBy(m => m.ShortName).AsNoTracking().ToListAsync();
+
+            var allTeams = await _zarnicaDb.Teams.Where(m => militaryUnits.Contains(m.MilitaryUnitCode))
+                .Include(m => m.MilitaryUnit)
+                .Include(m => m.ArmyType)
+                .Include(m => m.MilitaryDistrict)
+                .OrderBy(m => m.MilitaryUnitCode).AsNoTracking().ToListAsync();
+            var mainTeams = allTeams.Where(m => m.SendDate == null).ToList();
+
+            var teamWithSpecialPersons = new List<TeamWithSpecialPerson>();
+            foreach (var mainTeam in mainTeams)
+            {
+                var teamWithSpecialPerson = new TeamWithSpecialPerson();
+                var teamPersons = persons.Where(m => m.Requirement.MilitaryUnitCode == mainTeam.MilitaryUnitCode)
+                    .ToList();
+
+                var childrenTeams = allTeams
+                    .Where(m => m.MilitaryUnitCode == mainTeam.MilitaryUnitCode && m.Id != mainTeam.Id)
+                    .OrderBy(m => m.SendDate).ToList();
+                var childrenTeamsSendDates = childrenTeams.Select(m => m.SendDate).Distinct().ToList();
+
+                teamWithSpecialPerson.MainTeam = mainTeam;
+
+                foreach (var tsd in childrenTeamsSendDates)
+                {
+                    if (tsd == null) continue;
+                    var teamSendDate = tsd.Value.Date;
+                    if (teamSendDate.DayOfYear + 1 < DateTime.Now.DayOfYear) continue;
+
+                    var sendChildrenTeams = childrenTeams
+                        .Where(m => m.SendDate.Value.DayOfYear == teamSendDate.DayOfYear).ToList();
+
+                    var childrenTeam = new ChildrenTeam();
+                    childrenTeam.Title = teamSendDate.ToShortDateString();
+                    childrenTeam.AllCount = sendChildrenTeams.Sum(m => m.Amount);
+                    childrenTeam.Persons = teamPersons.Where(m =>
+                        m.SendDate != null && m.SendDate.Value.DayOfYear == teamSendDate.DayOfYear).ToList();
+                    childrenTeam.PersonsCount = childrenTeam.Persons.Count;
+
+                    var patronages = new List<PatronageTask>();
+                    var tempTeamPatronages = new List<PatronageTask>();
+                    foreach (var chteam in sendChildrenTeams)
+                    {
+                        if (!string.IsNullOrEmpty(chteam.PatronageRelations))
+                            tempTeamPatronages.AddRange(chteam.PatronageRelations.Split(",").Select(m =>
+                                    new PatronageTask
+                                    {
+                                        MilitaryComissariat = militaryComissariats.First(t => t.Id == m.Split("#")[0]),
+                                        Count = int.Parse(m.Split("#")[1])
+                                    })
+                                .ToList());
+                    }
+
+                    foreach (var militaryComissariat in tempTeamPatronages.Select(m => m.MilitaryComissariat)
+                        .Distinct())
+                    {
+                        patronages.Add(new PatronageTask
+                        {
+                            MilitaryComissariat = militaryComissariat,
+                            Count = tempTeamPatronages.Where(m => m.MilitaryComissariat.Id == militaryComissariat.Id)
+                                        .Sum(m => m.Count)
+                        });
+                    }
+                    childrenTeam.PatronageTasks = patronages;
+                    childrenTeam.PatronageTasksCount = patronages.Sum(m => m.Count - childrenTeam.Persons.Count(
+                        p => p.MilitaryComissariatCode == m.MilitaryComissariat.Id));
+
+                    if (specialMilitaryUnits.Contains(mainTeam.MilitaryUnitCode))
+                    {
+                        var plans = _zarnicaDb.TeamDistrictDistributions
+                            .Where(m => m.MilitaryComissariatCode != "-" &&
+                                        mainTeam.MilitaryUnitCode == m.MilitaryUnitCode &&
+                                        teamSendDate.DayOfYear == m.SendDate.DayOfYear &&
+                                        m.Education == "-" && m.AllCount != null && m.AllCount != 0)
+                            .AsNoTracking().ToList();
+                        foreach (var plan in plans)
+                        {
+                            plan.AllCount -= childrenTeam.Persons
+                                .Where(m => m.MilitaryComissariatCode == plan.MilitaryComissariatCode).Count();
+                        }
+
+                        childrenTeam.PatronageTasksCount +=
+                            plans.Where(m => m.AllCount.Value > 0).Sum(m => m.AllCount.Value);
+                    }
+
+                    childrenTeam.RemainCount =
+                        childrenTeam.AllCount - childrenTeam.PersonsCount - childrenTeam.PatronageTasksCount;
+                    teamWithSpecialPerson.ChildrenTeams.Add(childrenTeam);
+                }
+
+                var notDistriburedPersons = teamPersons.Where(m => m.SendDate == null).ToList();
+                teamWithSpecialPerson.ChildrenTeams.Add(new ChildrenTeam
+                {
+                    Title = "Не распределенные",
+                    Persons = notDistriburedPersons,
+                    PersonsCount = notDistriburedPersons.Count
+                });
+                teamWithSpecialPerson.AllCount = teamWithSpecialPerson.ChildrenTeams.Sum(m => m.AllCount);
+                teamWithSpecialPerson.PersonsCount = teamWithSpecialPerson.ChildrenTeams.Sum(m => m.PersonsCount);
+                teamWithSpecialPerson.PatronageRecruitsCount =
+                    teamWithSpecialPerson.ChildrenTeams.Sum(m => m.PatronageTasksCount);
+                teamWithSpecialPerson.RemainCount =
+                    teamWithSpecialPerson.AllCount - teamWithSpecialPerson.PersonsCount -
+                    teamWithSpecialPerson.PatronageRecruitsCount;
+                teamWithSpecialPersons.Add(teamWithSpecialPerson);
+            }
+
+            teamWithSpecialPersons = teamWithSpecialPersons.Where(m => m.PersonsCount > 0).ToList();
+            ViewData["personsCount"] = persons.Count;
+            return View(teamWithSpecialPersons);
         }
 
         //Список персональщиков
         public async Task<IActionResult> List()
         {
-            var filterData = new FilterViewModel();
+            var filterData = new FilterDataViewModel();
             filterData.MilitaryComissariats = await _zarnicaDb.MilitaryComissariats
                 .Where(m => m.Region == MilitaryComissariat.CurrentRegion && m.IsEmpty == "0")
                 .OrderBy(m => m.ShortName).AsNoTracking().ToListAsync();
@@ -47,8 +174,8 @@ namespace NewSprt.Controllers
                 .Where(m => m.Name != null).Distinct().OrderBy(m => m.Name).ToList();
 
             filterData.DirectiveTypes = await _zarnicaDb.DirectivesTypes.AsNoTracking().ToListAsync();
-            ViewBag.AllCount = await _zarnicaDb.SpecialPersons.AsNoTracking().CountAsync();
             ViewBag.FilterData = filterData;
+            ViewData["personsCount"] = await _zarnicaDb.SpecialPersons.AsNoTracking().CountAsync();
             return View();
         }
 
@@ -66,7 +193,7 @@ namespace NewSprt.Controllers
             ViewBag.Pagination = new Pagination(rows, page);
             if (exitMode) return PartialView("_ListGrid", new List<SpecialPerson>());
 
-            IQueryable<SpecialPerson> query = _zarnicaDb.SpecialPersons
+            var query = _zarnicaDb.SpecialPersons
                 .Include(m => m.MilitaryComissariat)
                 .Include(m => m.SpecialPersonToRequirements)
                 .ThenInclude(m => m.Requirement)
@@ -146,7 +273,7 @@ namespace NewSprt.Controllers
 
         public PartialViewResult CreateModal()
         {
-            var filterData = new FilterViewModel();
+            var filterData = new FilterDataViewModel();
             filterData.MilitaryComissariats = _zarnicaDb.MilitaryComissariats
                 .Where(m => m.Region == MilitaryComissariat.CurrentRegion && m.IsEmpty == "0")
                 .OrderBy(m => m.ShortName).AsNoTracking().ToList();
@@ -170,8 +297,9 @@ namespace NewSprt.Controllers
                 ModelState.AddModelError("RequirementTypeId", "Не выбрано требование");
             }
 
-            // try
-            // {
+            var transaction = _zarnicaDb.Database.BeginTransaction(IsolationLevel.ReadCommitted);
+            try
+            {
                 var personCount = _zarnicaDb.SpecialPersons
                     .Count(m => m.LastName == model.LastName &&
                                 m.FirstName == model.FirstName &&
@@ -193,7 +321,7 @@ namespace NewSprt.Controllers
                     return new JsonResult(new {isSucceeded = false, errors = errorList});
                 }
 
-                var transaction = _zarnicaDb.Database.BeginTransaction(IsolationLevel.ReadCommitted);
+
                 var newPerson = new SpecialPerson
                 {
                     LastName = model.LastName,
@@ -240,7 +368,7 @@ namespace NewSprt.Controllers
                     var armyTypeId = _zarnicaDb.Teams.AsNoTracking()
                         .FirstOrDefault(m => m.MilitaryUnitCode == model.MilitaryUnitId)?.ArmyTypeId;
                     // var newId = _zarnicaDb.Requirements.Select(m => m.Id).Max() + 1;
-                    
+
                     requirement = new Requirement
                     {
                         DocumentNumber = newIndex,
@@ -255,7 +383,7 @@ namespace NewSprt.Controllers
                         Notice = "Отправка со СП РТ",
                         UserName = User.Identity.Name.ToLower()
                     };
-                    
+
                     query =
                         "INSERT INTO zapiski (id, num, r7012, data_v, data, dir_type, nach, vchast, p102, prim, username) " +
                         $"VALUES (nextval('public.zapiski_id_seq'::text), @DocumentNumber, @ArmyTypeCode, @CreateDate, " +
@@ -270,7 +398,6 @@ namespace NewSprt.Controllers
                         new NpgsqlParameter("RequirementTypeId", requirement.RequirementTypeId),
                         new NpgsqlParameter("MilitaryUnitCode", requirement.MilitaryUnitCode),
                         new NpgsqlParameter("UserName", requirement.UserName));
-                    
                 }
                 else
                 {
@@ -294,20 +421,21 @@ namespace NewSprt.Controllers
                 _zarnicaDb.SaveChanges();
                 transaction.Commit();
                 return new JsonResult(new {isSucceeded = true});
-            // }
-            // catch (Exception e)
-            // {
-            //     var errorList = new Dictionary<string, string[]>
-            //     {
-            //         {"Id", new[] {"Критическая ошибка при изменении персональщика. Обратитесь в ВЦшнику"}}
-            //     };
-            //     return new JsonResult(new {isSucceeded = false, errors = errorList});
-            // }
+            }
+            catch
+            {
+                transaction.Rollback();
+                var errorList = new Dictionary<string, string[]>
+                {
+                    {"Id", new[] {"Критическая ошибка при изменении персональщика. Обратитесь в ВЦшнику"}}
+                };
+                return new JsonResult(new {isSucceeded = false, errors = errorList});
+            }
         }
 
         public PartialViewResult EditModal(int id)
         {
-            var filterData = new FilterViewModel();
+            var filterData = new FilterDataViewModel();
             filterData.MilitaryComissariats = _zarnicaDb.MilitaryComissariats
                 .Where(m => m.Region == MilitaryComissariat.CurrentRegion && m.IsEmpty == "0")
                 .OrderBy(m => m.ShortName).AsNoTracking().ToList();
@@ -340,7 +468,7 @@ namespace NewSprt.Controllers
                 .Distinct()
                 .OrderBy(m => m)
                 .ToList();
-            
+
             if (!string.IsNullOrEmpty(person.Notice))
             {
                 var noticeArray = person.SendDateString.Split(" ", StringSplitOptions.RemoveEmptyEntries);
@@ -393,22 +521,23 @@ namespace NewSprt.Controllers
         [HttpPost]
         public IActionResult Edit(SpecialPersonViewModel model)
         {
+            if (model.RequirementTypeId == 0)
+            {
+                ModelState.AddModelError("RequirementTypeId", "Не выбрано требование");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errorList = ModelState.Where(m => m.Value.Errors.Count > 0).ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                );
+                return new JsonResult(new {isSucceeded = false, errors = errorList});
+            }
+
+            var transaction = _zarnicaDb.Database.BeginTransaction(IsolationLevel.ReadCommitted);
             try
             {
-                if (model.RequirementTypeId == 0)
-                {
-                    ModelState.AddModelError("RequirementTypeId", "Не выбрано требование");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    var errorList = ModelState.Where(m => m.Value.Errors.Count > 0).ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                    );
-                    return new JsonResult(new {isSucceeded = false, errors = errorList});
-                }
-
                 var person = _zarnicaDb.SpecialPersons.Include(m => m.SpecialPersonToRequirements)
                     .ThenInclude(m => m.Requirement)
                     .FirstOrDefault(m => m.Id == model.Id);
@@ -472,10 +601,9 @@ namespace NewSprt.Controllers
                             var armyTypeId = _zarnicaDb.Teams
                                 .AsNoTracking()
                                 .FirstOrDefault(m => m.MilitaryUnitCode == model.MilitaryUnitId)?.ArmyTypeId;
-                            var newId = _zarnicaDb.Requirements.Select(m => m.Id).Max() + 1;
-                            var newRequirement = new Requirement
+
+                            var requirement = new Requirement
                             {
-                                Id = newId,
                                 DocumentNumber = newIndex,
                                 ArmyTypeCode = armyTypeId,
                                 CreateDate = DateTime.Now.Date,
@@ -486,11 +614,28 @@ namespace NewSprt.Controllers
                                 Amount = 1,
                                 NotInfo = 0,
                                 Notice = "Отправка со СП РТ",
-                                UserName = "sprtSITE"
+                                UserName = User.Identity.Name.ToLower()
                             };
-                            _zarnicaDb.Requirements.Add(newRequirement);
-                            _zarnicaDb.SaveChanges();
-                            editRequirementRelative.RequirementId = newRequirement.Id;
+
+                            var query =
+                                "INSERT INTO zapiski (id, num, r7012, data_v, data, dir_type, nach, vchast, p102, prim, username) " +
+                                $"VALUES (nextval('public.zapiski_id_seq'::text), @DocumentNumber, @ArmyTypeCode, @CreateDate, " +
+                                $"@UpdateDate, @DirectiveTypeId, @RequirementTypeId, @MilitaryUnitCode, 1, 'Отправка со СП РТ', @UserName)";
+
+                            _zarnicaDb.Database.ExecuteSqlCommand(query,
+                                new NpgsqlParameter("DocumentNumber", requirement.DocumentNumber),
+                                new NpgsqlParameter("ArmyTypeCode", requirement.ArmyTypeCode),
+                                new NpgsqlParameter("CreateDate", requirement.CreateDate.Date),
+                                new NpgsqlParameter("UpdateDate", requirement.UpdateDate.Value.Date),
+                                new NpgsqlParameter("DirectiveTypeId", requirement.DirectiveTypeId),
+                                new NpgsqlParameter("RequirementTypeId", requirement.RequirementTypeId),
+                                new NpgsqlParameter("MilitaryUnitCode", requirement.MilitaryUnitCode),
+                                new NpgsqlParameter("UserName", requirement.UserName));
+                            requirement = _zarnicaDb.Requirements.AsNoTracking()
+                                .FirstOrDefault(m => m.DirectiveTypeId == model.DirectiveTypeId &&
+                                                     m.RequirementTypeId == model.RequirementTypeId &&
+                                                     m.MilitaryUnitCode == model.MilitaryUnitId);
+                            editRequirementRelative.RequirementId = requirement.Id;
                         }
                         else
                         {
@@ -508,10 +653,12 @@ namespace NewSprt.Controllers
 
                 _zarnicaDb.SpecialPersons.Update(person);
                 _zarnicaDb.SaveChanges();
+                transaction.Commit();
                 return new JsonResult(new {isSucceeded = true});
             }
-            catch (Exception e)
+            catch
             {
+                transaction.Rollback();
                 var errorList = new Dictionary<string, string[]>
                 {
                     {"Id", new[] {"Критическая ошибка при изменении персональщика. Обратитесь в ВЦшнику"}}

@@ -1,1 +1,127 @@
-﻿<h1 class="text-center">Сборный пункт Республики Татарстан</h1>
+﻿@model List<TeamWithSpecialPerson>
+@{
+   var index = 0;
+}
+<section class="container">
+    <h2 >Информация по воинским частям</h2>
+</section>
+
+<section class="container mt-4 mb-2 ">
+    <div class="row align-items-end">
+        <div class="col-lg-8">
+            <h5>Всего по директивным указаниям (персональщики и семейные): <b>@ViewData["personsCount"]</b> чел.</h5>
+        </div>
+        <div class="col-lg-4 text-right">
+            <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fad fa-user-plus"></i> Добавить</a>
+        </div>
+    </div>
+</section>
+
+<section class="container">
+    <div class="mvc-grid">
+        <table class="table table-hover table-bordered table-label-hide">
+            <thead class="thead-dark">
+            <tr>
+                <th colspan="3">Воинская часть</th>
+                <th class="w-px-110">Задание</th>
+                <th class="w-px-170">Персональщиков</th>
+                <th class="w-px-150">Шефские связи</th>
+                <th class="w-px-120">Остаток</th>
+                <th class="w-px-70"></th>
+            </tr>
+            </thead>
+            @foreach (var team in Model)
+            {
+                <tbody class="label">
+                <tr class="border-top @(team.RemainCount < 0 ? "bg-warning" : "table-primary")">
+                    <td colspan="3" class="font-weight-bold">
+                        <label for="team-@team.MainTeam.MilitaryUnitCode">
+                            @team.MainTeam.ArmyType.Name, @(team.MainTeam.MilitaryDistrict.ShortName != "-" ? team.MainTeam.MilitaryDistrict.ShortName + ", " : "")№ в/ч @team.MainTeam.MilitaryUnitCode, ст. @team.MainTeam.MilitaryUnit.Name
+                        </label>
+                        <input type="checkbox" name="team-@team.MainTeam.MilitaryUnitCode" id="team-@team.MainTeam.MilitaryUnitCode" data-toggle="toggle">
+                    </td>
+                    <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Задание">@team.AllCount</td>
+                    <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Персональщиков">@team.PersonsCount</td>
+                    <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Шефские связи">@team.PatronageRecruitsCount</td>
+                    <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Остаток">@team.RemainCount</td>
+                    <td class="wpx-70"></td>
+                </tr>
+                </tbody>
+                <tbody class="hide">
+                @foreach (var childrenTeam in team.ChildrenTeams)
+                {
+                    <tr class="@(childrenTeam.RemainCount < 0 ? "bg-warning" : "table-secondary")">
+                        <td colspan="3" class="font-weight-bold">
+                            Отправка со СП, @childrenTeam.Title
+                        </td>
+                        <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Задание">@childrenTeam.AllCount</td>
+                        <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Персональщиков">@childrenTeam.PersonsCount</td>
+                        <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Шефские связи: @childrenTeam.GetPatronageTasksText()">@childrenTeam.GetPatrinageCount()</td>
+                        <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Остаток">@childrenTeam.RemainCount</td>
+                        <td class="font-weight-bold"></td>
+                    </tr>
+                    index = 1;
+                    @foreach (var person in childrenTeam.Persons)
+                    {
+                        <tr>
+                            <td style="text-align: center">@(index++).</td>
+                            <td>@person.FullName</td>
+                            <td>@(person.BirthYear)г.</td>
+                            <td colspan="2">@person.MilitaryComissariat.ShortName</td>
+                            <td>@person.Requirement.RequirementType.Name</td>
+                            <td>@person.SendDateString</td>
+                            <td><button class='btn btn-success btnEditPerson' onclick="editPerson('@Url.Action("EditModal", "PersonalGuidance", new {id = person.Id})')"><i class='fad fa-edit'></i></button></td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            }
+        </table>
+    </div>
+</section>
+
+<div id="modalContainer"></div>
+
+@section Scripts
+{
+    <script>
+    function editPerson(url) {
+        $('.btnEditPerson').attr('disabled','');
+        $("#modalContainer").load(url, function (responseText, textStatus, req) {
+            if (textStatus == "error") {
+                $('.btnEditPerson').removeAttr('disabled');
+                alert("Не удалось загрузить Персональщика")
+            } else {
+                $("#editModal").modal('toggle');
+                $("#editModal").on('hidden.bs.modal', function (e) {
+                    reloadTable()
+                    $("#modalContainer").html("")
+                })
+            }  
+        })
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        $('[data-toggle="tooltip"]').tooltip()
+        document.getElementById('createModalBtn').addEventListener('click', function(e) {
+            e.preventDefault()
+            let url = $(this).attr('href')
+            
+            $("#modalContainer").load(url, function (responseText, textStatus, req) {
+                if (textStatus == "error") {
+                    alert("Не удалось загрузить Персональщика")
+                } else {
+                    $("#createModal").modal('toggle');
+                    $("#createModal").on('hidden.bs.modal', function (e) {
+                        $("#modalContainer").html("")
+                    })
+                }  
+            })
+        })
+        
+        $('[data-toggle="toggle"]').change(function(){
+            $(this).parents().next('.hide').toggle();
+        });
+    })
+    </script>
+}

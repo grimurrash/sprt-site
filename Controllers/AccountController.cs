@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.App;
 using NewSprt.Data.App.Models;
-using NewSprt.ViewModels;
+using NewSprt.ViewModels.FormModels;
 
 namespace NewSprt.Controllers
 {

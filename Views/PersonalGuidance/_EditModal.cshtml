@@ -1,7 +1,7 @@
 ﻿@model SpecialPersonViewModel
 
 @{
-    FilterViewModel filterViewModel = ViewBag.FilterData;
+    FilterDataViewModel filterDataViewModel = ViewBag.FilterData;
     var sendDates = ViewBag.SendDates;
 }
 
@@ -46,26 +46,26 @@
                     <div class="form-group">
                         @Html.LabelFor(m => m.MilitaryComissariatId, new {@class = "control-label"})
                         @Html.DropDownListFor(m => m.MilitaryComissariatId, 
-                            new SelectList(filterViewModel.MilitaryComissariats, "Id", "ShortName", 0), 
+                            new SelectList(filterDataViewModel.MilitaryComissariats, "Id", "ShortName", 0), 
                             new {@class = "form-control"})
                     </div>
                     <hr/>
                     <div class="form-group">
                         @Html.LabelFor(m => m.DirectiveTypeId, new {@class = "control-label"})
                         @Html.DropDownListFor(m => m.DirectiveTypeId, 
-                            new SelectList(filterViewModel.DirectiveTypes, "Id", "ViewName"), 
+                            new SelectList(filterDataViewModel.DirectiveTypes, "Id", "ViewName"), 
                             new {@class = "form-control", @disabled = ""})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.RequirementTypeId, new {@class = "control-label"})
                         @Html.DropDownListFor(m => m.RequirementTypeId,
-                            new SelectList(filterViewModel.RequirementTypes, "Id", "Name"), 
+                            new SelectList(filterDataViewModel.RequirementTypes, "Id", "Name"), 
                             new {@class = "form-control"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.MilitaryUnitId, new {@class = "control-label"})
                         @Html.DropDownListFor(m => m.MilitaryUnitId, 
-                            new SelectList(filterViewModel.MilitaryUnits.Select(m => new {Value = m.Id, Text = $"{m.Id} ({m.Name})"}), "Value", "Text"), 
+                            new SelectList(filterDataViewModel.MilitaryUnits.Select(m => new {Value = m.Id, Text = $"{m.Id} ({m.Name})"}), "Value", "Text"), 
                             new {@class = "form-control"})
                     </div>
                     <div class="form-group">

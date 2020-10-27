@@ -312,3 +312,33 @@ header {
 .w-px-m-200 {
     max-width: 200px;
 }
+
+table.table-bordered{
+    border:1px solid #929292;
+}
+table.table-bordered > thead > tr > th, table.table-bordered > tbody > tr > td{
+    border:1px solid #929292;
+}
+table.table-bordered > tbody > tr.border-top > td {
+    border-top: 3px solid #000;
+}
+
+.table-secondary, .table-secondary>td, .table-secondary>th {
+    background-color: #d6d6de;
+}
+
+table.table-label-hide .label label {
+    cursor: pointer;
+}
+
+.table tbody+tbody {
+    border-top: 1px solid #929292;
+}
+
+table.table-label-hide .label input[data-toggle="toggle"]{
+    display: none;
+}
+
+.hide{
+    display: none;
+}

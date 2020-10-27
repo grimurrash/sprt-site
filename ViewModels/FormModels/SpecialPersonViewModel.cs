@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.XPath;
 
-namespace NewSprt.ViewModels
+namespace NewSprt.ViewModels.FormModels
 {
     public class SpecialPersonViewModel
     {

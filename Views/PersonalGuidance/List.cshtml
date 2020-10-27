@@ -1,6 +1,5 @@
-﻿@model object
-@{
-    FilterViewModel filterViewModel = ViewBag.FilterData;
+﻿@{
+    FilterDataViewModel filterDataViewModel = ViewBag.FilterData;
 }
 <section class="container">
     <h2 >Список призывников находящихся в директивных указаниях</h2>
@@ -9,21 +8,21 @@
         <div class="col-lg-4">
             @Html.Label("DirectiveTypeIdFilter", "Вид директивного указания:", new {@class="col-form-label"})
             @Html.DropDownList("DirectiveTypeIdFilter", 
-                new SelectList(filterViewModel.DirectiveTypes, "Id", "Name", 0),
+                new SelectList(filterDataViewModel.DirectiveTypes, "Id", "Name", 0),
                 "Все",
                 new {@id="DirectiveTypeIdFilter", @class="form-control border-info"})
         </div>
         <div class="col-lg-4">
             @Html.Label("RequirementTypeIdFilter", "Требование от:", new {@class="col-form-label"})
             @Html.DropDownList("RequirementTypeIdFilter", 
-                new SelectList(filterViewModel.RequirementTypes, "Id", "Name", 0),
+                new SelectList(filterDataViewModel.RequirementTypes, "Id", "Name", 0),
                 "Все",
                 new {@id="RequirementTypeIdFilter", @class="form-control border-info"})
         </div>
         <div class="col-lg-4">
             @Html.Label("MilitaryUnitIdFilter", "Воинская часть:", new {@class="col-form-label"})
             @Html.DropDownList("MilitaryUnitIdFilter", 
-                new SelectList(filterViewModel.MilitaryUnits.Select(m => new
+                new SelectList(filterDataViewModel.MilitaryUnits.Select(m => new
                 {
                     Value = m.Id,
                     Text = $"{m.Id} ({m.Name})"
@@ -36,7 +35,7 @@
         <div class="col-lg-4">
             @Html.Label("MilitaryComissariatIdFilter", "Военный комиссариат (районный):", new {@class="col-form-label"})
             @Html.DropDownList("MilitaryComissariatIdFilter", 
-                new SelectList(filterViewModel.MilitaryComissariats, "Id", "ShortName", 0),
+                new SelectList(filterDataViewModel.MilitaryComissariats, "Id", "ShortName", 0),
                 "Все",
                 new {@id="MilitaryComissariatIdFilter", @class="form-control border-info"})
         </div>
@@ -53,10 +52,10 @@
 
 <section class="container">
     <div class="row mt-4 mb-2 align-items-end">
-        <div class="col-lg-7">
-            <h5>Всего по директивным указаниям: <b>@ViewBag.AllCount</b> чел.</h5>
+        <div class="col-lg-8">
+            <h5>Всего по директивным указаниям: <b>@ViewData["personsCount"]</b> чел.</h5>
         </div>
-        <div class="col-lg-5 text-right">
+        <div class="col-lg-4 text-right">
             <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fad fa-user-plus"></i> Добавить</a>
         </div>
     </div>
@@ -116,7 +115,7 @@
             })
         }
     
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
             if (localStorage.getItem('DirectiveTypeIdFilter')){
                 document.getElementById('DirectiveTypeIdFilter').value = localStorage.getItem('DirectiveTypeIdFilter')
             }

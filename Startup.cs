@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewSprt.Data.App;
 using NewSprt.Data.Zarnica;
-using NewSprt.ViewModels.Requirements;
+using NewSprt.Models.Requirements;
 
 namespace NewSprt
 {

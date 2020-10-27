@@ -3,14 +3,14 @@ using NewSprt.Data.Zarnica.Models;
 
 namespace NewSprt.ViewModels
 {
-    public class FilterViewModel
+    public class FilterDataViewModel
     {
         public List<MilitaryComissariat> MilitaryComissariats { get; set; }
         public List<DirectiveType> DirectiveTypes { get; set; }
         public List<RequirementType> RequirementTypes { get; set; }
         public List<MilitaryUnit> MilitaryUnits { get; set; }
 
-        public FilterViewModel()
+        public FilterDataViewModel()
         {
             MilitaryComissariats = new List<MilitaryComissariat>();
             DirectiveTypes = new List<DirectiveType>();

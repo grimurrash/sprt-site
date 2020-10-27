@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace NewSprt.ViewModels
+namespace NewSprt.ViewModels.FormModels
 {
     public class LoginModel
     {
