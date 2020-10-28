@@ -329,6 +329,7 @@ table.table-bordered > tbody > tr.border-top > td {
 
 table.table-label-hide .label label {
     cursor: pointer;
+    margin-bottom: 0;
 }
 
 .table tbody+tbody {
@@ -341,4 +342,7 @@ table.table-label-hide .label input[data-toggle="toggle"]{
 
 .hide{
     display: none;
+}
+table.table td, table.table th {
+    vertical-align: middle;
 }

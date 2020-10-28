@@ -54,7 +54,6 @@ namespace NewSprt
                     options.LoginPath = new PathString("/Account/Login");
                     options.AccessDeniedPath = new PathString("/Account/Login");
                 });
-
             services.AddTransient<IAuthorizationHandler, PermissionHandler>();
             services.AddAuthorization(options =>
             {
@@ -66,11 +65,13 @@ namespace NewSprt
                     p => p.Requirements.Add(new PermissionRequirement("PersonalGuidance")));
             });
 
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddMvc().AddJsonOptions(options => { options.SerializerSettings.DateFormatString = "dd.MM.yyyy"; });
             services.AddMvc().AddRazorOptions(options => options.AllowRecompilingViewsOnFileChange = true);
             
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(1));
+
             services.Configure<RequestLocalizationOptions>(opts =>
             {
                 var supportedCultures = new[]
@@ -96,9 +97,8 @@ namespace NewSprt
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
             app.UseAuthentication();
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

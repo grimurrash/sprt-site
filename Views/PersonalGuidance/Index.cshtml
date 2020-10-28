@@ -12,7 +12,7 @@
             <h5>Всего по директивным указаниям (персональщики и семейные): <b>@ViewData["personsCount"]</b> чел.</h5>
         </div>
         <div class="col-lg-4 text-right">
-            <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fad fa-user-plus"></i> Добавить</a>
+            <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fas fa-user-plus"></i> Добавить</a>
         </div>
     </div>
 </section>
@@ -70,7 +70,7 @@
                             <td colspan="2">@person.MilitaryComissariat.ShortName</td>
                             <td>@person.Requirement.RequirementType.Name</td>
                             <td>@person.SendDateString</td>
-                            <td><button class='btn btn-success btnEditPerson' onclick="editPerson('@Url.Action("EditModal", "PersonalGuidance", new {id = person.Id})')"><i class='fad fa-edit'></i></button></td>
+                            <td><button class='btn btn-success btnEditPerson' onclick="editPerson('@Url.Action("EditModal", "PersonalGuidance", new {id = person.Id})')"><i class='fas fa-edit'></i></button></td>
                         </tr>
                     }
                 }

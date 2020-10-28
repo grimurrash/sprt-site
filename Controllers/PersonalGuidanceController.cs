@@ -4,11 +4,14 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Session;
 using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.Zarnica;
 using NewSprt.Data.Zarnica.Models;
+using NewSprt.Models;
 using NewSprt.ViewModels;
 using NewSprt.ViewModels.SpecialGuidance;
 using NewSprt.ViewModels.FormModels;
@@ -105,12 +108,14 @@ namespace NewSprt.Controllers
                         {
                             MilitaryComissariat = militaryComissariat,
                             Count = tempTeamPatronages.Where(m => m.MilitaryComissariat.Id == militaryComissariat.Id)
-                                        .Sum(m => m.Count)
+                                .Sum(m => m.Count)
                         });
                     }
+
                     childrenTeam.PatronageTasks = patronages;
                     childrenTeam.PatronageTasksCount = patronages.Sum(m => m.Count - childrenTeam.Persons.Count(
-                        p => p.MilitaryComissariatCode == m.MilitaryComissariat.Id));
+                        p => p.MilitaryComissariatCode ==
+                             m.MilitaryComissariat.Id));
 
                     if (specialMilitaryUnits.Contains(mainTeam.MilitaryUnitCode))
                     {
@@ -668,9 +673,58 @@ namespace NewSprt.Controllers
         }
 
 
-        public IActionResult SearchForDuplicates()
+        public async Task<IActionResult> SearchForDuplicates()
         {
-            return Content("В разработке");
+            var persons = await _zarnicaDb.SpecialPersons
+                .Where(m => m.SpecialPersonToRequirements.Count > 1)
+                .Include(m => m.MilitaryComissariat)
+                .Include(m => m.SpecialPersonToRequirements)
+                .ThenInclude(m => m.Requirement)
+                .ThenInclude(m => m.RequirementType)
+                .Include(m => m.SpecialPersonToRequirements)
+                .ThenInclude(m => m.Requirement)
+                .ThenInclude(m => m.MilitaryUnit)
+                .Include(m => m.SpecialPersonToRequirements)
+                .ThenInclude(m => m.Requirement)
+                .ThenInclude(m => m.DirectiveType)
+                .AsNoTracking().ToListAsync();
+            ViewData["duplicatesCount"] = persons.Count;
+            if (HttpContext.Session.Keys.Contains("alert"))
+            {
+                ViewBag.Alert = HttpContext.Session.Get<AlertViewModel>("alert");
+                HttpContext.Session.Remove("alert");
+            }
+            return View(persons);
+        }
+
+        public IActionResult DeleteRequirementFromPerson(int requirementId, int personId)
+        {
+            var transaction = _zarnicaDb.Database.BeginTransaction(IsolationLevel.ReadCommitted);
+            try
+            {
+                var specialPersonToRequirement = _zarnicaDb.SpecialPersonToRequirements
+                    .Include(m => m.Requirement)
+                    .FirstOrDefault(m =>
+                        m.RequirementId == requirementId && m.SpecialPersonId == personId);
+                if (specialPersonToRequirement == null)
+                {
+                    HttpContext.Session.Set<AlertViewModel>("alert", new AlertViewModel(AlertType.Error, "Данное требование для данного персональщика не существует!"));
+                    return RedirectToAction("SearchForDuplicates");
+                }
+                specialPersonToRequirement.Requirement.Amount -= 1;
+                _zarnicaDb.Requirements.Update(specialPersonToRequirement.Requirement);
+                _zarnicaDb.SpecialPersonToRequirements.Remove(specialPersonToRequirement);
+                _zarnicaDb.SaveChanges();
+                transaction.Commit();
+                HttpContext.Session.Set<AlertViewModel>("alert", new AlertViewModel(AlertType.Success, "Требование персональщика успешно удалено!"));
+                return RedirectToAction("SearchForDuplicates");
+            }
+            catch
+            {
+                transaction.Rollback();
+                HttpContext.Session.Set<AlertViewModel>("alert", new AlertViewModel(AlertType.Error, "Ошибка при удалении требования!"));
+                return RedirectToAction("SearchForDuplicates");
+            }
         }
 
         public IActionResult DeleteSpecialPerson()

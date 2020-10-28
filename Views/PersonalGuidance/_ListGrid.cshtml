@@ -15,7 +15,7 @@
         columns.Add(model => model.MilitaryUnitInfo).Titled("в/ч").Css("w-px-120");
         columns.Add(model => model.RequirementInfo).Titled("Требование").Css("w-px-180");
         columns.Add(model => model.SendDateString).Titled("Дата отправки").Css("w-px-m-200").Filterable(true);
-        columns.Add(model => $"<button class='btn btn-success btnEditPerson' onclick=\"editPerson('{@Url.Action("EditModal", "PersonalGuidance", new {id = model.Id})}')\"><i class='fad fa-edit'></i></button>").Encoded(false);
+        columns.Add(model => $"<button class='btn btn-success btnEditPerson' onclick=\"editPerson('{@Url.Action("EditModal", "PersonalGuidance", new {id = model.Id})}')\"><i class='fas fa-edit'></i></button>").Encoded(false);
     })
     .Css("table-striped")
     .AppendCss("table-hover")
@@ -23,7 +23,7 @@
     .Empty("Призывников по директивным указаниям не найдены")
     .Pageable(pager =>
     {
-        pager.PartialViewName = "_ExtendedPager";
+        pager.PartialViewName = "ViewComponents/_ExtendedPager";
         pager.PageSizes = new Dictionary<int, string> {{0, "Все"}, {10, "10"}, {20, "20"}, {50, "50"}, {100, "100"}};
         pager.ShowPageSizes = true;
         pager.PagesToDisplay = 5;
