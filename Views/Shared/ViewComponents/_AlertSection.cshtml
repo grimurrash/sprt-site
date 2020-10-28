@@ -1,11 +1,11 @@
 ﻿@{
-    var alert = ViewBag.Alert;
+    AlertViewModel alert = ViewBag.Alert;
 }
 
 @if (alert != null)
 {
     <section class="container" role="alert">
-        <div class="alert alert-@alert.GetAlertTypeClass() alert-dismissible fade show" >
+        <div class="alert alert-@alert.GetAlertTypeClass() alert-dismissible fade show">
             @if (alert.Title != "")
             {
                 <h5 class="alert-heading">@alert.Title</h5>

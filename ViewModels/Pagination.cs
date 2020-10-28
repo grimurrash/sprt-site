@@ -2,8 +2,8 @@
 {
     public class Pagination
     {
-        public int Rows { get; set; }
-        public int CurrentPage { get; set; }
+        public int Rows { get; }
+        public int CurrentPage { get; }
 
         public Pagination(int rows, int currentPage = 1)
         {

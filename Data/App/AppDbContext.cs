@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.App.Models;
 
 namespace NewSprt.Data.App
 {
-    public class AppDbContext : DbContext
+    public sealed class AppDbContext : DbContext
     {
         //migratiins add command:
         //InitialCreate

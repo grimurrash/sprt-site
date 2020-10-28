@@ -80,7 +80,7 @@ header {
     top: calc(2.25rem + 2px);
     left: 2px;
     width: calc(3rem - 4px);
-    height: calc(1.5em + 0.75rem  - 2px);
+    height: calc(1.5em + 0.75rem - 2px);
     border-radius: 4rem;
 }
 
@@ -313,17 +313,19 @@ header {
     max-width: 200px;
 }
 
-table.table-bordered{
-    border:1px solid #929292;
+table.table-bordered {
+    border: 1px solid #929292;
 }
-table.table-bordered > thead > tr > th, table.table-bordered > tbody > tr > td{
-    border:1px solid #929292;
+
+table.table-bordered > thead > tr > th, table.table-bordered > tbody > tr > td {
+    border: 1px solid #929292;
 }
+
 table.table-bordered > tbody > tr.border-top > td {
     border-top: 3px solid #000;
 }
 
-.table-secondary, .table-secondary>td, .table-secondary>th {
+.table-secondary, .table-secondary > td, .table-secondary > th {
     background-color: #d6d6de;
 }
 
@@ -332,17 +334,18 @@ table.table-label-hide .label label {
     margin-bottom: 0;
 }
 
-.table tbody+tbody {
+.table tbody + tbody {
     border-top: 1px solid #929292;
 }
 
-table.table-label-hide .label input[data-toggle="toggle"]{
+table.table-label-hide .label input[data-toggle="toggle"] {
     display: none;
 }
 
-.hide{
+.hide {
     display: none;
 }
+
 table.table td, table.table th {
     vertical-align: middle;
 }

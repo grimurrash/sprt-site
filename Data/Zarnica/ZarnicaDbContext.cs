@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using NewSprt.Data.Zarnica.Models;
 
 namespace NewSprt.Data.Zarnica
 {
-    public class ZarnicaDbContext : DbContext
+    public sealed class ZarnicaDbContext : DbContext
     {
         public DbSet<Recruit> Recruits { get; set; }
         public DbSet<AdditionalData> AdditionalDatas { get; set; }

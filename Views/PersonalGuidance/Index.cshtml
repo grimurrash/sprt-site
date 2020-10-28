@@ -1,7 +1,5 @@
 ﻿@model List<TeamWithSpecialPerson>
-@{
-   var index = 0;
-}
+
 <section class="container">
     <h2 >Информация по воинским частям</h2>
 </section>
@@ -12,7 +10,7 @@
             <h5>Всего по директивным указаниям (персональщики и семейные): <b>@ViewData["personsCount"]</b> чел.</h5>
         </div>
         <div class="col-lg-4 text-right">
-            <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fas fa-user-plus"></i> Добавить</a>
+            <a asp-controller="PersonalGuidance" asp-action="CreateModal" class="btn btn-success" id="createModalBtn"> <i class="fas fa-user-plus"></i> Добавить</a>
         </div>
     </div>
 </section>
@@ -34,16 +32,16 @@
             {
                 <tbody class="label">
                 <tr class="border-top @(team.RemainCount < 0 ? "bg-warning" : "table-primary")">
-                    <td colspan="3" class="font-weight-bold">
+                    <td class="font-weight-bold" colspan="3">
                         <label for="team-@team.MainTeam.MilitaryUnitCode">
                             @team.MainTeam.ArmyType.Name, @(team.MainTeam.MilitaryDistrict.ShortName != "-" ? team.MainTeam.MilitaryDistrict.ShortName + ", " : "")№ в/ч @team.MainTeam.MilitaryUnitCode, ст. @team.MainTeam.MilitaryUnit.Name
                         </label>
-                        <input type="checkbox" name="team-@team.MainTeam.MilitaryUnitCode" id="team-@team.MainTeam.MilitaryUnitCode" data-toggle="toggle">
+                        <input data-toggle="toggle" id="team-@team.MainTeam.MilitaryUnitCode" name="team-@team.MainTeam.MilitaryUnitCode" type="checkbox">
                     </td>
-                    <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Задание">@team.AllCount</td>
-                    <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Персональщиков">@team.PersonsCount</td>
-                    <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Шефские связи">@team.PatronageRecruitsCount</td>
-                    <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Остаток">@team.RemainCount</td>
+                    <td class="font-weight-bold text-center" data-placement="top" data-toggle="tooltip" title="Задание">@team.AllCount</td>
+                    <td class="font-weight-bold text-center" data-placement="top" data-toggle="tooltip" title="Персональщиков">@team.PersonsCount</td>
+                    <td class="font-weight-bold text-center" data-placement="top" data-toggle="tooltip" title="Шефские связи">@team.PatronageRecruitsCount</td>
+                    <td class="font-weight-bold text-center" data-placement="top" data-toggle="tooltip" title="Остаток">@team.RemainCount</td>
                     <td class="wpx-70"></td>
                 </tr>
                 </tbody>
@@ -51,16 +49,16 @@
                 @foreach (var childrenTeam in team.ChildrenTeams)
                 {
                     <tr class="@(childrenTeam.RemainCount < 0 ? "bg-warning" : "table-secondary")">
-                        <td colspan="3" class="font-weight-bold">
+                        <td class="font-weight-bold" colspan="3">
                             Отправка со СП, @childrenTeam.Title
                         </td>
-                        <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Задание">@childrenTeam.AllCount</td>
-                        <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Персональщиков">@childrenTeam.PersonsCount</td>
-                        <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Шефские связи: @childrenTeam.GetPatronageTasksText()">@childrenTeam.GetPatrinageCount()</td>
-                        <td class="font-weight-bold text-center" data-toggle="tooltip" data-placement="top" title="Остаток">@childrenTeam.RemainCount</td>
+                        <td class="font-weight-bold text-center" data-placement="top" data-toggle="tooltip" title="Задание">@childrenTeam.AllCount</td>
+                        <td class="font-weight-bold text-center" data-placement="top" data-toggle="tooltip" title="Персональщиков">@childrenTeam.PersonsCount</td>
+                        <td class="font-weight-bold text-center" data-placement="top" data-toggle="tooltip" title="Шефские связи: @childrenTeam.GetPatronageTasksText()">@childrenTeam.GetPatrinageCount()</td>
+                        <td class="font-weight-bold text-center" data-placement="top" data-toggle="tooltip" title="Остаток">@childrenTeam.RemainCount</td>
                         <td class="font-weight-bold"></td>
                     </tr>
-                    index = 1;
+                    var index = 1;
                     @foreach (var person in childrenTeam.Persons)
                     {
                         <tr>
@@ -70,7 +68,11 @@
                             <td colspan="2">@person.MilitaryComissariat.ShortName</td>
                             <td>@person.Requirement.RequirementType.Name</td>
                             <td>@person.SendDateString</td>
-                            <td><button class='btn btn-success btnEditPerson' onclick="editPerson('@Url.Action("EditModal", "PersonalGuidance", new {id = person.Id})')"><i class='fas fa-edit'></i></button></td>
+                            <td>
+                                <button class='btn btn-success btnEditPerson' onclick="editPerson('@Url.Action("EditModal", "PersonalGuidance", new {id = person.Id})')">
+                                    <i class='fas fa-edit'></i>
+                                </button>
+                            </td>
                         </tr>
                     }
                 }
@@ -85,16 +87,17 @@
 @section Scripts
 {
     <script>
+    
     function editPerson(url) {
         $('.btnEditPerson').attr('disabled','');
-        $("#modalContainer").load(url, function (responseText, textStatus, req) {
-            if (textStatus == "error") {
+        $("#modalContainer").load(url, function (responseText, textStatus) {
+            if (textStatus === "error") {
                 $('.btnEditPerson').removeAttr('disabled');
                 alert("Не удалось загрузить Персональщика")
             } else {
-                $("#editModal").modal('toggle');
-                $("#editModal").on('hidden.bs.modal', function (e) {
-                    reloadTable()
+                let editModal = $('#editModal')
+                editModal.modal('toggle');
+                editModal.on('hidden.bs.modal', function () {
                     $("#modalContainer").html("")
                 })
             }  
@@ -107,19 +110,19 @@
             e.preventDefault()
             let url = $(this).attr('href')
             
-            $("#modalContainer").load(url, function (responseText, textStatus, req) {
-                if (textStatus == "error") {
+            $("#modalContainer").load(url, function (responseText, textStatus) {
+                if (textStatus === "error") {
                     alert("Не удалось загрузить Персональщика")
                 } else {
-                    $("#createModal").modal('toggle');
-                    $("#createModal").on('hidden.bs.modal', function (e) {
+                    let createModal = $("#createModal")
+                    createModal.modal('toggle');
+                    createModal.on('hidden.bs.modal', function () {
                         $("#modalContainer").html("")
                     })
                 }  
             })
         })
-        
-        $('[data-toggle="toggle"]').change(function(){
+        document.querySelector('[data-toggle="toggle"]').addEventListener('change', function () {
             $(this).parents().next('.hide').toggle();
         });
     })

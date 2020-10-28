@@ -6,7 +6,7 @@ namespace NewSprt.ViewModels.SpecialGuidance
     public class TeamWithSpecialPerson
     {
         public Team MainTeam { get; set; }
-        public List<ChildrenTeam> ChildrenTeams { get; set; }
+        public List<ChildrenTeam> ChildrenTeams { get; }
         
         public int AllCount { get; set; }
         public int PersonsCount { get; set; }

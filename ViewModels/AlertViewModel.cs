@@ -18,7 +18,7 @@ namespace NewSprt.ViewModels
 
         public string GetAlertTypeClass()
         {
-            var alertTypeClass = "";
+            string alertTypeClass;
             switch (Type)
             {
                 case AlertType.Success:
@@ -33,6 +33,8 @@ namespace NewSprt.ViewModels
                 case AlertType.Info:
                     alertTypeClass = "info";
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             return alertTypeClass;
@@ -41,7 +43,6 @@ namespace NewSprt.ViewModels
     
     public enum AlertType
     {
-        Not,
         Success,
         Error,
         Warning,

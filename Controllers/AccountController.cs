@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.App;
-using NewSprt.Data.App.Models;
 using NewSprt.ViewModels.FormModels;
 
 namespace NewSprt.Controllers
 {
     public class AccountController : Controller
     {
-        private AppDbContext _appDb;
+        private readonly AppDbContext _appDb;
 
         public AccountController(AppDbContext appDbContext)
         {
@@ -31,23 +30,20 @@ namespace NewSprt.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var user = await _appDb.Users
-                    .Include(m => m.UserPermissions)
-                    .ThenInclude(m => m.Permission)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(u =>
+            if (!ModelState.IsValid) return View(model);
+            
+            var user = await _appDb.Users
+                .Include(m => m.UserPermissions)
+                .ThenInclude(m => m.Permission)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u =>
                     u.Login == model.Login && u.Password == model.Password);
-                if (user != null)
-                {
-                    await Authenticate(model.Login, string.Join(",",user.UserPermissions.Select(m => m.Permission.ShortName)));
-
-                    return RedirectToAction("Index", "Home");
-                }
-                ModelState.AddModelError("", "Некоректные логин и(или) пароль");
+            if (user != null)
+            {
+                await Authenticate(model.Login, string.Join(",",user.UserPermissions.Select(m => m.Permission.ShortName)));
+                return RedirectToAction("Index", "Home");
             }
-
+            ModelState.AddModelError("", "Некоректные логин и(или) пароль");
             return View(model);
         }
 

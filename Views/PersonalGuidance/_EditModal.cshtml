@@ -15,18 +15,18 @@
                 </button>
             </div>
             <div class="modal-body" id="modalBody">
-               @using (Html.BeginForm(
-                   "Edit",
-                   "PersonalGuidance",
-                   null,
-                   FormMethod.Post,
-                   true,
-                   new {@class = "form-horizontal needs-validation", id="editForm", @novalidate = "", role = "form"}))
-               {
+                @using (Html.BeginForm(
+                    "Edit",
+                    "PersonalGuidance",
+                    null,
+                    FormMethod.Post,
+                    true,
+                    new {@class = "form-horizontal needs-validation", id = "editForm", novalidate = "", role = "form"}))
+                {
                     @Html.AntiForgeryToken()
-                   <div class="form-group">
-                       @Html.HiddenFor(m => m.Id)
-                   </div>
+                    <div class="form-group">
+                        @Html.HiddenFor(m => m.Id)
+                    </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.LastName, new {@class = "control-label"})
                         @Html.TextBoxFor(m => m.LastName, new {@class = "form-control"})
@@ -41,36 +41,36 @@
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.BirthYear, new {@class = "control-label"})
-                        @Html.TextBoxFor(m => m.BirthYear, new {@class = "form-control", @type = "number"})
+                        @Html.TextBoxFor(m => m.BirthYear, new {@class = "form-control", type = "number"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.MilitaryComissariatId, new {@class = "control-label"})
-                        @Html.DropDownListFor(m => m.MilitaryComissariatId, 
-                            new SelectList(filterDataViewModel.MilitaryComissariats, "Id", "ShortName", 0), 
+                        @Html.DropDownListFor(m => m.MilitaryComissariatId,
+                            new SelectList(filterDataViewModel.MilitaryComissariats, "Id", "ShortName", 0),
                             new {@class = "form-control"})
                     </div>
                     <hr/>
                     <div class="form-group">
                         @Html.LabelFor(m => m.DirectiveTypeId, new {@class = "control-label"})
-                        @Html.DropDownListFor(m => m.DirectiveTypeId, 
-                            new SelectList(filterDataViewModel.DirectiveTypes, "Id", "ViewName"), 
-                            new {@class = "form-control", @disabled = ""})
+                        @Html.DropDownListFor(m => m.DirectiveTypeId,
+                            new SelectList(filterDataViewModel.DirectiveTypes, "Id", "ViewName"),
+                            new {@class = "form-control", disabled = ""})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.RequirementTypeId, new {@class = "control-label"})
                         @Html.DropDownListFor(m => m.RequirementTypeId,
-                            new SelectList(filterDataViewModel.RequirementTypes, "Id", "Name"), 
+                            new SelectList(filterDataViewModel.RequirementTypes, "Id", "Name"),
                             new {@class = "form-control"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.MilitaryUnitId, new {@class = "control-label"})
-                        @Html.DropDownListFor(m => m.MilitaryUnitId, 
-                            new SelectList(filterDataViewModel.MilitaryUnits.Select(m => new {Value = m.Id, Text = $"{m.Id} ({m.Name})"}), "Value", "Text"), 
+                        @Html.DropDownListFor(m => m.MilitaryUnitId,
+                            new SelectList(filterDataViewModel.MilitaryUnits.Select(m => new {Value = m.Id, Text = $"{m.Id} ({m.Name})"}), "Value", "Text"),
                             new {@class = "form-control"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.SendDate, new {@class = "control-label"})
-                        @Html.DropDownListFor(m => m.SendDate, 
+                        @Html.DropDownListFor(m => m.SendDate,
                             new SelectList(sendDates, "Value", "Text"),
                             new {@class = "form-control"})
                     </div>
@@ -78,8 +78,8 @@
                         @Html.LabelFor(m => m.Notice, new {@class = "control-label"})
                         @Html.TextBoxFor(m => m.Notice, new {@class = "form-control"})
                     </div>
-                   <input type="submit" hidden="hidden" id="editSpecialPersonBtn"/>
-               }
+                    <input type="submit" hidden="hidden" id="editSpecialPersonBtn"/>
+                }
             </div>
             <div class="modal-footer d-flex justify-content-sm-between">
                 <button class="btn btn btn-success" onclick="document.getElementById('editSpecialPersonBtn').click()">Сохранить</button>
@@ -92,6 +92,7 @@
 
 <script>
     $(document).ready(function() {
+        let editFormElement = $("#editModal")
         $("#editForm").on('submit', function(e) {
             e.preventDefault()
             let form = $(this)
@@ -104,36 +105,37 @@
                     $('.invalid-feedback.feedback-text').remove();
                     $(".is-invalid").removeClass('is-invalid')
                     if (data.isSucceeded) {
-                        $("#editModal").modal('toggle')
+                        editFormElement.modal('toggle')
                     } else {
                         $("#modalBody").scrollTop(0);
-                        $.each(data.errors, function(index, value) {
-                            $("#" + index).addClass('is-invalid')
-                            $("#" + index).parent().append("<div class='invalid-feedback feedback-text'>" + value[0] + "</div>");
+                        $.each(data.errors, function(elementId, value) {
+                            let element = $(`#${elementId}`)
+                            element.addClass('is-invalid')
+                            element.parent().append("<div class='invalid-feedback feedback-text'>" + value[0] + "</div>");
                         })
                     }
                 },
-                error: function(data) {
+                error: function() {
                     alert('Не удалось сохранить изменения')
                 }
             })
         })
         $("#RequirementTypeId").select2({
             theme: 'bootstrap4',
-            dropdownParent: $('#editModal')
+            dropdownParent: editFormElement
         })
         $("#MilitaryComissariatId").select2({
             theme: 'bootstrap4',
-            dropdownParent: $('#editModal')
+            dropdownParent: editFormElement
         })
         $("#MilitaryUnitId").select2({
             theme: 'bootstrap4',
-            dropdownParent: $('#editModal')
+            dropdownParent: editFormElement
         })
-        $('#MilitaryUnitId').on('change', function(e) {
+        document.getElementById('MilitaryUnitId').addEventListener('change', function () {
             let id = document.getElementById('MilitaryUnitId').value
             $.ajax({
-                url: '@Url.Action("SendDateJsonList","MilitaryUnit")',
+                url: '@Url.Action("SendDateJsonList", "MilitaryUnit")',
                 data: {id: id},
                 type: 'get',
                 success: function(data) {
@@ -148,20 +150,5 @@
                 }
             })
         })
-       
-          window.addEventListener('load', function() {
-            // Fetch all the forms we want to apply custom Bootstrap validation styles to
-            var forms = document.getElementsByClassName('needs-validation');
-            // Loop over them and prevent submission
-            var validation = Array.prototype.filter.call(forms, function(form) {
-              form.addEventListener('submit', function(event) {
-                if (form.checkValidity() === false) {
-                  event.preventDefault();
-                  event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-              }, false);
-            });
-          }, false);
     })
 </script>

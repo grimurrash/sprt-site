@@ -37,8 +37,8 @@
                     <td rowspan="2">@person.Notice</td>
                     <td>
                         @person.SpecialPersonToRequirements[0].Requirement.ToString()<br>
-                        @(person.SpecialPersonToRequirements[0].Requirement.MilitaryUnitCode == "-" ? "" : $"в/ч {person.SpecialPersonToRequirements[0].Requirement.MilitaryUnit.ToString()} <br>")
-                        @(@person.SpecialPersonToRequirements[0].Requirement.Notice == "" ? "" : $"({person.SpecialPersonToRequirements[0].Requirement.Notice})")
+                        @(person.SpecialPersonToRequirements[0].Requirement.MilitaryUnitCode == "-" ? "" : $"в/ч {person.SpecialPersonToRequirements[0].Requirement.MilitaryUnit} <br>")
+                        @(person.SpecialPersonToRequirements[0].Requirement.Notice == "" ? "" : $"({person.SpecialPersonToRequirements[0].Requirement.Notice})")
                     </td>
                     <td>
                         <a class="btn btn-danger deleteRequirementFromPersonBtn" asp-controller="PersonalGuidance" asp-action="DeleteRequirementFromPerson" asp-route-personId="@person.SpecialPersonToRequirements[0].SpecialPersonId" asp-route-requirementId="@person.SpecialPersonToRequirements[0].RequirementId">
@@ -50,8 +50,8 @@
                 <tr>
                     <td>
                         @person.SpecialPersonToRequirements[1].Requirement.ToString()<br>
-                        @(person.SpecialPersonToRequirements[1].Requirement.MilitaryUnitCode == "-" ? "" : $"в/ч {person.SpecialPersonToRequirements[1].Requirement.MilitaryUnit.ToString()}")<br>
-                        @(@person.SpecialPersonToRequirements[1].Requirement.Notice == "" ? "" : $"({person.SpecialPersonToRequirements[1].Requirement.Notice})")
+                        @(person.SpecialPersonToRequirements[1].Requirement.MilitaryUnitCode == "-" ? "" : $"в/ч {person.SpecialPersonToRequirements[1].Requirement.MilitaryUnit}")<br>
+                        @(person.SpecialPersonToRequirements[1].Requirement.Notice == "" ? "" : $"({person.SpecialPersonToRequirements[1].Requirement.Notice})")
                     </td>
                     <td>
                         <a class='btn btn-danger deleteRequirementFromPersonBtn' asp-controller="PersonalGuidance" asp-action="DeleteRequirementFromPerson" asp-route-personId="@person.SpecialPersonToRequirements[1].SpecialPersonId" asp-route-requirementId="@person.SpecialPersonToRequirements[1].RequirementId">
@@ -69,7 +69,7 @@
 {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementsByClassName('deleteRequirementFromPersonBtn', function(e) {
+            document.querySelector('.deleteRequirementFromPersonBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 if(confirm("Вы уверены что хотите удалить требование у персональщика?")) {
                     window.location.href = this

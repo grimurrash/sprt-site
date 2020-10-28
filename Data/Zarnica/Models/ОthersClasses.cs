@@ -13,7 +13,7 @@ namespace NewSprt.Data.Zarnica.Models
         public int AllCount { get; set; }
         public int AllACategoryCount { get; set; }
         public int AllCTypeCount { get; set; }
-        public int AllSPOTypeCount { get; set; }
+        public int AllSpoTypeCount { get; set; }
         
         public int OneCount { get; set; }
         public int OneCTypeCount { get; set; }

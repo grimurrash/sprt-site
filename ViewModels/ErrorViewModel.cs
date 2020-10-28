@@ -1,5 +1,3 @@
-using System;
-
 namespace NewSprt.ViewModels
 {
     public class ErrorViewModel

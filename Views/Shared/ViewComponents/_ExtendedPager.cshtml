@@ -46,16 +46,16 @@
 
             <div class="mvc-grid-page-sizes">
                 <select class="mvc-grid-pager-rows">
-                    
+
                     @foreach (var pageSiz in pageSizes)
                     {
                         if (Model.RowsPerPage == pageSiz.Key)
                         {
-                            <option value = "@pageSiz.Key" selected="selected">@pageSiz.Value </option>
+                            <option value="@pageSiz.Key" selected="selected">@pageSiz.Value </option>
                         }
                         else
                         {
-                            <option value = "@pageSiz.Key">@pageSiz.Value </option>
+                            <option value="@pageSiz.Key">@pageSiz.Value </option>
                         }
                     }
                 </select>
@@ -64,6 +64,6 @@
     }
     else
     {
-        <input class="mvc-grid-pager-rows" type="hidden" value="@Model.RowsPerPage" />
+        <input class="mvc-grid-pager-rows" type="hidden" value="@Model.RowsPerPage"/>
     }
 </div>

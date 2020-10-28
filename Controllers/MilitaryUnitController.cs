@@ -7,7 +7,7 @@ namespace NewSprt.Controllers
 {
     public class MilitaryUnitController : Controller
     {
-        private ZarnicaDbContext _zarnicaDb;
+        private readonly ZarnicaDbContext _zarnicaDb;
 
         public MilitaryUnitController(ZarnicaDbContext zarnicaDb)
         {
