@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using NewSprt.Models;
 
 namespace NewSprt.Data.Zarnica.Models
 {
@@ -17,7 +18,7 @@ namespace NewSprt.Data.Zarnica.Models
         [Column("k101_g5")] public int BirthYear { get; set; }
         [Column("k001_g5")] public DateTime? BirthDate { get; set; }
         [Column("prim_g5")] public string Notice { get; set; }
-        
+
         [Column("data_g5")] public DateTime UpdateDate { get; set; }
         [Column("username")] public string UpdateUser { get; set; }
 
@@ -33,6 +34,8 @@ namespace NewSprt.Data.Zarnica.Models
             SpecialPersonToRequirements = new List<SpecialPersonToRequirement>();
         }
 
+        [NotMapped] public Recruit Recruit => SpecialPersonToRecruits.FirstOrDefault()?.Recruit;
+
         [NotMapped]
         public Requirement Requirement
         {
@@ -43,9 +46,9 @@ namespace NewSprt.Data.Zarnica.Models
                 var personalRequirement = SpecialPersonToRequirements.OrderBy(m => m.RequirementId).FirstOrDefault(m =>
                     m.Requirement.DirectiveTypeId == DirectiveType.PersonalPerson);
 
-                if (personalRequirement == null) return SpecialPersonToRequirements.FirstOrDefault().Requirement;
-
-                return personalRequirement.Requirement;
+                return personalRequirement == null
+                    ? SpecialPersonToRequirements.FirstOrDefault()?.Requirement
+                    : personalRequirement.Requirement;
             }
         }
 
@@ -57,13 +60,13 @@ namespace NewSprt.Data.Zarnica.Models
             get
             {
                 var notice = Notice.Replace("Отправка", "").Replace("отправка", "").Trim(',').Trim();
-                if (string.IsNullOrEmpty(notice)) return "-";
-                return notice;
+                return string.IsNullOrEmpty(notice) ? "-" : notice;
             }
         }
-        
+
         [NotMapped]
-        public DateTime? SendDate {
+        public DateTime? SendDate
+        {
             get
             {
                 var notice = Notice.Replace("Отправка", "").Replace("отправка", "").Trim(',').Trim();
@@ -78,42 +81,48 @@ namespace NewSprt.Data.Zarnica.Models
                         {
                             return sendDate;
                         }
+
                         break;
                     default:
                         if (DateTime.TryParse(noticeArray[0].Trim(',').Trim('.').Trim(' '), out sendDate))
                         {
                             return sendDate;
                         }
+
                         break;
                 }
 
                 return null;
             }
         }
-        
-        
-        [NotMapped]
-        public string MilitaryUnitInfo
-        {
-            get
-            {
-                if (Requirement == null) return "-";
 
-                return Requirement.MilitaryUnit.ToString();
-            }
-        }
 
-        [NotMapped]
-        public string RequirementInfo
-        {
-            get
-            {
-                if (Requirement == null) return "-";
+        [NotMapped] public string MilitaryUnitInfo => Requirement == null ? "-" : Requirement.MilitaryUnit.ToString();
 
-                return Requirement.ToString();
-            }
-        }
+        [NotMapped] public string RequirementInfo => Requirement == null ? "-" : Requirement.ToString();
 
         [NotMapped] public bool IsMark { get; set; }
+
+        public string GetRecruitStatus()
+        {
+            if (Recruit == null) return "Не доставлен на сборный пункт";
+            if (Requirement == null) return "Ошибка при получении требования!!!";
+            if (Requirement.DirectiveTypeId != DirectiveType.FamilyPerson &&
+                Requirement.DirectiveTypeId != DirectiveType.PersonalPerson &&
+                Requirement.RequirementTypeId != RequirementType.TcpRequirement)
+                return "Не обрабатываемый тип директивного указания";
+            var lastEvent = Recruit.Events.FirstOrDefault(m => m.Date == Recruit.Events.Max(e => e.Date));
+            if (lastEvent == null) return "Отсутствуют события у призывника";
+
+            if (lastEvent.EventCode == 113 || lastEvent.EventCode == 112)
+            {
+                return
+                    $"{EventType.GetName(lastEvent.EventCode)}: " +
+                    $"{Recruit.Team.TeamNumber} (в/ч {Recruit.Team.MilitaryUnitCode} ({Recruit.Team.MilitaryUnit.Name}) " +
+                    $"на {Recruit.Team.SendDate?.ToShortDateString()})";
+            }
+
+            return EventType.GetName(lastEvent.EventCode);
+        }
     }
 }

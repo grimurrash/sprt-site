@@ -1,0 +1,33 @@
+﻿@model IEnumerable<SpecialPerson>
+
+@{
+    Pagination paging = ViewBag.Pagination;
+}
+
+@(Html.Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add(model => model.Id).Titled("Номер").Named("id").Hidden();
+        columns.Add().RenderedAs((model, row) => paging.Rows * paging.CurrentPage - paging.Rows + row + 1).Titled("#");
+        columns.Add(model => model.FullName).Titled("ФИО").Sortable(true);
+        columns.Add(model => model.BirthYear).Titled("Год рождения").Css("w-px-100");
+        columns.Add(model => model.MilitaryComissariat.ShortName).Css("w-px-150").Titled("Военный комиссариат");
+        columns.Add(model => $"{model.Requirement}<br/>{model.Requirement.MilitaryUnit}<br/>({model.Notice.Trim()})" ).Titled("Требование").Css("w-px-250").Encoded(false);
+        columns.Add(model => model.GetRecruitStatus()).Titled("Статус").Css("w-px-250").Filterable(true);
+        columns.Add(model => $"<button data-placement='top' data-toggle='tooltip' title='Редактировать данные на призывника' class='btn btn-success btnEditPerson' onclick=\"editPerson('{Url.Action("EditModal", "PersonalGuidance", new {id = model.Id})}')\"><i class='fas fa-edit'></i></button>").Css("w-px-60 button").Encoded(false);
+        columns.Add(model => $"<button data-placement='top' data-toggle='tooltip' title='Удалить персональщика' class='btn btn-danger btnDeletePerson' onclick=\"deletePerson('{Url.Action("DeleteSpecialPerson", "PersonalGuidance", new {id = model.Id})}')\"><i class='fas fa-trash-alt'></i></button>").Css("w-px-60 button").Encoded(false);
+    })
+    .Css("table-striped")
+    .AppendCss("table-hover")
+    .RowAttributed(model => new {@class = model.IsMark ? "table-success" : null})
+    .Empty("Призывников на удаление не найдено")
+    .Pageable(pager =>
+    {
+        pager.PartialViewName = "ViewComponents/_ExtendedPager";
+        pager.PageSizes = new Dictionary<int, string> {{0, "Все"}, {10, "10"}, {20, "20"}, {50, "50"}, {100, "100"}};
+        pager.ShowPageSizes = true;
+        pager.PagesToDisplay = 5;
+        pager.CurrentPage = paging.CurrentPage;
+        pager.RowsPerPage = paging.Rows;
+    })
+)

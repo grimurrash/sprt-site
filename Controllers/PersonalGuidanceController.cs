@@ -36,7 +36,9 @@ namespace NewSprt.Controllers
         public async Task<IActionResult> Index()
         {
             var specialMilitaryUnits = new List<string>() {"5561"};
-
+            var militaryComissariats = await _zarnicaDb.MilitaryComissariats
+                .Where(m => m.Region == MilitaryComissariat.CurrentRegion && m.IsEmpty == "0")
+                .OrderBy(m => m.ShortName).AsNoTracking().ToListAsync();
             var persons = await _zarnicaDb.SpecialPersons
                 .Where(m => m.SpecialPersonToRequirements.Any(s =>
                     s.Requirement.DirectiveTypeId == DirectiveType.PersonalPerson ||
@@ -49,10 +51,6 @@ namespace NewSprt.Controllers
                 .OrderBy(m => m.LastName).AsNoTracking().ToListAsync();
             var requirements = persons.Select(m => m.Requirement).ToList();
             var militaryUnits = requirements.Select(m => m.MilitaryUnitCode).Distinct().ToList();
-            var militaryComissariats = await _zarnicaDb.MilitaryComissariats
-                .Where(m => m.Region == MilitaryComissariat.CurrentRegion && m.IsEmpty == "0")
-                .OrderBy(m => m.ShortName).AsNoTracking().ToListAsync();
-
             var allTeams = await _zarnicaDb.Teams.Where(m => militaryUnits.Contains(m.MilitaryUnitCode))
                 .Include(m => m.MilitaryUnit)
                 .Include(m => m.ArmyType)
@@ -200,7 +198,7 @@ namespace NewSprt.Controllers
             bool exitMode = false)
         {
             ViewBag.Pagination = new Pagination(rows, page);
-            if (exitMode) return PartialView("_ListGrid", new List<SpecialPerson>());
+            if (exitMode) return PartialView("Grid/_ListGrid", new List<SpecialPerson>());
 
             var query = _zarnicaDb.SpecialPersons
                 .Include(m => m.MilitaryComissariat)
@@ -276,7 +274,7 @@ namespace NewSprt.Controllers
 
             if (isMark) persons = persons.Where(m => m.IsMark).ToList();
 
-            return PartialView("_ListGrid", persons);
+            return PartialView("Grid/_ListGrid", persons);
         }
 
         public PartialViewResult CreateModal()
@@ -357,6 +355,7 @@ namespace NewSprt.Controllers
                 _zarnicaDb.SaveChanges();
 
                 var requirement = _zarnicaDb.Requirements
+                    .Include(m => m.SpecialPersonsInRequirement)
                     .FirstOrDefault(m => m.DirectiveTypeId == model.DirectiveTypeId &&
                                          m.RequirementTypeId == model.RequirementTypeId &&
                                          m.MilitaryUnitCode == model.MilitaryUnitId);
@@ -400,7 +399,7 @@ namespace NewSprt.Controllers
                 }
                 else
                 {
-                    requirement.Amount += 1;
+                    requirement.Amount += requirement.SpecialPersonsInRequirement.Count;
                     _zarnicaDb.Requirements.Update(requirement);
                 }
 
@@ -587,10 +586,12 @@ namespace NewSprt.Controllers
                     _zarnicaDb.Requirements.Update(person.Requirement);
                     if (selectRequirements == null)
                     {
-                        var searchRequirement = _zarnicaDb.Requirements.FirstOrDefault(m =>
-                            m.MilitaryUnitCode == model.MilitaryUnitId &&
-                            m.DirectiveTypeId == model.DirectiveTypeId &&
-                            m.RequirementTypeId == model.RequirementTypeId);
+                        var searchRequirement = _zarnicaDb.Requirements
+                            .Include(m => m.SpecialPersonsInRequirement)
+                            .FirstOrDefault(m =>
+                                m.MilitaryUnitCode == model.MilitaryUnitId &&
+                                m.DirectiveTypeId == model.DirectiveTypeId &&
+                                m.RequirementTypeId == model.RequirementTypeId);
 
                         if (searchRequirement == null)
                         {
@@ -640,6 +641,8 @@ namespace NewSprt.Controllers
                         else
                         {
                             editRequirementRelative.RequirementId = searchRequirement.Id;
+                            searchRequirement.Amount = searchRequirement.SpecialPersonsInRequirement.Count + 1;
+                            _zarnicaDb.Requirements.Update(searchRequirement);
                         }
                     }
 
@@ -697,17 +700,19 @@ namespace NewSprt.Controllers
             {
                 var specialPersonToRequirement = _zarnicaDb.SpecialPersonToRequirements
                     .Include(m => m.Requirement)
+                    .ThenInclude(m => m.SpecialPersonsInRequirement)
                     .FirstOrDefault(m =>
                         m.RequirementId == requirementId && m.SpecialPersonId == personId);
                 if (specialPersonToRequirement == null)
                 {
                     HttpContext.Session.Set("alert",
                         new AlertViewModel(AlertType.Error,
-                            "Данное требование для данного персональщика не существует!"));
+                            "Требование не найдено!"));
                     return RedirectToAction("SearchForDuplicates");
                 }
 
-                specialPersonToRequirement.Requirement.Amount -= 1;
+                specialPersonToRequirement.Requirement.Amount =
+                    specialPersonToRequirement.Requirement.SpecialPersonsInRequirement.Count - 1;
                 _zarnicaDb.Requirements.Update(specialPersonToRequirement.Requirement);
                 _zarnicaDb.SpecialPersonToRequirements.Remove(specialPersonToRequirement);
                 _zarnicaDb.SaveChanges();
@@ -725,9 +730,102 @@ namespace NewSprt.Controllers
             }
         }
 
-        public IActionResult DeleteSpecialPerson()
+        public IActionResult RemovingTheDepartingSpecialPerson()
         {
-            return Content("В разработке");
+            if (!HttpContext.Session.Keys.Contains("alert")) return View();
+            ViewBag.Alert = HttpContext.Session.Get<AlertViewModel>("alert");
+            HttpContext.Session.Remove("alert");
+            return View();
+        }
+
+        public async Task<PartialViewResult> RemovingTheDepartingSpecialPersonGrid(int page = 1, int rows = 10)
+        {
+            ViewBag.Pagination = new Pagination(rows, page);
+            var persons = await _zarnicaDb.SpecialPersons
+                .Where(m => ((m.Recruit != null && m.Recruit.TeamId != null &&
+                              m.Recruit.Team.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear) ||
+                             (m.SendDate != null && m.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear)
+                             && m.SpecialPersonToRequirements.Count(t =>
+                                 (t.Requirement.DirectiveTypeId == DirectiveType.PersonalPerson
+                                  || t.Requirement.DirectiveTypeId == DirectiveType.FamilyPerson
+                                  || t.Requirement.RequirementTypeId == RequirementType.TcpRequirement)) > 0))
+                .Include(m => m.MilitaryComissariat)
+                .Include(m => m.SpecialPersonToRequirements)
+                .ThenInclude(m => m.Requirement)
+                .ThenInclude(m => m.RequirementType)
+                .Include(m => m.SpecialPersonToRequirements)
+                .ThenInclude(m => m.Requirement)
+                .ThenInclude(m => m.MilitaryUnit)
+                .Include(m => m.SpecialPersonToRequirements)
+                .ThenInclude(m => m.Requirement)
+                .ThenInclude(m => m.DirectiveType)
+                .Include(m => m.SpecialPersonToRecruits)
+                .ThenInclude(m => m.Recruit)
+                .ThenInclude(m => m.Team)
+                .ThenInclude(m => m.MilitaryUnit)
+                .Include(m => m.SpecialPersonToRecruits)
+                .ThenInclude(m => m.Recruit)
+                .ThenInclude(m => m.Events)
+                .AsNoTracking()
+                .ToListAsync();
+            foreach (var person in persons
+                .Where(person => person.Recruit?.Team != null &&
+                                 person.Recruit.Team.MilitaryUnitCode == person.Requirement.MilitaryUnitCode))
+            {
+                person.IsMark = true;
+            }
+
+            return PartialView("Grid/_RemovingTheDepartingSpecialPersonGrid", persons);
+        }
+
+        public async Task<IActionResult> DeleteSpecialPerson(int id)
+        {
+            var transaction = await _zarnicaDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+            try
+            {
+                var person = await _zarnicaDb.SpecialPersons
+                    .Include(m => m.SpecialPersonToRecruits)
+                    .Include(m => m.SpecialPersonToRequirements)
+                    .ThenInclude(m => m.Requirement)
+                    .ThenInclude(m => m.SpecialPersonsInRequirement)
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (person == null)
+                {
+                    HttpContext.Session.Set("alert",
+                        new AlertViewModel(AlertType.Error,
+                            "Персональщик не найден!"));
+                    return RedirectToAction("RemovingTheDepartingSpecialPerson");
+                }
+
+                if (person.SpecialPersonToRequirements.Any())
+                {
+                    foreach (var requirement in person.SpecialPersonToRequirements.Select(m => m.Requirement))
+                    {
+                        requirement.Amount = requirement.SpecialPersonsInRequirement.Count - 1;
+                    }
+
+                    _zarnicaDb.Requirements.UpdateRange(person.SpecialPersonToRequirements.Select(m => m.Requirement));
+
+                    _zarnicaDb.SpecialPersonToRequirements.RemoveRange(person.SpecialPersonToRequirements);
+                }
+
+                _zarnicaDb.SpecialPersonToRecruits.RemoveRange(person.SpecialPersonToRecruits);
+                await _zarnicaDb.SaveChangesAsync();
+                _zarnicaDb.SpecialPersons.Remove(person);
+                await _zarnicaDb.SaveChangesAsync();
+
+                transaction.Commit();
+                HttpContext.Session.Set("alert",
+                    new AlertViewModel(AlertType.Success, "Персональщик успешно удален!"));
+                return RedirectToAction("RemovingTheDepartingSpecialPerson");
+            }
+            catch
+            {
+                transaction.Rollback();
+                HttpContext.Session.Set("alert",
+                    new AlertViewModel(AlertType.Error, "Ошибка при удалении требования!"));
+                return RedirectToAction("RemovingTheDepartingSpecialPerson");
+            }
         }
     }
 }

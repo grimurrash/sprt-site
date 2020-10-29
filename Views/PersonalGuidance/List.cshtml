@@ -51,17 +51,17 @@
 </section>
 
 <section class="container">
-    <div class="row mt-4 mb-2 align-items-end">
+    <div class="row mt-4 align-items-end">
         <div class="col-lg-8">
             <h5>Всего по директивным указаниям: <b>@ViewData["personsCount"]</b> чел.</h5>
         </div>
         <div class="col-lg-4 text-right">
-            <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fas fa-user-plus"></i> Добавить</a>
+            <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fas fa-user-plus"></i> Добавить персональщика</a>
         </div>
     </div>
 </section>
 
-<section class="container">
+<section class="container mt-2">
     @Html.AjaxGrid(Url.Action("ListGrid", new {exitMode = true}))
 </section>
 

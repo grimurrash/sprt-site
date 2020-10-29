@@ -15,7 +15,7 @@
         columns.Add(model => model.MilitaryUnitInfo).Titled("в/ч").Css("w-px-120");
         columns.Add(model => model.RequirementInfo).Titled("Требование").Css("w-px-180");
         columns.Add(model => model.SendDateString).Titled("Дата отправки").Css("w-px-m-200").Filterable(true);
-        columns.Add(model => $"<button class='btn btn-success btnEditPerson' onclick=\"editPerson('{@Url.Action("EditModal", "PersonalGuidance", new {id = model.Id})}')\"><i class='fas fa-edit'></i></button>").Encoded(false);
+        columns.Add(model => $"<button data-placement='top' data-toggle='tooltip' title='Редактировать данные на призывника' class='btn btn-success btnEditPerson' onclick=\"editPerson('{Url.Action("EditModal", "PersonalGuidance", new {id = model.Id})}')\"><i class='fas fa-edit'></i></button>").Css("w-px-60 button").Encoded(false);
     })
     .Css("table-striped")
     .AppendCss("table-hover")

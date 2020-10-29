@@ -349,3 +349,6 @@ table.table-label-hide .label input[data-toggle="toggle"] {
 table.table td, table.table th {
     vertical-align: middle;
 }
+td.button {
+    padding: 0.5em !important;
+} 

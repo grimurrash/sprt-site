@@ -4,18 +4,18 @@
     <h2 >Информация по воинским частям</h2>
 </section>
 
-<section class="container mt-4 mb-2 ">
+<section class="container mt-4">
     <div class="row align-items-end">
         <div class="col-lg-8">
             <h5>Всего по директивным указаниям (персональщики и семейные): <b>@ViewData["personsCount"]</b> чел.</h5>
         </div>
         <div class="col-lg-4 text-right">
-            <a asp-controller="PersonalGuidance" asp-action="CreateModal" class="btn btn-success" id="createModalBtn"> <i class="fas fa-user-plus"></i> Добавить</a>
+            <a asp-controller="PersonalGuidance" asp-action="CreateModal" class="btn btn-success" id="createModalBtn"> <i class="fas fa-user-plus"></i> Добавить персональщика</a>
         </div>
     </div>
 </section>
 
-<section class="container">
+<section class="container mt-2">
     <div class="mvc-grid">
         <table class="table table-hover table-bordered table-label-hide">
             <thead class="thead-dark">
@@ -68,8 +68,8 @@
                             <td colspan="2">@person.MilitaryComissariat.ShortName</td>
                             <td>@person.Requirement.RequirementType.Name</td>
                             <td>@person.SendDateString</td>
-                            <td>
-                                <button class='btn btn-success btnEditPerson' onclick="editPerson('@Url.Action("EditModal", "PersonalGuidance", new {id = person.Id})')">
+                            <td class="w-px-60 button">
+                                <button class='btn btn-success btnEditPerson' data-placement='top' data-toggle='tooltip' title='Редактировать данные на призывника' onclick="editPerson('@Url.Action("EditModal", "PersonalGuidance", new {id = person.Id})')">
                                     <i class='fas fa-edit'></i>
                                 </button>
                             </td>
@@ -87,7 +87,6 @@
 @section Scripts
 {
     <script>
-    
     function editPerson(url) {
         $('.btnEditPerson').attr('disabled','');
         $("#modalContainer").load(url, function (responseText, textStatus) {
@@ -105,7 +104,6 @@
     }
     
     document.addEventListener('DOMContentLoaded', function() {
-        $('[data-toggle="tooltip"]').tooltip()
         document.getElementById('createModalBtn').addEventListener('click', function(e) {
             e.preventDefault()
             let url = $(this).attr('href')

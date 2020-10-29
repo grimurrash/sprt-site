@@ -12,7 +12,19 @@ namespace NewSprt.Data.Zarnica.Models
 
         public List<Predstav> Predstavs { get; set; }
 
-        public override string ToString() => Id == "По указанию" ? "По указанию" : $"{Id} ({Name})";
+        public override string ToString()
+        {
+            
+            switch (Id)
+            {
+                case "По указанию":
+                    return "По указанию";
+                case "-":
+                    return "";
+                default:
+                    return $"{Id} ({Name})";
+            }
+        }
 
         public MilitaryUnit()
         {

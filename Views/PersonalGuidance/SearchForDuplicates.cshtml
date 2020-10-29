@@ -1,7 +1,4 @@
 ﻿@model List<SpecialPerson>
-@{
-    var index = 1;
-}
 <section class="container">
     <h2 >Информация по воинским частям</h2>
 </section>
@@ -12,7 +9,7 @@
     <h5>Всего дубликатов найдено: <b>@ViewData["duplicatesCount"]</b> чел.</h5>
 </section>
 
-<section class="container">
+<section class="container mt-2">
     <div class="mvc-grid">
         <table class="table">
             <thead>
@@ -27,21 +24,30 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var person in Model)
+            @{
+                var index = 1;
+            }
+            @foreach (SpecialPerson person in Model)
             {
                 <tr>
                     <td rowspan="2">@index</td>
                     <td rowspan="2">@person.FullName</td>
                     <td rowspan="2" class="w-px-80">@person.BirthYear</td>
                     <td rowspan="2">@person.MilitaryComissariat.ShortName</td>
-                    <td rowspan="2">@person.Notice</td>
+                    <td rowspan="2" class="w-px-150">@person.Notice</td>
                     <td>
-                        @person.SpecialPersonToRequirements[0].Requirement.ToString()<br>
-                        @(person.SpecialPersonToRequirements[0].Requirement.MilitaryUnitCode == "-" ? "" : $"в/ч {person.SpecialPersonToRequirements[0].Requirement.MilitaryUnit} <br>")
-                        @(person.SpecialPersonToRequirements[0].Requirement.Notice == "" ? "" : $"({person.SpecialPersonToRequirements[0].Requirement.Notice})")
+                        @person.SpecialPersonToRequirements[0].Requirement <br/>
+                        @person.SpecialPersonToRequirements[0].Requirement.MilitaryUnit <br/>
+                        @person.SpecialPersonToRequirements[0].Requirement.Notice
                     </td>
                     <td>
-                        <a class="btn btn-danger deleteRequirementFromPersonBtn" asp-controller="PersonalGuidance" asp-action="DeleteRequirementFromPerson" asp-route-personId="@person.SpecialPersonToRequirements[0].SpecialPersonId" asp-route-requirementId="@person.SpecialPersonToRequirements[0].RequirementId">
+                        <a class="btn btn-danger deleteRequirementFromPersonBtn"
+                           data-placement='top' data-toggle='tooltip' title='Удалить требование'
+                           onclick="deleteRequirementFromPerson(event)"
+                           asp-controller="PersonalGuidance"
+                           asp-action="DeleteRequirementFromPerson"
+                           asp-route-personId="@person.SpecialPersonToRequirements[0].SpecialPersonId"
+                           asp-route-requirementId="@person.SpecialPersonToRequirements[0].RequirementId">
                             <i class='fas fa-trash-alt'></i>
                         </a>
                     </td>
@@ -49,16 +55,23 @@
                 </tr>
                 <tr>
                     <td>
-                        @person.SpecialPersonToRequirements[1].Requirement.ToString()<br>
-                        @(person.SpecialPersonToRequirements[1].Requirement.MilitaryUnitCode == "-" ? "" : $"в/ч {person.SpecialPersonToRequirements[1].Requirement.MilitaryUnit}")<br>
-                        @(person.SpecialPersonToRequirements[1].Requirement.Notice == "" ? "" : $"({person.SpecialPersonToRequirements[1].Requirement.Notice})")
+                        @person.SpecialPersonToRequirements[1].Requirement <br/>
+                        @person.SpecialPersonToRequirements[1].Requirement.MilitaryUnit <br/>
+                        @person.SpecialPersonToRequirements[1].Requirement.Notice
                     </td>
                     <td>
-                        <a class='btn btn-danger deleteRequirementFromPersonBtn' asp-controller="PersonalGuidance" asp-action="DeleteRequirementFromPerson" asp-route-personId="@person.SpecialPersonToRequirements[1].SpecialPersonId" asp-route-requirementId="@person.SpecialPersonToRequirements[1].RequirementId">
+                        <a class='btn btn-danger deleteRequirementFromPersonBtn' 
+                           data-placement='top' data-toggle='tooltip' title='Удалить требование'
+                           onclick="deleteRequirementFromPerson(event)"
+                           asp-controller="PersonalGuidance"
+                           asp-action="DeleteRequirementFromPerson"
+                           asp-route-personId="@person.SpecialPersonToRequirements[1].SpecialPersonId"
+                           asp-route-requirementId="@person.SpecialPersonToRequirements[1].RequirementId">
                             <i class='fas fa-trash-alt'></i>
                         </a>
                     </td>
                 </tr>
+                index++;
             }
             </tbody>
         </table>
@@ -68,13 +81,11 @@
 @section Scripts
 {
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('.deleteRequirementFromPersonBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                if(confirm("Вы уверены что хотите удалить требование у персональщика?")) {
-                    window.location.href = this
-                }
-            })
-        })
+        function deleteRequirementFromPerson (e) {
+            e.preventDefault();
+            if(confirm("Вы уверены что хотите удалить требование у персональщика?")) {
+                window.location.href = $(e.currentTarget).attr('href')
+            }    
+        }
     </script>
 }

@@ -16,3 +16,9 @@ window.addEventListener('load', function() {
         }, false);
     });
 }, false);
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+    document.addEventListener("reloadend", e => {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+})

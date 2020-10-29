@@ -11,6 +11,7 @@ namespace NewSprt.Data.Zarnica.Models
         [Column("id_object")] public int RecruitId { get; set; }
         [Column("zapr_code")] public int EventCode { get; set; }
         [Column("sdate")] public DateTime Date { get; set; }
+        
 
         [ForeignKey(nameof(RecruitId))] public Recruit Recruit { get; set; }
     }
