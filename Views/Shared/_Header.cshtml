@@ -23,7 +23,19 @@
                 </ul>
             </div>
             <ul class="navbar-nav flex-grow-1">
-                @* Пункт меню *@
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-dark" href="#" id="WorkTaskMenuLink" role="button" data-toggle="dropdown" aria-expanded="false">
+                        Задачи
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="WorkTaskMenuLink">
+                        <li>
+                            <a class="dropdown-item" asp-controller="WorkTask" asp-action="Index">Список задач</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-controller="WorkTask" asp-action="Index">Архив</a>
+                        </li>
+                    </ul>
+                </li>
                 @if ((await AuthorizationService.AuthorizeAsync(User, "PersonalGuidance")).Succeeded)
                 {
                     <li class="nav-item dropdown">

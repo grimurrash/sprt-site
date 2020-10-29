@@ -823,7 +823,7 @@ namespace NewSprt.Controllers
             {
                 transaction.Rollback();
                 HttpContext.Session.Set("alert",
-                    new AlertViewModel(AlertType.Error, "Ошибка при удалении требования!"));
+                    new AlertViewModel(AlertType.Error, "Ошибка при удалении персональщика!"));
                 return RedirectToAction("RemovingTheDepartingSpecialPerson");
             }
         }
