@@ -34,9 +34,10 @@
 <script src="~/lib/fontawesome/js/all.min.js"></script>
 <script src="~/lib/jquery-select2/select2.min.js"></script>
 <script src="~/lib/mvc-grid/js/mvc-grid.js"></script>
+<script src="~/js/functions.js"></script>
 <script src="~/js/site.js"></script>
 
-@RenderSection("Scripts", required: false)
+@await RenderSectionAsync("Scripts", required: false)
 
 <script>
     document.querySelectorAll(".mvc-grid").forEach(element => new MvcGrid(element));

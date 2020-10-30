@@ -16,14 +16,29 @@ using Npgsql;
 
 namespace NewSprt.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с персональщиками
+    /// </summary>
     [Authorize(Policy = "PersonalGuidance")]
     public class PersonalGuidanceController : Controller
     {
+        /// <summary>
+        /// Context для работы с базой Зарницы
+        /// </summary>
         private readonly ZarnicaDbContext _zarnicaDb;
 
+        /// <summary>
+        /// SQL запрос для добавления нового требования
+        /// С помощью Entity Framework невозможно добавить в базу зарницы (PostgreSQL 7.2(ОЧЕНЬ старая версия) не поддерживается на должном уровне)
+        /// объект с автогенерацией ключа, при указании ключа в ручную могут появиться ошибки.
+        /// В 2020г. (при написании) решить эту проблему её не получилось.
+        /// </summary>
         private const string InsertRequirementQuery =
             "INSERT INTO zapiski (id, num, r7012, data_v, data, dir_type, nach, vchast, p102, prim, username) VALUES (nextval(\'public.zapiski_id_seq\'::text), @DocumentNumber, @ArmyTypeCode, @CreateDate, @UpdateDate, @DirectiveTypeId, @RequirementTypeId, @MilitaryUnitCode, 1, \'Отправка со СП РТ\', @UserName)";
 
+        /// <summary>
+        /// SQL запрос для добавления нового персональщика (без прикрепленного требования)
+        /// </summary>
         private const string InsertSpecialPersonQuery =
             "INSERT INTO gsp05_d (id, k101_g5, data_g5, username, p006_g5, p005_g5, r8012_g5, prim_g5, p007_g5) VALUES (nextval(\'public.gsp05_d_id_seq\'::text), @BirthYear, @UpdateDate, @UpdateUser, @FirstName, @LastName, @MilitaryComissariatCode, @Notice, @Patronymic)";
 
@@ -32,7 +47,10 @@ namespace NewSprt.Controllers
             _zarnicaDb = zarnicaDb;
         }
 
-        //Таблица в/ч
+        /// <summary>
+        /// Страница с информацией о персональщиках по воинским частям
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> Index()
         {
             var specialMilitaryUnits = new List<string>() {"5561"};
@@ -164,7 +182,10 @@ namespace NewSprt.Controllers
             return View(teamWithSpecialPersons);
         }
 
-        //Список персональщиков
+        /// <summary>
+        /// Страница фильтрами и выводом всех персональщиков
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> List()
         {
             var requirements = _zarnicaDb.Requirements
@@ -186,6 +207,19 @@ namespace NewSprt.Controllers
             return View();
         }
 
+        /// <summary>
+        /// Вывод таблица на странице Index
+        /// </summary>
+        /// <param name="militaryComissariatId">Военный комиссариат</param>
+        /// <param name="directorTypeId">Тип директивного указания</param>
+        /// <param name="requirementTypeId">Требование от</param>
+        /// <param name="militaryUnitId">Воинская часть</param>
+        /// <param name="search">Поиск по ФИО (разделение пробелом)</param>
+        /// <param name="isMark">При true вывод только персональщиков с ошибками в датах отправки</param>
+        /// <param name="page">Номер страницы</param>
+        /// <param name="rows">Кол-во элементов на 1 странице</param>
+        /// <param name="exitMode">Моментальный выход из функции</param>
+        /// <returns></returns>
         public async Task<PartialViewResult> ListGrid(
             string militaryComissariatId = "",
             int directorTypeId = 0,
@@ -277,6 +311,10 @@ namespace NewSprt.Controllers
             return PartialView("Grid/_ListGrid", persons);
         }
 
+        /// <summary>
+        /// Модальное окно для добавления нового персональщика
+        /// </summary>
+        /// <returns></returns>
         public PartialViewResult CreateModal()
         {
             var filterData = new FilterDataViewModel
@@ -298,6 +336,12 @@ namespace NewSprt.Controllers
             return PartialView("_CreateModal", viewPerson);
         }
 
+        /// <summary>
+        /// Добавление нового персональщика в базу Заринцы
+        /// </summary>
+        /// <param name="model">ViewModel для проверки валидации</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
         public IActionResult Create(SpecialPersonViewModel model)
         {
             if (model.RequirementTypeId == 0)
@@ -432,6 +476,11 @@ namespace NewSprt.Controllers
             }
         }
 
+        /// <summary>
+        /// Модальное окно для изменения персональщика
+        /// </summary>
+        /// <param name="id">Id персональщика в Зарнице</param>
+        /// <returns></returns>
         public PartialViewResult EditModal(int id)
         {
             var person = _zarnicaDb.SpecialPersons
@@ -521,6 +570,12 @@ namespace NewSprt.Controllers
             return PartialView("_EditModal", viewPerson);
         }
 
+        /// <summary>
+        /// Изменение персональщика
+        /// </summary>
+        /// <param name="model">ViewModel для проверки валидации</param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
         [HttpPost]
         public IActionResult Edit(SpecialPersonViewModel model)
         {
@@ -670,7 +725,10 @@ namespace NewSprt.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Страница поиска персональщиков с двумя и более требованиями
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> SearchForDuplicates()
         {
             var persons = await _zarnicaDb.SpecialPersons
@@ -693,6 +751,12 @@ namespace NewSprt.Controllers
             return View(persons);
         }
 
+        /// <summary>
+        /// Удаление связи между персональщиком и требованием
+        /// </summary>
+        /// <param name="requirementId">Id требования</param>
+        /// <param name="personId">Id персональщика</param>
+        /// <returns></returns>
         public IActionResult DeleteRequirementFromPerson(int requirementId, int personId)
         {
             var transaction = _zarnicaDb.Database.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -730,6 +794,10 @@ namespace NewSprt.Controllers
             }
         }
 
+        /// <summary>
+        /// Страница удаления убывших персональщиков
+        /// </summary>
+        /// <returns></returns>
         public IActionResult RemovingTheDepartingSpecialPerson()
         {
             if (!HttpContext.Session.Keys.Contains("alert")) return View();
@@ -778,6 +846,11 @@ namespace NewSprt.Controllers
             return PartialView("Grid/_RemovingTheDepartingSpecialPersonGrid", persons);
         }
 
+        /// <summary>
+        /// Удаление персональщика по ID
+        /// </summary>
+        /// <param name="id">Id персональщика</param>
+        /// <returns></returns>
         public async Task<IActionResult> DeleteSpecialPerson(int id)
         {
             var transaction = await _zarnicaDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);

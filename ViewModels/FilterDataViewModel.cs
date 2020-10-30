@@ -3,6 +3,9 @@ using NewSprt.Data.Zarnica.Models;
 
 namespace NewSprt.ViewModels
 {
+    /// <summary>
+    /// Класс для вывода фильтров
+    /// </summary>
     public class FilterDataViewModel
     {
         public List<MilitaryComissariat> MilitaryComissariats { get; set; }

@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NewSprt.Data.App.Models
 {
+    /// <summary>
+    /// Таблица задач
+    /// </summary>
     public class WorkTask : BaseModel
     {
         [Key]

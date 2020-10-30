@@ -3,6 +3,9 @@ using NewSprt.Data.Zarnica.Models;
 
 namespace NewSprt.ViewModels.SpecialGuidance
 {
+    /// <summary>
+    /// Класс для вывода информации об командах с персональщиками
+    /// </summary>
     public class TeamWithSpecialPerson
     {
         public Team MainTeam { get; set; }

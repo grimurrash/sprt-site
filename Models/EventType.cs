@@ -2,9 +2,14 @@
 
 namespace NewSprt.Models
 {
+    /// <summary>
+    /// Класс для получения текста события призывника
+    /// </summary>
     public static class EventType
     {
-        //Zarnica table name r6213 
+        /// <summary>
+        /// Словарь событий призывника в Заринце (копия таблицы r6213)
+        /// </summary>
         private static readonly Dictionary<int, string> EventList = new Dictionary<int, string>
         {
             {100, "-"},
@@ -32,7 +37,11 @@ namespace NewSprt.Models
             {125, "Находится на доп. обследовании"},
             {126, "Прошел доп. обследование, годен к в/с"}
         };
-
+        /// <summary>
+        /// Вывод наименования ошибки по коду
+        /// </summary>
+        /// <param name="eventCode">Код ошибки</param>
+        /// <returns></returns>
         public static string GetName(int eventCode)
         {
             return EventList[eventCode];

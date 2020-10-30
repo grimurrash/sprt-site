@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NewSprt.Data.App.Models
 {
+    /// <summary>
+    /// Таблица прав доступа
+    /// </summary>
     public class Permission
     {
         [Key]

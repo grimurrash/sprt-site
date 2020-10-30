@@ -5,7 +5,7 @@
     var sendDates = ViewBag.SendDates;
 }
 
-<div class="modal fade" data-backdrop="static" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModal" aria-hidden="false">
+<div class="modal fade" data-backdrop="static" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModal" aria-hidden="false">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -21,7 +21,7 @@
                     null,
                     FormMethod.Post,
                     true,
-                    new {@class = "form-horizontal needs-validation", id = "createForm", novalidate = "", role = "form"}))
+                    new {@class = "form-horizontal needs-validation", id = "modalForm", onsubmit="saveModalForm(event)", novalidate = "", role = "form"}))
                 {
                     @Html.AntiForgeryToken()
                     <div class="form-group">
@@ -92,45 +92,18 @@
 
 <script>
     $(document).ready(function() {
-        let createModalElement = $('#createModal');
-        document.getElementById('createForm').addEventListener('submit', function (e)  {
-            e.preventDefault()
-            let form = $(this)
-            let url = form.attr('action')
-            $.ajax({
-                type: 'post',
-                url: url,
-                data: form.serialize(),
-                success: function(data) {
-                    $('.invalid-feedback.feedback-text').remove();
-                    $(".is-invalid").removeClass('is-invalid')
-                    if (data.isSucceeded) {
-                        createModalElement.modal('toggle')
-                    } else {
-                        $("#modalBody").scrollTop(0);
-                        $.each(data.errors, function(elementId, value) {
-                            let element = $(`#${elementId}`)
-                            element.addClass('is-invalid')
-                            element.parent().append("<div class='invalid-feedback feedback-text'>" + value[0] + "</div>");
-                        })
-                    }
-                },
-                error: function() {
-                    alert('Не удалось сохранить нового персональщика')
-                }
-            })
-        })
+        let modalElement = $('#showModal');
         $("#RequirementTypeId").select2({
             theme: 'bootstrap4',
-            dropdownParent: createModalElement
+            dropdownParent: modalElement
         })
         $("#MilitaryComissariatId").select2({
             theme: 'bootstrap4',
-            dropdownParent: createModalElement
+            dropdownParent: modalElement
         })
         $("#MilitaryUnitId").select2({
             theme: 'bootstrap4',
-            dropdownParent: createModalElement
+            dropdownParent: modalElement
         })
         document.getElementById('MilitaryUnitId').addEventListener('change', function () {
             let id = document.getElementById('MilitaryUnitId').value
@@ -142,7 +115,7 @@
                     $('#SendDate').html("<option value='-'>-</option>");
                     if (data.isSucceeded) {
                         data.result.forEach((item) => {
-                            $('#SendDate').append(`<option value="${item.value}">${item.text}</option>`)
+                            $('#SendDate').append(`<option value="${item}">${item}</option>`)
                         })
                     } else {
                         alert('Не удалось загрузить время отправки')

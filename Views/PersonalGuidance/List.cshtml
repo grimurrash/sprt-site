@@ -45,7 +45,7 @@
         </div>
         <div class="col-lg-1 custom-control custom-switch">
             @Html.CheckBox("IsMark", false, new {id="IsMark", autocomplete="off", @class="custom-control-input input-warning"})
-            @Html.Label("IsMark", "Ошибки", new {@class="custom-control-label"})
+            @Html.Label("IsMark", "Ошибки", new {@class="custom-control-label cursor-pointer"})
         </div>
     </div>
 </section>
@@ -56,7 +56,10 @@
             <h5>Всего по директивным указаниям: <b>@ViewData["personsCount"]</b> чел.</h5>
         </div>
         <div class="col-lg-4 text-right">
-            <a asp-controller="PersonalGuidance" asp-action="CreateModal" id="createModalBtn" class="btn btn-success"> <i class="fas fa-user-plus"></i> Добавить персональщика</a>
+            <a asp-controller="PersonalGuidance" asp-action="CreateModal" class="btn btn-success"
+               onclick="showModal(event)" data-alert-text="Не удалось открыть окно добавления персональщика">
+                 <i class="fas fa-user-plus"></i> Добавить персональщика
+            </a>
         </div>
     </div>
 </section>
@@ -69,53 +72,6 @@
 
 @section Scripts {
     <script>
-        function reloadTable() {
-            var grid = new MvcGrid(document.querySelector('.mvc-grid'))
-            grid.url.searchParams.set('exitMode', 'false')
-            
-            let select = document.getElementById('DirectiveTypeIdFilter')
-            grid.url.searchParams.set('directorTypeId', select.value)
-            
-            select = document.getElementById('RequirementTypeIdFilter')
-            grid.url.searchParams.set('requirementTypeId', select.value)
-            
-            select = document.getElementById('MilitaryUnitIdFilter')
-            grid.url.searchParams.set('militaryUnitId', select.value)
-            
-            select = document.getElementById('MilitaryComissariatIdFilter')
-            grid.url.searchParams.set('militaryComissariatId', select.value)
-            
-            select = document.getElementById('Search')
-            grid.url.searchParams.set('search', select.value)
-            
-            select = document.getElementById('IsMark')
-            grid.url.searchParams.set('isMark', select.checked)
-            
-            grid.url.searchParams.set('page', '1')
-            
-            grid.reload();
-        }
-        
-        
-            
-        
-        function editPerson(url) {
-            $('.btnEditPerson').attr('disabled','');
-            $("#modalContainer").load(url, function (responseText, textStatus) {
-                if (textStatus === "error") {
-                    $('.btnEditPerson').removeAttr('disabled');
-                    alert("Не удалось загрузить Персональщика")
-                } else {
-                    let editModal = $('#editModal')
-                    editModal.modal('toggle');
-                    editModal.on('hidden.bs.modal', function () {
-                        reloadTable()
-                        $("#modalContainer").html("")
-                    })
-                }  
-            })
-        }
-    
         document.addEventListener('DOMContentLoaded', function() {
             if (localStorage.getItem('DirectiveTypeIdFilter')){
                 document.getElementById('DirectiveTypeIdFilter').value = localStorage.getItem('DirectiveTypeIdFilter')
@@ -161,27 +117,6 @@
                 e.preventDefault()
                 reloadTable()
             })
-            
-            document.getElementById('createModalBtn').addEventListener('click', function(e) {
-                e.preventDefault()
-                let url = $(this).attr('href')
-                
-                $("#modalContainer").load(url, function (responseText, textStatus) {
-                    if (textStatus === "error") {
-                        alert("Не удалось загрузить Персональщика")
-                    } else {
-                        let createModal = $('#createModal')
-                        createModal.modal('toggle');
-                        createModal.on('hidden.bs.modal', function () {
-                            reloadTable()
-                            $("#modalContainer").html("")
-                        })
-                    }  
-                })
-            })
-                  
-                    
-            reloadTable()
         })
                
     </script>

@@ -15,6 +15,7 @@ namespace NewSprt.Data.App
 
         //database update command:
         //dotnet ef database update --context NewSprt.Data.App.AppDbContext
+        
         public DbSet<User> Users { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Department> Departments { get; set; }

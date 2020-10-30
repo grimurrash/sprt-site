@@ -2,6 +2,9 @@
 
 namespace NewSprt.ViewModels
 {
+    /// <summary>
+    /// Класс для вывода alert уведомлений
+    /// </summary>
     [Serializable]
     public class AlertViewModel
     {

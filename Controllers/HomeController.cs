@@ -14,7 +14,10 @@ namespace NewSprt.Controllers
             return View();
         }
 
-
+        /// <summary>
+        /// Страница ошибки
+        /// </summary>
+        /// <returns></returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

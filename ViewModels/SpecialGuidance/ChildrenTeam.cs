@@ -4,6 +4,9 @@ using NewSprt.Data.Zarnica.Models;
 
 namespace NewSprt.ViewModels.SpecialGuidance
 {
+    /// <summary>
+    /// Класс для вывода информации (задание, персональщики, шефские, остаток) по отправкам команды
+    /// </summary>
     public class ChildrenTeam
     {
         public string Title { get; set; }

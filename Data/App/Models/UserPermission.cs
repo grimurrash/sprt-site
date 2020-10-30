@@ -2,6 +2,9 @@
 
 namespace NewSprt.Data.App.Models
 {
+    /// <summary>
+    /// Таблица для связи пользователя и прав доступа
+    /// </summary>
     public class UserPermission
     {
         public int UserId { get; set; }

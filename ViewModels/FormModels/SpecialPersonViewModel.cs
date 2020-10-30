@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NewSprt.ViewModels.FormModels
 {
+    /// <summary>
+    /// Класс для добавления и изменения персональщиков
+    /// </summary>
     public class SpecialPersonViewModel
     {
         public int Id { get; set; }

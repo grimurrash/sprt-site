@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NewSprt.Data.App.Models
 {
+    /// <summary>
+    /// Таблица отделений организации
+    /// </summary>
     public class Department
     {
         [Key]

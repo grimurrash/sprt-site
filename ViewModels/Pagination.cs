@@ -1,5 +1,8 @@
 ﻿namespace NewSprt.ViewModels
 {
+    /// <summary>
+    /// Класс для вывода пагинации
+    /// </summary>
     public class Pagination
     {
         public int Rows { get; }

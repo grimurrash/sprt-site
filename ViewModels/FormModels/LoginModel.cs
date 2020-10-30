@@ -2,6 +2,9 @@
 
 namespace NewSprt.ViewModels.FormModels
 {
+    /// <summary>
+    /// Класс для авторизации пользователя
+    /// </summary>
     public class LoginModel
     {
         [Required(ErrorMessage = "Не указан Логин")]

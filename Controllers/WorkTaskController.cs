@@ -5,6 +5,9 @@ using NewSprt.ViewModels.FormModels;
 
 namespace NewSprt.Controllers
 {
+    /// <summary>
+    /// Контроллер для работы с задачами
+    /// </summary>
     public class WorkTaskController : Controller
     {
         private readonly AppDbContext _appDb;
@@ -18,6 +21,11 @@ namespace NewSprt.Controllers
         public async Task<IActionResult> Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> IndexGrid()
+        {
+            return PartialView("Grid/_IndexGrid");
         }
 
         public async Task<IActionResult> Archive()

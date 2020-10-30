@@ -9,36 +9,3 @@
 </section>
 
 <div id="modalContainer"></div>
-
-@section Scripts {
-    <script>
-        function reloadTable() {
-            var grid = new MvcGrid(document.querySelector('.mvc-grid'))
-            grid.url.searchParams.set('page', '1')
-            grid.reload()
-        }
-        
-        function editPerson(url) {
-            $('.btnEditPerson').attr('disabled','')
-            $("#modalContainer").load(url, function (responseText, textStatus) {
-                if (textStatus === "error") {
-                    $('.btnEditPerson').removeAttr('disabled')
-                    alert("Не удалось загрузить Персональщика")
-                } else {
-                    let editModal = $('#editModal')
-                    editModal.modal('toggle')
-                    editModal.on('hidden.bs.modal', function () {
-                        reloadTable()
-                        $("#modalContainer").html("")
-                    })
-                }  
-            })
-        }
-        
-        function deletePerson(url) {
-            if(confirm("Вы уверены что хотите удалить персональщика?")) {
-                window.location.href = url
-            }
-        }
-    </script>
-}

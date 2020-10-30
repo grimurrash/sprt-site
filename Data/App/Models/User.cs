@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NewSprt.Data.App.Models
 {
+    /// <summary>
+    /// Таблица пользователей
+    /// </summary>
     public class User
     {
         [Key]

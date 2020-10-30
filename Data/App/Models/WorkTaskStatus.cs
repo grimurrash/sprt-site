@@ -2,6 +2,9 @@
 
 namespace NewSprt.Data.App.Models
 {
+    /// <summary>
+    /// Таблица статусов задачи
+    /// </summary>
     public class WorkTaskStatus
     {
         [Key]

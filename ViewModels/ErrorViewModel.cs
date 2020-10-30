@@ -1,5 +1,8 @@
 namespace NewSprt.ViewModels
 {
+    /// <summary>
+    /// Класс для вывода ошибок
+    /// </summary>
     public class ErrorViewModel
     {
         public string RequestId { get; set; }

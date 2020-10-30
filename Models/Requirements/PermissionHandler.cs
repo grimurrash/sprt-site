@@ -5,8 +5,18 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace NewSprt.Models.Requirements
 {
+    
+    /// <summary>
+    /// Handler для проверки полики по правам доступа
+    /// </summary>
     public class PermissionHandler : AuthorizationHandler<PermissionRequirement>
     {
+        /// <summary>
+        /// Проверка наисполнение требований политики
+        /// </summary>
+        /// <param name="context">Авторизация пользователя</param>
+        /// <param name="requirement">Требование политики</param>
+        /// <returns></returns>
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
             PermissionRequirement requirement)
         {
