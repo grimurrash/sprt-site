@@ -1,0 +1,76 @@
+﻿@model WorkTaskViewModel
+
+@{
+    var users = ViewBag.Users;
+}
+
+<div class="modal fade" data-backdrop="static" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModal" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Просмотр задачи</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        @Html.HiddenFor(m => m.Id)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TaskManagerId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.TaskManagerId,
+                            new SelectList(users, "Id", "FullName"),
+                            new {@class = "form-control", disabled=""})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TaskResponsibleId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.TaskResponsibleId,
+                            new SelectList(users, "Id", "FullName"), 
+                            new {@class = "form-control", disabled=""})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DocumentName, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.DocumentName, new {@class = "form-control", disabled=""})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DocumentNumber, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.DocumentNumber, new {@class = "form-control", disabled=""})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Discription, new {@class = "control-label"})
+                        @Html.TextAreaFor(m => m.Discription, new {@class = "form-control", disabled=""})
+                    </div>
+                    @if (Model.IsRepeat) {
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.AdditionToDeadlines, "Переодичность исполнения", new {@class = "control-label"})
+                            @Html.TextAreaFor(m => m.AdditionToDeadlines, new {@class = "form-control", placeholder = "Текст с описанием частоты исполенния", disabled = ""})
+                        </div>
+                    } else {
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Discription, "Срок исполнения",new {@class = "control-label"})
+                            @Html.TextBoxFor(m => m.CompletionDate, "{0:yyyy-MM-dd}", new {@class = "form-control", type = "date", disabled = ""})
+                        </div>
+                    }
+                    <div class="custom-control custom-switch mt-2">
+                        @Html.CheckBoxFor(m => m.IsUrgent, new {autocomplete = "off", @class = "custom-control-input", disabled=""})
+                        @Html.LabelFor(m => m.IsUrgent, "Особое внимание", new {@class = "custom-control-label cursor-pointer"})
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CreateDate, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.CreateDate, new {@class = "form-control", disabled=""})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.UpdateDate, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.UpdateDate, new {@class = "form-control", disabled=""})
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-sm-between">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.Zarnica;
 using NewSprt.Data.Zarnica.Models;
-using NewSprt.Models;
+using NewSprt.Models.Extensions;
 using NewSprt.ViewModels;
 using NewSprt.ViewModels.SpecialGuidance;
 using NewSprt.ViewModels.FormModels;
@@ -366,11 +366,7 @@ namespace NewSprt.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    var errorList = ModelState.Where(m => m.Value.Errors.Count > 0).ToDictionary(
-                        kvp => kvp.Key,
-                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                    );
-                    return new JsonResult(new {isSucceeded = false, errors = errorList});
+                    return new JsonResult(new {isSucceeded = false, errors =  ModelState.Errors()});
                 }
 
 
@@ -468,11 +464,8 @@ namespace NewSprt.Controllers
             catch
             {
                 transaction.Rollback();
-                var errorList = new Dictionary<string, string[]>
-                {
-                    {"Id", new[] {"Критическая ошибка при изменении персональщика. Обратитесь в ВЦшнику"}}
-                };
-                return new JsonResult(new {isSucceeded = false, errors = errorList});
+                ModelState.AddModelError("Id", "Критическая ошибка при изменении персональщика. Обратитесь в ВЦшнику");
+                return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
             }
         }
 
@@ -586,11 +579,7 @@ namespace NewSprt.Controllers
 
             if (!ModelState.IsValid)
             {
-                var errorList = ModelState.Where(m => m.Value.Errors.Count > 0).ToDictionary(
-                    kvp => kvp.Key,
-                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                );
-                return new JsonResult(new {isSucceeded = false, errors = errorList});
+                return new JsonResult(new {isSucceeded = false, errors =  ModelState.Errors()});
             }
 
             var transaction = _zarnicaDb.Database.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -601,11 +590,8 @@ namespace NewSprt.Controllers
                     .FirstOrDefault(m => m.Id == model.Id);
                 if (person == null)
                 {
-                    var errorList = new Dictionary<string, string[]>
-                    {
-                        {"Id", new[] {"Не удалось найти персональщика. Перезагрузите страницу"}}
-                    };
-                    return new JsonResult(new {isSucceeded = false, errors = errorList});
+                    ModelState.AddModelError("Id", "Не удалось найти персональщика. Перезагрузите страницу");
+                    return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
                 }
 
                 person.LastName = model.LastName;
@@ -717,11 +703,8 @@ namespace NewSprt.Controllers
             catch
             {
                 transaction.Rollback();
-                var errorList = new Dictionary<string, string[]>
-                {
-                    {"Id", new[] {"Критическая ошибка при изменении персональщика. Обратитесь в ВЦшнику"}}
-                };
-                return new JsonResult(new {isSucceeded = false, errors = errorList});
+                ModelState.AddModelError("Id", "Критическая ошибка при изменении персональщика. Обратитесь в ВЦшнику");
+                return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
             }
         }
 

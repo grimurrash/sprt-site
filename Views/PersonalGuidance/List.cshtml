@@ -43,15 +43,15 @@
             @Html.Label("Search", "Поиск (учитываются ранее выбранные фильтры):", new {@class="col-form-label"})
             @Html.TextBox("Search", "", new {id="Search", @class="form-control border-info", placeholder="Поиск"})
         </div>
-        <div class="col-lg-1 custom-control custom-switch">
+        <div class="col-lg-1 custom-control custom-switch custom-switch-warning">
             @Html.CheckBox("IsMark", false, new {id="IsMark", autocomplete="off", @class="custom-control-input input-warning"})
             @Html.Label("IsMark", "Ошибки", new {@class="custom-control-label cursor-pointer"})
         </div>
     </div>
 </section>
 
-<section class="container">
-    <div class="row mt-4 align-items-end">
+<section class="container mt-4 ">
+    <div class="row align-items-end">
         <div class="col-lg-8">
             <h5>Всего по директивным указаниям: <b>@ViewData["personsCount"]</b> чел.</h5>
         </div>

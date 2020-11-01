@@ -37,7 +37,10 @@ namespace NewSprt
 
             /*DataBase Connections*/
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+            {
+                options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
+                // options.EnableSensitiveDataLogging(); //Для тестирования
+            });
             services.AddDbContext<ZarnicaDbContext>(options =>
             {
                 options.UseNpgsql(Configuration.GetConnectionString("ZarnicaConnection"), 
@@ -53,12 +56,11 @@ namespace NewSprt
             services.AddTransient<IAuthorizationHandler, PermissionHandler>();
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("VVK",
-                    p => p.Requirements.Add(new PermissionRequirement("VVK")));
-                options.AddPolicy("Dactyloscopy", 
-                    p => p.Requirements.Add(new PermissionRequirement("Dactyloscopy")));
-                options.AddPolicy("PersonalGuidance",
-                    p => p.Requirements.Add(new PermissionRequirement("PersonalGuidance")));
+                foreach (var policyName in AppPermissionPolicy.PolicyNameList())
+                {
+                    options.AddPolicy(policyName,
+                        p => p.Requirements.Add(new PermissionRequirement(policyName)));
+                }
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);

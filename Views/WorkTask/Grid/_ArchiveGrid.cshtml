@@ -1,1 +1,48 @@
-﻿<h1 class="text-center">В разработке</h1>
+﻿@model IEnumerable<WorkTask>
+
+@{
+    Pagination paging = ViewBag.Pagination;
+}
+
+@(Html.Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add(model => model.Id).Titled("Номер").Named("id").Hidden();
+        columns.Add(model => 
+                             $"<span data-placement='top' data-toggle='tooltip' title='Дата создание задачи: {model.CreateDate.ToShortDateString()} в {model.CreateDate:HH:mm}.   Последнее изменение: {model.UpdateDate.ToShortDateString()} в {model.UpdateDate:HH:mm}'>{model.TaskManagerUser.FullName}</span>")
+            .Encoded(false).Titled("Поставил задачу").Css("w-px-130");
+        columns.Add(model => model.DocumentNumber).Titled("Номер документа").Css("w-px-120");
+        columns.Add(model => model.Name).Titled("Наименование").Css("w-px-150");
+        columns.Add(model => model.ShortDiscription).Titled("Краткое описание").Css("overflow-wrap");
+        columns.Add(model => $"<span data-placement='top' data-toggle='tooltip' title='{model.Department.Name}'>{model.TaskResponsibleUser.FullName}</span>")
+            .Titled("Исполнитель").Encoded(false).Css("w-px-130");
+        columns.Add(model => model.ComplitionTimeLine).Encoded(false).Titled("Срок выполнения").Css("w-px-160 overflow-wrap");
+        columns.Add(model =>
+            $"<a class='btn btn-info' href='{Url.Action("ShowModal", "WorkTask", new {id = model.Id})}'" +
+            " data-placement='top' data-toggle='tooltip' title='Открыть окно с информацией о задаче' " +
+            "onclick='showModal(event)' data-alert-text='Не удалось открыть окно задачи'>" +
+            "<i class='fas fa-external-link-alt'></i></a>").Css("w-px-60 button").Encoded(false);
+        columns.Add(model => 
+            $"<a class='btn btn-success' href='{Url.Action("ReturnFromArchive", "WorkTask", new {id = model.Id})}'" +
+            " data-placement='top' data-toggle='tooltip' title='Востановить из архива' " +
+            "onclick='actionWarning(event)' data-alert-text='Не удалось открыть окно редактирования задачи'>" +
+            "<i class='fas fa-edit'></i></a>").Css("w-px-60 button").Encoded(false);
+        columns.Add(model => model.IsArchive).RenderedAs(model => 
+            $"<a class='btn btn-danger' href='{Url.Action("Delete", "WorkTask", new {id = model.Id})}'" +
+            " data-placement='top' data-toggle='tooltip' title='Удалить задачу' " +
+            "onclick='actionWarning(event)' data-alert-text='Вы уверены что хотите полностью удалить задачу?'>" +
+            "<i class='fas fa-trash-alt'></i></a>").Css("w-px-60 button").Encoded(false);
+    })
+    .Css("table-striped")
+    .AppendCss("table-hover")
+    .Empty("Нет задач в архиве")
+    .Pageable(pager =>
+    {
+        pager.PartialViewName = "ViewComponents/_ExtendedPager";
+        pager.PageSizes = new Dictionary<int, string> {{0, "Все"}, {10, "10"}, {20, "20"}, {50, "50"}, {100, "100"}};
+        pager.ShowPageSizes = true;
+        pager.PagesToDisplay = 5;
+        pager.CurrentPage = paging.CurrentPage;
+        pager.RowsPerPage = paging.Rows;
+    })
+    .Using(GridFilterMode.Excel))

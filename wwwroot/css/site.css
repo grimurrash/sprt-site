@@ -62,13 +62,13 @@ header {
     box-shadow: 0 .3125rem .875rem 0 rgba(129, 129, 129, .3) !important;
 }
 
-.custom-control-label {
+.custom-switch-warning .custom-control-label {
     position: absolute;
     padding-top: calc(0.375rem + 1px);
     left: 0;
 }
 
-.custom-switch .custom-control-label::before {
+.custom-switch-warning.custom-switch .custom-control-label::before {
     top: 2.25rem;
     left: 0;
     width: 4.75rem;
@@ -76,7 +76,7 @@ header {
     border-radius: 4rem;
 }
 
-.custom-switch .custom-control-label::after {
+.custom-switch-warning.custom-switch .custom-control-label::after {
     top: calc(2.25rem + 2px);
     left: 2px;
     width: calc(3rem - 4px);
@@ -84,20 +84,20 @@ header {
     border-radius: 4rem;
 }
 
-.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
+.custom-switch-warning.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
     transform: translateX(1.75rem);
 }
 
-.custom-control-input.input-warning:checked ~ .custom-control-label::before {
+.custom-switch-warning .custom-control-input.input-warning:checked ~ .custom-control-label::before {
     border-color: #ffc107;
     background-color: #ffc107;
 }
 
-.custom-control-input.input-warning:focus ~ .custom-control-label::before {
+.custom-switch-warning .custom-control-input.input-warning:focus ~ .custom-control-label::before {
     box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);;
 }
 
-#editModal, #createModal {
+#showModal {
     overflow-y: hidden;
 }
 
@@ -355,3 +355,6 @@ table.table td, table.table th {
 td.button {
     padding: 0.5em !important;
 } 
+.overflow-wrap {
+    overflow-wrap: anywhere;
+}

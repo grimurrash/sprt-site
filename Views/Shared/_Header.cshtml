@@ -31,12 +31,15 @@
                         <li>
                             <a class="dropdown-item" asp-controller="WorkTask" asp-action="Index">Список задач</a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" asp-controller="WorkTask" asp-action="Index">Архив</a>
-                        </li>
+                        @if (User.IsAdmin() || User.IsPermission("Registrar"))
+                        {
+                            <li>
+                                <a class="dropdown-item" asp-controller="WorkTask" asp-action="Archive">Архив</a>
+                            </li>
+                        }
                     </ul>
                 </li>
-                @if ((await AuthorizationService.AuthorizeAsync(User, "PersonalGuidance")).Succeeded)
+                @if (User.IsPermission("PersonalGuidance"))
                 {
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-dark" href="#" id="PersonalGuidanceMenuLink" role="button" data-toggle="dropdown" aria-expanded="false">

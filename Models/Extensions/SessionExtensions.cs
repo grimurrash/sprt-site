@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
-namespace NewSprt.Models
+namespace NewSprt.Models.Extensions
 {
     /// <summary>
     /// Расширение для sessions для хранения в сессии объектов

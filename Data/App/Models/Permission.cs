@@ -13,10 +13,16 @@ namespace NewSprt.Data.App.Models
         public string ShortName { get; set; }
         public string Name { get; set; }
         public string Discription { get; set; }
-        public List<UserPermission> UserPermissions { get; set; }
+        public List<UserPermission> UserPermissions { get;}
         public Permission()
         {
             UserPermissions = new List<UserPermission>();
         }
+
+        public const string Admin = "Admin";
+        public const string Vvk = "VVK";
+        public const string Dactyloscopy = "Dactyloscopy";
+        public const string PersonalGuidance = "PersonalGuidance";
+        public const string Secretary = "Secretary";
     }
 }

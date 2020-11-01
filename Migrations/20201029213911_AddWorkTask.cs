@@ -90,6 +90,11 @@ namespace NewSprt.Migrations
                 name: "IX_WorkTasks_StatusId",
                 table: "WorkTasks",
                 column: "StatusId");
+            
+            migrationBuilder.Sql("INSERT INTO public.\"WorkTaskStatuses\"(\"Id\", \"Name\") VALUES (1, 'Создано');");
+            migrationBuilder.Sql("INSERT INTO public.\"WorkTaskStatuses\"(\"Id\", \"Name\") VALUES (2, 'В процессе');");
+            migrationBuilder.Sql("INSERT INTO public.\"WorkTaskStatuses\"(\"Id\", \"Name\") VALUES (3, 'Выполнено');");
+            migrationBuilder.Sql("INSERT INTO public.\"WorkTaskStatuses\"(\"Id\", \"Name\") VALUES (4, 'В архиве');");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

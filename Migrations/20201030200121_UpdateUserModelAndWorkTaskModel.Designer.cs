@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NewSprt.Data.App;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -9,9 +10,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace NewSprt.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201030200121_UpdateUserModelAndWorkTaskModel")]
+    partial class UpdateUserModelAndWorkTaskModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -93,8 +95,6 @@ namespace NewSprt.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AdditionToDeadlines");
-
                     b.Property<DateTime>("CompletionDate");
 
                     b.Property<DateTime>("CreateDate");
@@ -107,17 +107,19 @@ namespace NewSprt.Migrations
 
                     b.Property<string>("FilePath");
 
-                    b.Property<bool>("IsArchive");
-
                     b.Property<bool>("IsRepeat");
 
                     b.Property<bool>("IsUrgent");
 
                     b.Property<string>("Name");
 
+                    b.Property<int>("StatusId");
+
                     b.Property<int>("TaskManagerId");
 
                     b.Property<int>("TaskResponsibleId");
+
+                    b.Property<string>("TimelineForCompliance");
 
                     b.Property<DateTime>("UpdateDate");
 
@@ -125,11 +127,25 @@ namespace NewSprt.Migrations
 
                     b.HasIndex("DepartmentId");
 
+                    b.HasIndex("StatusId");
+
                     b.HasIndex("TaskManagerId");
 
                     b.HasIndex("TaskResponsibleId");
 
                     b.ToTable("WorkTasks");
+                });
+
+            modelBuilder.Entity("NewSprt.Data.App.Models.WorkTaskStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkTaskStatuses");
                 });
 
             modelBuilder.Entity("NewSprt.Data.App.Models.Department", b =>
@@ -166,6 +182,11 @@ namespace NewSprt.Migrations
                     b.HasOne("NewSprt.Data.App.Models.Department", "Department")
                         .WithMany()
                         .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("NewSprt.Data.App.Models.WorkTaskStatus", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("NewSprt.Data.App.Models.User", "TaskManagerUser")

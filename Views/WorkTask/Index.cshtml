@@ -2,6 +2,8 @@
     <h2>Задачи</h2>
 </section>
 
+<partial name="ViewComponents/_AlertSection"/>
+
 <section class="container mt-4">
     <div class="row align-items-end">
         <div class="col-lg-8">
@@ -10,7 +12,7 @@
         <div class="col-lg-4 text-right">
             <a asp-controller="WorkTask" asp-action="CreateModal" class="btn btn-success"
                 onclick="showModal(event)" data-alert-text="Не удалось открыть окно создания задачи">
-                <i class="fas fa-user-plus"></i> Добавить задачу
+                <i class="fas fa-thumbtack"></i> Добавить задачу
             </a>
         </div>
     </div>

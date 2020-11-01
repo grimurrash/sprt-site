@@ -13,11 +13,12 @@ namespace NewSprt.Data.App.Models
         public int Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        public string Fio { get; set; }
+        public string AuthorizationToken { get; set; }
+        public string FullName { get; set; }
         public int DepartmentId { get; set; }
         [ForeignKey(nameof(DepartmentId))]
         public Department Department { get; set; }
-        public List<UserPermission> UserPermissions { get; set; }
+        public List<UserPermission> UserPermissions { get;}
         public User()
         {
             UserPermissions = new List<UserPermission>();

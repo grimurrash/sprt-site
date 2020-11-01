@@ -1,6 +1,7 @@
 ﻿@model LoginModel
 @{
     Layout = null;
+    var returnUrl = (string)ViewData["ReturnUrl"];
 }
 
 <!doctype html>
@@ -39,6 +40,7 @@
                             <h1>Вход</h1>
                         </div>
                     </div>
+                    <input type="hidden" asp-for="ReturnUrl" value="@returnUrl" class="form-control" placeholder="Логин">
                     <div class="row mt-4">
                         <label asp-for="Login" class="col">
                             <input type="text" asp-for="Login" class="form-control" placeholder="Логин">

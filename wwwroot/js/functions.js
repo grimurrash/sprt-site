@@ -56,7 +56,9 @@ function showModal(e) {
             let modalElement = $('#showModal')
             modalElement.modal('toggle');
             modalElement.on('hidden.bs.modal', function () {
-                reloadTable()
+                if (!modalElement.data('not-reload')) {
+                    reloadTable()
+                }
                 $("#modalContainer").html("")
             })
         }
@@ -70,7 +72,6 @@ function actionWarning (e) {
         window.location.href = element.prop('href')
     }
 }
-
 function saveModalForm(e) {
     e.preventDefault()
     let form = $(e.currentTarget)
