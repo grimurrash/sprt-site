@@ -61,10 +61,13 @@ namespace NewSprt.Controllers
                 .Where(m => m.SpecialPersonToRequirements.Any(s =>
                     s.Requirement.DirectiveTypeId == DirectiveType.PersonalPerson ||
                     s.Requirement.DirectiveTypeId == DirectiveType.FamilyPerson ||
-                    s.Requirement.RequirementTypeId == RequirementType.TcpRequirement))
+                    s.Requirement.DirectiveTypeId == DirectiveType.SelectedToTheMilitaryUnitPerson))
                 .Include(m => m.SpecialPersonToRequirements)
                 .ThenInclude(m => m.Requirement)
                 .ThenInclude(m => m.RequirementType)
+                .Include(m => m.SpecialPersonToRecruits)
+                .ThenInclude(m => m.Recruit)
+                .ThenInclude(m => m.Events)
                 .Include(m => m.MilitaryComissariat)
                 .OrderBy(m => m.LastName).AsNoTracking().ToListAsync();
             var requirements = persons.Select(m => m.Requirement).ToList();
@@ -82,6 +85,17 @@ namespace NewSprt.Controllers
                 var teamWithSpecialPerson = new TeamWithSpecialPerson();
                 var teamPersons = persons.Where(m => m.Requirement.MilitaryUnitCode == mainTeam.MilitaryUnitCode)
                     .ToList();
+
+                foreach (var person in teamPersons.Where(person => person.Recruit != null).Where(person =>
+                    person.Recruit.LastEvent.EventCode == 125 ||
+                    person.Recruit.LastEvent.EventCode == 120 ||
+                    person.Recruit.LastEvent.EventCode == 106 ||
+                    person.Recruit.LastEvent.EventCode == 107 ||
+                    person.Recruit.LastEvent.EventCode == 106 ||
+                    person.Recruit.LastEvent.EventCode == 124))
+                {
+                    person.IsMark = true;
+                }
 
                 var childrenTeams = allTeams
                     .Where(m => m.MilitaryUnitCode == mainTeam.MilitaryUnitCode && m.Id != mainTeam.Id)
@@ -244,7 +258,9 @@ namespace NewSprt.Controllers
                 .ThenInclude(m => m.RequirementType)
                 .Include(m => m.SpecialPersonToRequirements)
                 .ThenInclude(m => m.Requirement)
-                .ThenInclude(m => m.MilitaryUnit).AsQueryable();
+                .ThenInclude(m => m.MilitaryUnit)
+                .Where(m => m.SpecialPersonToRequirements.Any())
+                .AsNoTracking().AsEnumerable();
 
             if (!string.IsNullOrEmpty(militaryComissariatId))
             {
@@ -254,23 +270,23 @@ namespace NewSprt.Controllers
             if (directorTypeId != 0)
             {
                 query = query.Where(m =>
-                    m.SpecialPersonToRequirements.Count(r => r.Requirement.DirectiveTypeId == directorTypeId) > 0);
+                    m.SpecialPersonToRequirements.Any(r => r.Requirement.DirectiveTypeId == directorTypeId));
             }
 
             if (requirementTypeId != 0)
             {
                 query = query.Where(m =>
-                    m.SpecialPersonToRequirements.Count(r => r.Requirement.RequirementTypeId == requirementTypeId) > 0);
+                    m.SpecialPersonToRequirements.Any(r => r.Requirement.RequirementTypeId == requirementTypeId));
             }
 
             if (!string.IsNullOrEmpty(militaryUnitId))
             {
                 query = query.Where(m =>
-                    m.SpecialPersonToRequirements.Count(r => r.Requirement.MilitaryUnitCode == militaryUnitId) > 0);
+                    m.SpecialPersonToRequirements.Any(r => r.Requirement.MilitaryUnitCode == militaryUnitId));
             }
 
-            var persons = query.OrderBy(m => m.LastName).AsNoTracking().ToList();
-
+            var persons = query.OrderBy(m => m.LastName).ToList();
+            
             if (!string.IsNullOrEmpty(search))
             {
                 var searchArr = search.Split(" ");
@@ -305,6 +321,7 @@ namespace NewSprt.Controllers
             {
                 pers.IsMark = true;
             }
+
 
             if (isMark) persons = persons.Where(m => m.IsMark).ToList();
 
@@ -366,7 +383,7 @@ namespace NewSprt.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    return new JsonResult(new {isSucceeded = false, errors =  ModelState.Errors()});
+                    return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
                 }
 
 
@@ -489,8 +506,7 @@ namespace NewSprt.Controllers
                     .OrderBy(m => m.ShortName).AsNoTracking().ToList(),
                 RequirementTypes = _zarnicaDb.RequirementTypes.OrderBy(m => m.Name).AsNoTracking().ToList(),
                 MilitaryUnits = _zarnicaDb.MilitaryUnits.OrderBy(m => m.Id).AsNoTracking().ToList(),
-                DirectiveTypes = _zarnicaDb.DirectivesTypes
-                    .Where(m => m.Id == person.Requirement.DirectiveTypeId).AsNoTracking().ToList()
+                DirectiveTypes = _zarnicaDb.DirectivesTypes.OrderBy(m => m.Id).AsNoTracking().ToList()
             };
 
 
@@ -579,7 +595,7 @@ namespace NewSprt.Controllers
 
             if (!ModelState.IsValid)
             {
-                return new JsonResult(new {isSucceeded = false, errors =  ModelState.Errors()});
+                return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
             }
 
             var transaction = _zarnicaDb.Database.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -601,22 +617,23 @@ namespace NewSprt.Controllers
                 person.MilitaryComissariatCode = model.MilitaryComissariatId;
 
                 if (person.Requirement.MilitaryUnitCode != model.MilitaryUnitId ||
-                    person.Requirement.RequirementTypeId != model.RequirementTypeId)
+                    person.Requirement.RequirementTypeId != model.RequirementTypeId ||
+                    person.Requirement.DirectiveTypeId != model.DirectiveTypeId)
                 {
                     var oldRequirementsRelative = person.SpecialPersonToRequirements;
-                    SpecialPersonToRequirement editRequirementRelative;
+                    SpecialPersonToRequirement deleteRequirementRelative;
 
                     if (oldRequirementsRelative.Count == 1)
                     {
-                        editRequirementRelative = person.SpecialPersonToRequirements.First();
+                        deleteRequirementRelative = person.SpecialPersonToRequirements.First();
                     }
                     else
                     {
-                        editRequirementRelative = person.SpecialPersonToRequirements.FirstOrDefault(m =>
+                        deleteRequirementRelative = person.SpecialPersonToRequirements.FirstOrDefault(m =>
                             m.RequirementId == person.Requirement.Id);
                     }
 
-                    if (editRequirementRelative == null) throw new NullReferenceException();
+                    if (deleteRequirementRelative == null) throw new NullReferenceException();
                     var selectRequirements = person.SpecialPersonToRequirements.FirstOrDefault(m =>
                         m.Requirement.MilitaryUnitCode == model.MilitaryUnitId &&
                         m.Requirement.DirectiveTypeId == model.DirectiveTypeId &&
@@ -625,6 +642,8 @@ namespace NewSprt.Controllers
                     person.Requirement.Amount =
                         _zarnicaDb.SpecialPersonToRequirements.Count(m => m.RequirementId == person.Requirement.Id);
                     _zarnicaDb.Requirements.Update(person.Requirement);
+                    _zarnicaDb.SpecialPersonToRequirements.Remove(deleteRequirementRelative);
+                    var newRequirementRelative = new SpecialPersonToRequirement {SpecialPersonId = person.Id};
                     if (selectRequirements == null)
                     {
                         var searchRequirement = _zarnicaDb.Requirements
@@ -677,22 +696,22 @@ namespace NewSprt.Controllers
                                                      m.RequirementTypeId == model.RequirementTypeId &&
                                                      m.MilitaryUnitCode == model.MilitaryUnitId);
                             if (requirement == null) throw new NullReferenceException();
-                            editRequirementRelative.RequirementId = requirement.Id;
+                            newRequirementRelative.RequirementId = requirement.Id;
                         }
                         else
                         {
-                            editRequirementRelative.RequirementId = searchRequirement.Id;
+                            newRequirementRelative.RequirementId = searchRequirement.Id;
                             searchRequirement.Amount = searchRequirement.SpecialPersonsInRequirement.Count + 1;
                             _zarnicaDb.Requirements.Update(searchRequirement);
                         }
                     }
 
-                    _zarnicaDb.SpecialPersonToRequirements.Update(editRequirementRelative);
+                    _zarnicaDb.SpecialPersonToRequirements.Add(newRequirementRelative);
                 }
 
                 if (person.SendDateString != (model.SendDate + " " + model.Notice).Trim())
                 {
-                    person.Notice = $"Отправка {model.SendDate} {model.Notice}";
+                    person.Notice = (model.SendDate == null ? "" : $"Отправка {model.SendDate} ") + model.Notice;
                 }
 
                 _zarnicaDb.SpecialPersons.Update(person);
@@ -793,13 +812,6 @@ namespace NewSprt.Controllers
         {
             ViewBag.Pagination = new Pagination(rows, page);
             var persons = await _zarnicaDb.SpecialPersons
-                .Where(m => ((m.Recruit != null && m.Recruit.TeamId != null &&
-                              m.Recruit.Team.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear) ||
-                             (m.SendDate != null && m.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear)
-                             && m.SpecialPersonToRequirements.Count(t =>
-                                 (t.Requirement.DirectiveTypeId == DirectiveType.PersonalPerson
-                                  || t.Requirement.DirectiveTypeId == DirectiveType.FamilyPerson
-                                  || t.Requirement.RequirementTypeId == RequirementType.TcpRequirement)) > 0))
                 .Include(m => m.MilitaryComissariat)
                 .Include(m => m.SpecialPersonToRequirements)
                 .ThenInclude(m => m.Requirement)
@@ -819,6 +831,11 @@ namespace NewSprt.Controllers
                 .ThenInclude(m => m.Events)
                 .AsNoTracking()
                 .ToListAsync();
+
+            persons = persons.Where(m => (m.SendDate != null && m.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear) ||
+                                         (m.Recruit?.Team?.SendDate != null 
+                                          && m.Recruit.Team.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear))
+                .ToList();
             foreach (var person in persons
                 .Where(person => person.Recruit?.Team != null &&
                                  person.Recruit.Team.MilitaryUnitCode == person.Requirement.MilitaryUnitCode))

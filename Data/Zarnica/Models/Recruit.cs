@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace NewSprt.Data.Zarnica.Models
 {
@@ -37,5 +38,7 @@ namespace NewSprt.Data.Zarnica.Models
             Events = new List<EventControl>();
             RecruitFromSpecialPersons = new List<SpecialPersonToRecruit>();
         }
+
+        public EventControl LastEvent => Events.OrderBy(m => m.Id).Last();
     }
 }

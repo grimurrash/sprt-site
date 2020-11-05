@@ -54,7 +54,7 @@
                         @Html.LabelFor(m => m.DirectiveTypeId, new {@class = "control-label"})
                         @Html.DropDownListFor(m => m.DirectiveTypeId,
                             new SelectList(filterDataViewModel.DirectiveTypes, "Id", "ViewName"),
-                            new {@class = "form-control", disabled = ""})
+                            new {@class = "form-control"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.RequirementTypeId, new {@class = "control-label"})
@@ -89,10 +89,10 @@
     </div>
 </div>
 
-
 <script>
-    $(document).ready(function() {
+    $(function () {
         let modalElement = $("#showModal")
+        let militaryUnitIdSelect = $('#MilitaryUnitId')
         $("#RequirementTypeId").select2({
             theme: 'bootstrap4',
             dropdownParent: modalElement
@@ -101,27 +101,27 @@
             theme: 'bootstrap4',
             dropdownParent: modalElement
         })
-        $("#MilitaryUnitId").select2({
-            theme: 'bootstrap4',
-            dropdownParent: modalElement
-        })
-        document.getElementById('MilitaryUnitId').addEventListener('change', function () {
-            let id = document.getElementById('MilitaryUnitId').value
-            $.ajax({
-                url: '@Url.Action("SendDateJsonList", "MilitaryUnit")',
-                data: {id: id},
-                type: 'get',
-                success: function(data) {
-                    $('#SendDate').html("<option value='-'>-</option>");
-                    if (data.isSucceeded) {
-                        data.result.forEach((item) => {
-                            $('#SendDate').append(`<option value="${item}">${item}</option>`)
-                        })
-                    } else {
-                        alert('Не удалось загрузить время отправки')
-                    }
-                }
-            })
+         militaryUnitIdSelect.select2({
+             theme: 'bootstrap4',
+             dropdownParent: modalElement
+         })
+         militaryUnitIdSelect.on('change', function () {
+             let id = document.getElementById('MilitaryUnitId').value
+             $.ajax({
+                 url: '@Url.Action("SendDateJsonList", "MilitaryUnit")',
+                 data: {id: id},
+                 type: 'get',
+                 success: function(data) {
+                     $('#SendDate').html("<option value='-'>-</option>");
+                     if (data.isSucceeded) {
+                         data.result.forEach((item) => {
+                             $('#SendDate').append(`<option value="${item}">${item}</option>`)
+                         })
+                     } else {
+                         alert('Не удалось загрузить время отправки')
+                     }
+                 }
+             })
         })
     })
 </script>

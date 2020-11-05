@@ -25,7 +25,7 @@ namespace NewSprt.Data.Zarnica.Models
         [ForeignKey(nameof(MilitaryComissariatCode))]
         public MilitaryComissariat MilitaryComissariat { get; set; }
 
-        public List<SpecialPersonToRecruit> SpecialPersonToRecruits { get; }
+        public List<SpecialPersonToRecruit> SpecialPersonToRecruits { get; set; }
         public List<SpecialPersonToRequirement> SpecialPersonToRequirements { get; }
 
         public SpecialPerson()
@@ -34,7 +34,8 @@ namespace NewSprt.Data.Zarnica.Models
             SpecialPersonToRequirements = new List<SpecialPersonToRequirement>();
         }
 
-        [NotMapped] public Recruit Recruit => SpecialPersonToRecruits.FirstOrDefault()?.Recruit;
+        [NotMapped]
+        public Recruit Recruit => SpecialPersonToRecruits.Any() ? SpecialPersonToRecruits.First().Recruit : null;
 
         [NotMapped]
         public Requirement Requirement
@@ -47,7 +48,7 @@ namespace NewSprt.Data.Zarnica.Models
                     m.Requirement.DirectiveTypeId == DirectiveType.PersonalPerson);
 
                 return personalRequirement == null
-                    ? SpecialPersonToRequirements.FirstOrDefault()?.Requirement
+                    ? SpecialPersonToRequirements.OrderBy(m => m.RequirementId).FirstOrDefault()?.Requirement
                     : personalRequirement.Requirement;
             }
         }
@@ -107,10 +108,6 @@ namespace NewSprt.Data.Zarnica.Models
         {
             if (Recruit == null) return "Не доставлен на сборный пункт";
             if (Requirement == null) return "Ошибка при получении требования!!!";
-            if (Requirement.DirectiveTypeId != DirectiveType.FamilyPerson &&
-                Requirement.DirectiveTypeId != DirectiveType.PersonalPerson &&
-                Requirement.RequirementTypeId != RequirementType.TcpRequirement)
-                return "Не обрабатываемый тип директивного указания";
             var lastEvent = Recruit.Events.FirstOrDefault(m => m.Date == Recruit.Events.Max(e => e.Date));
             if (lastEvent == null) return "Отсутствуют события у призывника";
 
@@ -121,7 +118,6 @@ namespace NewSprt.Data.Zarnica.Models
                     $"{Recruit.Team.TeamNumber} (в/ч {Recruit.Team.MilitaryUnitCode} ({Recruit.Team.MilitaryUnit.Name}) " +
                     $"на {Recruit.Team.SendDate?.ToShortDateString()})";
             }
-
             return EventType.GetName(lastEvent.EventCode);
         }
     }

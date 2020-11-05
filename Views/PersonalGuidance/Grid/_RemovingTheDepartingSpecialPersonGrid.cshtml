@@ -12,18 +12,20 @@
         columns.Add(model => model.FullName).Titled("ФИО").Sortable(true);
         columns.Add(model => model.BirthYear).Titled("Год рождения").Css("w-px-100");
         columns.Add(model => model.MilitaryComissariat.ShortName).Css("w-px-150").Titled("Военный комиссариат");
-        columns.Add(model => $"{model.Requirement}<br/>{model.Requirement.MilitaryUnit}<br/>({model.Notice.Trim()})" ).Titled("Требование").Css("w-px-250").Encoded(false);
+        columns.Add(model => model.Requirement != null ? 
+            $"{model.Requirement}<br/>{model.Requirement.MilitaryUnit}<br/>({model.Notice.Trim()})" : 
+            "Нет требования" ).Titled("Требование").Css("w-px-250").Encoded(false);
         columns.Add(model => model.GetRecruitStatus()).Titled("Статус").Css("w-px-250").Filterable(true);
         columns.Add(model => 
             $"<a class='btn btn-success' href='{Url.Action("EditModal","PersonalGuidance", new {id = model.Id})}'" +
-            $" data-placement='top' data-toggle='tooltip' title='Редактировать данные на призывника' " +
-            $"onclick='showModal(event)' data-alert-text='Не удалось загрузить Персональщика'>" +
-            $"<i class='fas fa-edit'></i></a>").Css("w-px-60 button").Encoded(false);
+            " data-placement='top' data-toggle='tooltip' title='Редактировать данные на призывника' " +
+            "onclick='showModal(event)' data-alert-text='Не удалось загрузить Персональщика'>" +
+            "<i class='fas fa-edit'></i></a>").Css("w-px-60 button").Encoded(false);
         columns.Add(model => 
-            $"<a data-placement='top' data-toggle='tooltip' title='Удалить персональщика' class='btn btn-danger'" +
+            "<a data-placement='top' data-toggle='tooltip' title='Удалить персональщика' class='btn btn-danger'" +
             $"href='{Url.Action("DeleteSpecialPerson","PersonalGuidance", new {id = model.Id})}'" +
-            $"onclick='actionWarning(event)' data-alert-text='Вы уверены что хотите удалить персональщика?'>" +
-            $"<i class='fas fa-trash-alt'></i></a>").Css("w-px-60 button").Encoded(false);
+            "onclick='actionWarning(event)' data-alert-text='Вы уверены что хотите удалить персональщика?'>" +
+            "<i class='fas fa-trash-alt'></i></a>").Css("w-px-60 button").Encoded(false);
     })
     .Css("table-striped")
     .AppendCss("table-hover")
