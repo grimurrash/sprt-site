@@ -29,19 +29,19 @@
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.LastName, new {@class = "control-label"})
-                        @Html.TextBoxFor(m => m.LastName, new {@class = "form-control"})
+                        @Html.TextBoxFor(m => m.LastName, new {@class = "form-control", autocomplete="off"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.FirstName, new {@class = "control-label"})
-                        @Html.TextBoxFor(m => m.FirstName, new {@class = "form-control"})
+                        @Html.TextBoxFor(m => m.FirstName, new {@class = "form-control", autocomplete="off"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.Patronymic, new {@class = "control-label"})
-                        @Html.TextBoxFor(m => m.Patronymic, new {@class = "form-control"})
+                        @Html.TextBoxFor(m => m.Patronymic, new {@class = "form-control", autocomplete="off"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.BirthYear, new {@class = "control-label"})
-                        @Html.TextBoxFor(m => m.BirthYear, new {@class = "form-control", type = "number"})
+                        @Html.TextBoxFor(m => m.BirthYear, new {@class = "form-control", type = "number", autocomplete="off"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.MilitaryComissariatId, new {@class = "control-label"})
@@ -76,10 +76,10 @@
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.Notice, new {@class = "control-label"})
-                        @Html.TextBoxFor(m => m.Notice, new {@class = "form-control"})
+                        @Html.TextBoxFor(m => m.Notice, new {@class = "form-control", autocomplete="off"})
                     </div>
                     <div class="custom-control custom-switch mt-2">
-                        @Html.CheckBoxFor(m => m.IsDmo, new {autocomplete = "off", @class = "custom-control-input"})
+                        @Html.CheckBoxFor(m => m.IsDmo, new {@class = "custom-control-input", autocomplete = "off"})
                         @Html.LabelFor(m => m.IsDmo, "Находиться на доп. мед. обследовании", new {@class = "custom-control-label cursor-pointer"})
                     </div>
                     <input type="submit" hidden="hidden" id="saveBtn"/>

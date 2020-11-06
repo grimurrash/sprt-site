@@ -611,7 +611,7 @@ namespace NewSprt.Controllers
                     .FirstOrDefault(m => m.Id == model.Id);
                 if (person == null)
                 {
-                    ModelState.AddModelError("Id", "Не удалось найти персональщика. Перезагрузите страницу");
+                    ModelState.AddModelError("Id", "Не удалось найти персональщика. Обновите страницу");
                     return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
                 }
 

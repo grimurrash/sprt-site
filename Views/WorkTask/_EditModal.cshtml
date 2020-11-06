@@ -8,7 +8,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Добавление задачи</h5>
+                <h5 class="modal-title">Редактирование задачи</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -34,22 +34,22 @@
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.DocumentName, new {@class = "control-label"})
-                        @Html.TextBoxFor(m => m.DocumentName, new {@class = "form-control"})
+                        @Html.TextBoxFor(m => m.DocumentName, new {@class = "form-control", autocomplete = "off"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.DocumentNumber, new {@class = "control-label"})
-                        @Html.TextBoxFor(m => m.DocumentNumber, new {@class = "form-control"})
+                        @Html.TextBoxFor(m => m.DocumentNumber, new {@class = "form-control", autocomplete = "off"})
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(m => m.Discription, new {@class = "control-label"})
-                        @Html.TextAreaFor(m => m.Discription, new {@class = "form-control"})
+                        @Html.TextAreaFor(m => m.Discription, new {@class = "form-control", autocomplete = "off"})
                     </div>
                     <div class="form-check form-check-inline">
                         @Html.RadioButtonFor(m => m.IsRepeat, "false", new {@class = "form-check-input isRepeat", id = "IsNotRepeat"})
                         @Html.LabelFor(m => m.IsRepeat, "Срок исполнения (один раз)", new {@class = "form-check-label"})
                     </div>
                     <div class="form-group">
-                        @Html.TextBoxFor(m => m.CompletionDate, "{0:yyyy-MM-dd}", new {@class = "form-control", type="date"})
+                        @Html.TextBoxFor(m => m.CompletionDate, "{0:yyyy-MM-dd}", new {@class = "form-control", type = "date", autocomplete = "off"})
                     </div>
 
                     <div class="form-check form-check-inline">
@@ -57,7 +57,7 @@
                         @Html.LabelFor(m => m.IsRepeat, "Срок исполнения (переодично)", new {@class = "form-check-label"})
                     </div>
                     <div class="form-group">
-                        @Html.TextAreaFor(m => m.AdditionToDeadlines, new {@class = "form-control", placeholder = "Текст с описанием частоты исполенния"})
+                        @Html.TextAreaFor(m => m.AdditionToDeadlines, new {@class = "form-control", placeholder = "Текст с описанием частоты исполенния", autocomplete = "off"})
                     </div>
                     <div class="custom-control custom-switch mt-2">
                         @Html.CheckBoxFor(m => m.IsUrgent, new {autocomplete = "off", @class = "custom-control-input"})

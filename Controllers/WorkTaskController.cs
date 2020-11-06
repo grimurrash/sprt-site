@@ -186,7 +186,7 @@ namespace NewSprt.Controllers
                 .FirstOrDefaultAsync(m => m.Id == model.Id);
 
             if (task == null)
-                ModelState.AddModelError("Id", "Не удалось найти задачу по Id. Перезагрузите страницу.");
+                ModelState.AddModelError("Id", "Не удалось найти задачу по Id. Обновите страницу.");
             else if (! (User.IsAdmin()
                        || User.IsPermission(Permission.Secretary)
                        || user?.Id == task.TaskManagerId
