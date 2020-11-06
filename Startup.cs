@@ -43,8 +43,8 @@ namespace NewSprt
             });
             services.AddDbContext<ZarnicaDbContext>(options =>
             {
-                options.UseNpgsql(Configuration.GetConnectionString("ZarnicaConnection"), 
-                    builder => builder.SetPostgresVersion(new Version(7,4)));
+                options.UseNpgsql(Configuration.GetConnectionString("ZarnicaConnection"),
+                    builder => builder.SetPostgresVersion(new Version(7, 4)));
             });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -64,9 +64,12 @@ namespace NewSprt
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddMvc().AddJsonOptions(options => { options.SerializerSettings.DateFormatString = "dd.MM.yyyy"; });
+            services.AddMvc().AddJsonOptions(options =>
+            {
+                options.SerializerSettings.DateFormatString = "dd.MM.yyyy";
+            });
             services.AddMvc().AddRazorOptions(options => options.AllowRecompilingViewsOnFileChange = true);
-            
+            // services.AddMvc(o => o.EnableEndpointRouting = false);
             services.AddDistributedMemoryCache();
             services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(1));
 
@@ -81,7 +84,7 @@ namespace NewSprt
                 opts.SupportedCultures = supportedCultures;
                 opts.SupportedUICultures = supportedCultures;
             });
-            
+
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("ru-RU");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("ru-RU");
         }
@@ -99,6 +102,9 @@ namespace NewSprt
             app.UseSession();
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                    name: "areas",
+                    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

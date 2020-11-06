@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace NewSprt.Data.App.Models
 {
@@ -22,6 +23,11 @@ namespace NewSprt.Data.App.Models
         public User()
         {
             UserPermissions = new List<UserPermission>();
+        }
+
+        public string GetPermissionsNames()
+        {
+            return string.Join(", ", UserPermissions.Select(m => m.Permission.Name));
         }
     }
 }

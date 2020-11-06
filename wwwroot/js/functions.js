@@ -1,7 +1,7 @@
 /*
 
  */
-jQuery.fn.exists = function() {
+jQuery.fn.exists = function () {
     return $(this).length;
 }
 
@@ -19,31 +19,40 @@ function reloadTable() {
         select = document.getElementById('RequirementTypeIdFilter')
         grid.url.searchParams.set('requirementTypeId', select.value)
     }
-    
+
     if (document.getElementById('MilitaryUnitIdFilter')) {
         select = document.getElementById('MilitaryUnitIdFilter')
         grid.url.searchParams.set('militaryUnitId', select.value)
     }
-   
+
     if (document.getElementById('MilitaryComissariatIdFilter')) {
         select = document.getElementById('MilitaryComissariatIdFilter')
         grid.url.searchParams.set('militaryComissariatId', select.value)
     }
-    
+
     if (document.getElementById('Search')) {
         select = document.getElementById('Search')
         grid.url.searchParams.set('search', select.value)
     }
-}
-if (document.getElementById('IsDmoFilter')) {
-    select = document.getElementById('IsDmoFilter')
-    grid.url.searchParams.set('isDmo', select.checked)
-}
+
+    if (document.getElementById('IsDmoFilter')) {
+        select = document.getElementById('IsDmoFilter')
+        grid.url.searchParams.set('isDmo', select.checked)
+    }
     if (document.getElementById('IsMarkFilter')) {
         select = document.getElementById('IsMarkFilter')
         grid.url.searchParams.set('isMark', select.checked)
     }
-    
+
+    if (document.getElementById('PermissionIdFilter')) {
+        select = document.getElementById('PermissionIdFilter')
+        grid.url.searchParams.set('permissionId', select.value)
+    }
+    if (document.getElementById('DepartmentIdFilter')) {
+        select = document.getElementById('DepartmentIdFilter')
+        grid.url.searchParams.set('departmentId', select.value)
+    }
+
     grid.url.searchParams.set('page', '1')
     grid.reload();
 }
@@ -71,13 +80,14 @@ function showModal(e) {
     })
 }
 
-function actionWarning (e) {
+function actionWarning(e) {
     e.preventDefault();
     let element = $(e.currentTarget)
-    if(confirm(element.data('alert-text'))) {
+    if (confirm(element.data('alert-text'))) {
         window.location.href = element.prop('href')
     }
 }
+
 function saveModalForm(e) {
     e.preventDefault()
     let form = $(e.currentTarget)
@@ -86,21 +96,21 @@ function saveModalForm(e) {
         type: 'post',
         url: url,
         data: form.serialize(),
-        success: function(data) {
+        success: function (data) {
             $('.invalid-feedback.feedback-text').remove();
             $(".is-invalid").removeClass('is-invalid')
             if (data.isSucceeded) {
                 $("#showModal").modal('toggle')
             } else {
                 $("#modalBody").scrollTop(0);
-                $.each(data.errors, function(elementId, value) {
+                $.each(data.errors, function (elementId, value) {
                     let element = $(`#${elementId}`)
                     element.addClass('is-invalid')
                     element.parent().append("<div class='invalid-feedback feedback-text'>" + value[0] + "</div>");
                 })
             }
         },
-        error: function() {
+        error: function () {
             alert('Не удалось сохранить изменения')
         }
     })

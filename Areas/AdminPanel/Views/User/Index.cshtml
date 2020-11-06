@@ -1,0 +1,81 @@
+﻿@{
+    var permissions = ViewBag.Permissions;
+    var departments = ViewBag.Departments;
+}
+
+<section class="container">
+    <h2>Админ панель</h2>
+    <ul class="nav nav-pills mt-2">
+        <li class="nav-item">
+            <a class="nav-link active" asp-area="AdminPanel" asp-controller="User" asp-action="Index">Управление пользователями</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="AdminPanel" asp-controller="Department" asp-action="Index">Управление отделениями</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#">Управление архивами</a>
+        </li>
+    </ul>
+
+    <div class="row mt-2">
+
+        <div class="col-lg-6">
+            @Html.Label("Search", "Поиск (учитываются ранее выбранные фильтры):", new {@class = "col-form-label"})
+            @Html.TextBox("Search", "", new {id = "Search", @class = "form-control border-info", placeholder = "Поиск", autocomplete="off"})
+        </div>
+        <div class="col-lg-3">
+            @Html.Label("PermissionIdFilter", "Права доступа:", new {@class = "col-form-label"})
+            @Html.DropDownList("PermissionIdFilter",
+                new SelectList(permissions, "Id", "Name", 0),
+                "Все",
+                new {id = "PermissionIdFilter", @class = "form-control border-info"})
+        </div>
+         <div class="col-lg-3">
+            @Html.Label("DepartmentIdFilter", "Отделения:", new {@class = "col-form-label"})
+            @Html.DropDownList("DepartmentIdFilter",
+                new SelectList(departments, "Id", "Name", 0),
+                "Все",
+                new {id = "DepartmentIdFilter", @class = "form-control border-info"})
+        </div>
+    </div>
+</section>
+
+<section class="container mt-4 ">
+    <div class="row align-items-end">
+        <div class="col-lg-8">
+            <h5>Всего сотрудников имеют доступ к сайту: <b>@ViewData["usersCount"]</b> чел.</h5>
+        </div>
+        <div class="col-lg-4 text-right">
+            <a asp-area="AdminPanel" asp-controller="User" asp-action="CreateModal" class="btn btn-success"
+               onclick="showModal(event)" data-alert-text="Не удалось открыть окно добавления пользователя">
+                <i class="fas fa-user-plus"></i> Добавить пользователя
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="container mt-2">
+    @Html.AjaxGrid(Url.Action("IndexGrid"))
+</section>
+
+<div id="modalContainer"></div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("Search").addEventListener('keyup', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+            document.getElementById("PermissionIdFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+            document.getElementById("DepartmentIdFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+        })
+    </script>
+}

@@ -1,0 +1,67 @@
+﻿@model UserViewModel
+
+@{
+    List<Department> departments = ViewBag.Departments;
+    List<Permission> permissions = ViewBag.Permissions;
+}
+
+<div class="modal fade" data-backdrop="static" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModal" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавление пользователя</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                @using (Html.BeginForm(
+                    "Create",
+                    "User",
+                    null,
+                    FormMethod.Post,
+                    true,
+                    new {@class = "form-horizontal needs-validation", id = "modalForm", onsubmit = "saveModalForm(event)", novalidate = "", role = "form"}))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.HiddenFor(m => m.Id)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Login, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.Login, new {@class = "form-control", autocomplete="off", @readonly="true", onfocus="this.removeAttribute('readonly')"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.Password, new {@class = "form-control", type="password", autocomplete="off", @readonly="true", onfocus="this.removeAttribute('readonly')"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.FullName, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.FullName, new {@class = "form-control", autocomplete="off"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DepartmentId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.DepartmentId,
+                            new SelectList(departments, "Id", "Name"), "Выберите отделение",
+                            new {@class = "form-control"})
+                    </div>
+                    <div class="form-group">
+                        <span class="mb-2">Права доступа:</span>
+                        @foreach (var permission in permissions)
+                        {
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" name="PermissionsIds" value="@(permission.Id)" id="@(permission.ShortName)">
+                                <label data-placement="top" data-toggle="tooltip" title="@(permission.Discription)" class="custom-control-label" for="@(permission.ShortName)">@permission.Name</label>
+                            </div>
+                        }
+                    </div>
+                    <input type="submit" hidden="hidden" id="saveBtn"/>
+                }
+            </div>
+            <div class="modal-footer d-flex justify-content-sm-between">
+                <button class="btn btn btn-success" onclick="document.getElementById('saveBtn').click()">Добавить</button>
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>

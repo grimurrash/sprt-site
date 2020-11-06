@@ -1,6 +1,6 @@
 ﻿<nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-light">
     <div class="container">
-        <a href="" class="navbar-brand">
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">
             <img src="~/img/logo.png" alt="" width="44" height="30">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -13,9 +13,12 @@
                     <b>@User.Identity.Name.ToUpper()</b>
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="userNameDropdown">
-                    <li>
-                        <a class="dropdown-item" href="#">Админ панель</a>
-                    </li>
+                    @if (User.IsAdmin())
+                    {
+                        <li>
+                            <a class="dropdown-item" asp-area="AdminPanel" asp-controller="User" asp-action="Index">Админ панель</a>
+                        </li>
+                    }
                     <li>
                         <hr class="dropdown-divider">
                     </li>
