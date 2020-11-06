@@ -34,9 +34,13 @@ function reloadTable() {
         select = document.getElementById('Search')
         grid.url.searchParams.set('search', select.value)
     }
-    
-    if (document.getElementById('IsMark')) {
-        select = document.getElementById('IsMark')
+}
+if (document.getElementById('IsDmoFilter')) {
+    select = document.getElementById('IsDmoFilter')
+    grid.url.searchParams.set('isDmo', select.checked)
+}
+    if (document.getElementById('IsMarkFilter')) {
+        select = document.getElementById('IsMarkFilter')
         grid.url.searchParams.set('isMark', select.checked)
     }
     
@@ -56,8 +60,10 @@ function showModal(e) {
             let modalElement = $('#showModal')
             modalElement.modal('toggle');
             modalElement.on('hidden.bs.modal', function () {
-                if (!modalElement.data('not-reload')) {
+                if ($('.mvc-grid:not(.not-reload)').exists()) {
                     reloadTable()
+                } else {
+                    window.location.reload()
                 }
                 $("#modalContainer").html("")
             })

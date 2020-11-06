@@ -45,5 +45,8 @@ namespace NewSprt.ViewModels.FormModels
 
         [DisplayName("Примечание (идет после даты отправки)")]
         public string Notice { get; set; }
+        
+        [DisplayName("Находиться на доп. мед. обследовании")]
+        public bool IsDmo { get; set; }
     }
 }

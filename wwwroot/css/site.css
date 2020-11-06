@@ -97,6 +97,14 @@ header {
     box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);;
 }
 
+.custom-switch-warning .custom-control-input.input-danger:checked ~ .custom-control-label::before {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+.custom-switch-warning .custom-control-input.input-danger:focus ~ .custom-control-label::before {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);;
+}
+
 #showModal {
     overflow-y: hidden;
 }

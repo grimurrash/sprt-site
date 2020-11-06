@@ -23,7 +23,7 @@
     })
     .Css("table-striped")
     .AppendCss("table-hover")
-    .RowAttributed(model => new {@class = model.IsMark ? "table-warning" : null})
+    .RowAttributed(model => new {@class = (model.IsMark ? "table-warning" : null) + (model.IsDmo ? "table-danger" : null) })
     .Empty("Призывников по директивным указаниям не найдены")
     .Pageable(pager =>
     {

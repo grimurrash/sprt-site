@@ -230,6 +230,7 @@ namespace NewSprt.Controllers
         /// <param name="militaryUnitId">Воинская часть</param>
         /// <param name="search">Поиск по ФИО (разделение пробелом)</param>
         /// <param name="isMark">При true вывод только персональщиков с ошибками в датах отправки</param>
+        /// <param name="isDmo"></param>
         /// <param name="page">Номер страницы</param>
         /// <param name="rows">Кол-во элементов на 1 странице</param>
         /// <param name="exitMode">Моментальный выход из функции</param>
@@ -241,6 +242,7 @@ namespace NewSprt.Controllers
             string militaryUnitId = "",
             string search = "",
             bool isMark = false,
+            bool isDmo = false,
             int page = 1,
             int rows = 10,
             bool exitMode = false)
@@ -324,6 +326,7 @@ namespace NewSprt.Controllers
 
 
             if (isMark) persons = persons.Where(m => m.IsMark).ToList();
+            if (isDmo) persons = persons.Where(m => m.IsDmo).ToList();
 
             return PartialView("Grid/_ListGrid", persons);
         }
@@ -394,7 +397,7 @@ namespace NewSprt.Controllers
                     Patronymic = model.Patronymic,
                     BirthYear = int.Parse(model.BirthYear),
                     MilitaryComissariatCode = model.MilitaryComissariatId,
-                    Notice = $"Отправка {model.SendDate} {model.Notice}",
+                    Notice = (model.SendDate == null ? "" : $"Отправка {model.SendDate} ") + (model.IsDmo ? "ДМО " : "") + model.Notice,
                     UpdateDate = DateTime.Now.Date,
                     UpdateUser = User.Identity.Name.ToLower()
                 };
@@ -521,6 +524,7 @@ namespace NewSprt.Controllers
                 DirectiveTypeId = person.Requirement.DirectiveTypeId,
                 RequirementTypeId = person.Requirement.RequirementTypeId,
                 MilitaryUnitId = person.Requirement.MilitaryUnitCode,
+                IsDmo = person.IsDmo
             };
             var teamsSendDate = _zarnicaDb.Teams
                 .Where(m => m.MilitaryUnitCode == person.Requirement.MilitaryUnitCode && m.SendDate != null)
@@ -532,7 +536,8 @@ namespace NewSprt.Controllers
 
             if (!string.IsNullOrEmpty(person.Notice))
             {
-                var noticeArray = person.SendDateString.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                var noticeArray = person.SendDateString.Replace("ДМО", "" , StringComparison.OrdinalIgnoreCase)
+                    .Split(" ", StringSplitOptions.RemoveEmptyEntries);
                 DateTime sendDate;
                 switch (noticeArray.Length)
                 {
@@ -709,11 +714,12 @@ namespace NewSprt.Controllers
                     _zarnicaDb.SpecialPersonToRequirements.Add(newRequirementRelative);
                 }
 
-                if (person.SendDateString != (model.SendDate + " " + model.Notice).Trim())
+                if (person.SendDateString != (model.SendDate == null ? "" : $"Отправка {model.SendDate} ") + (model.IsDmo ? "ДМО " : "") + model.Notice)
                 {
-                    person.Notice = (model.SendDate == null ? "" : $"Отправка {model.SendDate} ") + model.Notice;
+                    person.Notice = (model.SendDate == null ? "" : $"Отправка {model.SendDate} ") + (model.IsDmo ? "ДМО " : "") + model.Notice;
+                    person.Notice = person.Notice.Trim();
                 }
-
+                
                 _zarnicaDb.SpecialPersons.Update(person);
                 _zarnicaDb.SaveChanges();
                 transaction.Commit();

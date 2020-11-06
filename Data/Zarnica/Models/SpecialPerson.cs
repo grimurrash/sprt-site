@@ -60,17 +60,26 @@ namespace NewSprt.Data.Zarnica.Models
         {
             get
             {
-                var notice = Notice.Replace("Отправка", "").Replace("отправка", "").Trim(',').Trim();
+                var notice = Notice
+                    .Replace("Отправка", "", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Отправка ", "", StringComparison.OrdinalIgnoreCase)
+                    .Trim(',').Trim();
                 return string.IsNullOrEmpty(notice) ? "-" : notice;
             }
         }
 
+        [NotMapped] public bool IsDmo => Notice.IndexOf("ДМО", StringComparison.OrdinalIgnoreCase) > -1;
+        
         [NotMapped]
         public DateTime? SendDate
         {
             get
             {
-                var notice = Notice.Replace("Отправка", "").Replace("отправка", "").Trim(',').Trim();
+                var notice = Notice
+                    .Replace("Отправка", "", StringComparison.OrdinalIgnoreCase)
+                    .Replace("Отправка ", "", StringComparison.OrdinalIgnoreCase)
+                    .Replace("ДМО", "", StringComparison.OrdinalIgnoreCase)
+                    .Trim(',').Trim();
                 var noticeArray = notice.Split(" ", StringSplitOptions.RemoveEmptyEntries);
                 DateTime sendDate;
                 switch (noticeArray.Length)

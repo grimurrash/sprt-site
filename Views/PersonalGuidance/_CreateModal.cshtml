@@ -78,6 +78,10 @@
                         @Html.LabelFor(m => m.Notice, new {@class = "control-label"})
                         @Html.TextBoxFor(m => m.Notice, new {@class = "form-control"})
                     </div>
+                    <div class="custom-control custom-switch mt-2">
+                        @Html.CheckBoxFor(m => m.IsDmo, new {autocomplete = "off", @class = "custom-control-input"})
+                        @Html.LabelFor(m => m.IsDmo, "Находиться на доп. мед. обследовании", new {@class = "custom-control-label cursor-pointer"})
+                    </div>
                     <input type="submit" hidden="hidden" id="saveBtn"/>
                 }
             </div>
