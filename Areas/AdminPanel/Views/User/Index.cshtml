@@ -13,7 +13,7 @@
             <a class="nav-link" asp-area="AdminPanel" asp-controller="Department" asp-action="Index">Управление отделениями</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">Управление архивами</a>
+            <a class="nav-link" asp-area="AdminPanel" asp-controller="СonscriptionPeriod" asp-action="Index">Управление периодами призыва</a>
         </li>
     </ul>
 
@@ -21,7 +21,7 @@
 
         <div class="col-lg-6">
             @Html.Label("Search", "Поиск (учитываются ранее выбранные фильтры):", new {@class = "col-form-label"})
-            @Html.TextBox("Search", "", new {id = "Search", @class = "form-control border-info", placeholder = "Поиск", autocomplete="off"})
+            @Html.TextBox("Search", "", new {id = "Search", @class = "form-control border-info", placeholder = "Поиск", autocomplete = "off"})
         </div>
         <div class="col-lg-3">
             @Html.Label("PermissionIdFilter", "Права доступа:", new {@class = "col-form-label"})
@@ -30,7 +30,7 @@
                 "Все",
                 new {id = "PermissionIdFilter", @class = "form-control border-info"})
         </div>
-         <div class="col-lg-3">
+        <div class="col-lg-3">
             @Html.Label("DepartmentIdFilter", "Отделения:", new {@class = "col-form-label"})
             @Html.DropDownList("DepartmentIdFilter",
                 new SelectList(departments, "Id", "Name", 0),

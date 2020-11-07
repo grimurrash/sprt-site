@@ -24,6 +24,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
         {
             _appDb = appDb;
         }
+
         // GET
         public async Task<IActionResult> Index()
         {
@@ -41,7 +42,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
         {
             ViewBag.Pagination = new Pagination(rows, page);
             var departments = await _appDb.Departments
-                .Include(m => m.HeadUser).ToArrayAsync();
+                .Include(m => m.HeadUser).ToListAsync();
             return PartialView("_IndexGrid", departments);
         }
 
@@ -55,12 +56,12 @@ namespace NewSprt.Areas.AdminPanel.Controllers
         {
             if (await _appDb.Departments.AnyAsync(m => m.ShortName == model.ShortName || m.Name == model.Name))
                 ModelState.AddModelError("Name", "Отделение с данным наименованием уже существует!");
-            
+
             if (!ModelState.IsValid)
             {
                 return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
             }
-            
+
             var transaction = await _appDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
             try
             {
@@ -93,7 +94,12 @@ namespace NewSprt.Areas.AdminPanel.Controllers
             var department = await _appDb.Departments.FirstOrDefaultAsync(m => m.Id == id);
             if (department == null) throw new NullReferenceException();
             ViewBag.Users = await _appDb.Users.Where(m => m.DepartmentId == id).ToListAsync();
-            return PartialView("_EditModal", new DepartmentViewModel{ShortName = department.ShortName, Name = department.Name, HeadUserId = department.HeadUserId, Id = department.Id});
+            return PartialView("_EditModal",
+                new DepartmentViewModel
+                {
+                    ShortName = department.ShortName, Name = department.Name, HeadUserId = department.HeadUserId,
+                    Id = department.Id
+                });
         }
 
         public async Task<IActionResult> Edit(DepartmentViewModel model)
@@ -101,14 +107,15 @@ namespace NewSprt.Areas.AdminPanel.Controllers
             var department = await _appDb.Departments.FirstOrDefaultAsync(m => m.Id == model.Id);
             if (department == null)
                 ModelState.AddModelError("Id", "Отделение не найдено. Обновите страницу!");
-            if (department != null && await _appDb.Departments.AnyAsync(m => m.Id != model.Id && (m.ShortName == model.ShortName || m.Name == model.Name)))
+            if (department != null && await _appDb.Departments.AnyAsync(m =>
+                m.Id != model.Id && (m.ShortName == model.ShortName || m.Name == model.Name)))
                 ModelState.AddModelError("Name", "Отделение с данным наименованием уже существует!");
-            
+
             if (!ModelState.IsValid)
             {
                 return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
             }
-            
+
             var transaction = await _appDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
             try
             {
@@ -141,6 +148,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
                         "Отделение не найдено!"));
                 return RedirectToAction("Index");
             }
+
             var transaction = await _appDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
             try
             {
@@ -149,6 +157,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
                 {
                     user.DepartmentId = 1;
                 }
+
                 _appDb.Users.UpdateRange(users);
                 _appDb.Departments.Remove(department);
                 await _appDb.SaveChangesAsync();

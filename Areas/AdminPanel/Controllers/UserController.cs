@@ -83,14 +83,15 @@ namespace NewSprt.Areas.AdminPanel.Controllers
         {
             if (model.PermissionsIds != null && model.PermissionsIds.Length > 0)
             {
-                var permissions = await _appDb.Permissions.Where(m => model.PermissionsIds.Contains(m.Id)).ToListAsync();
+                var permissions =
+                    await _appDb.Permissions.Where(m => model.PermissionsIds.Contains(m.Id)).ToListAsync();
                 if (permissions.Count != model.PermissionsIds.Length)
                     ModelState.AddModelError("Id", "Выбраны не существующие права доступа. Обновите страницу.");
             }
-            
+
             if (await _appDb.Users.AnyAsync(m => m.Login == model.Login))
                 ModelState.AddModelError("Login", "Сотрудник с данным Логином уже существует!");
-            
+
             if (!ModelState.IsValid)
             {
                 return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
@@ -100,7 +101,6 @@ namespace NewSprt.Areas.AdminPanel.Controllers
             var transaction = await _appDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
             try
             {
-                
                 await _appDb.Users.AddAsync(new User
                 {
                     Login = model.Login,
@@ -117,6 +117,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
                     await _appDb.UserPermissions.AddRangeAsync(model.PermissionsIds.Select(permissionsId =>
                         new UserPermission {UserId = user.Id, PermissionId = permissionsId}).ToList());
                 }
+
                 await _appDb.SaveChangesAsync();
                 transaction.Commit();
                 return new JsonResult(new {isSucceeded = true});
@@ -152,11 +153,12 @@ namespace NewSprt.Areas.AdminPanel.Controllers
         {
             if (model.PermissionsIds != null && model.PermissionsIds.Length > 0)
             {
-                var permissions = await _appDb.Permissions.Where(m => model.PermissionsIds.Contains(m.Id)).ToListAsync();
+                var permissions =
+                    await _appDb.Permissions.Where(m => model.PermissionsIds.Contains(m.Id)).ToListAsync();
                 if (permissions.Count != model.PermissionsIds.Length)
                     ModelState.AddModelError("Id", "Выбраны не существующие права доступа. Обновите страницу.");
             }
-            
+
             var user = await _appDb.Users
                 .Include(m => m.Department)
                 .Include(m => m.UserPermissions)
@@ -167,7 +169,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
 
             if (user != null && user.Login != model.Login && await _appDb.Users.AnyAsync(m => m.Login == model.Login))
                 ModelState.AddModelError("Login", "Пользователь с данным Логином уже существует!");
-            
+
             if (!ModelState.IsValid)
             {
                 return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
@@ -175,8 +177,8 @@ namespace NewSprt.Areas.AdminPanel.Controllers
 
             Debug.Assert(model.DepartmentId != null, "model.DepartmentId != null");
             Debug.Assert(user != null, nameof(user) + " != null");
-            
-            
+
+
             user.Login = model.Login;
             user.Password = model.Password;
             user.FullName = model.FullName;
@@ -191,6 +193,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
                     await _appDb.UserPermissions.AddRangeAsync(model.PermissionsIds.Select(permissionsId =>
                         new UserPermission {UserId = user.Id, PermissionId = permissionsId}).ToList());
                 }
+
                 _appDb.Users.Update(user);
                 await _appDb.SaveChangesAsync();
 
@@ -200,7 +203,8 @@ namespace NewSprt.Areas.AdminPanel.Controllers
             catch
             {
                 transaction.Rollback();
-                ModelState.AddModelError("Id", "Критическая ошибка при изменении данных пользователя. Обратитесь в ВЦшнику");
+                ModelState.AddModelError("Id",
+                    "Критическая ошибка при изменении данных пользователя. Обратитесь в ВЦшнику");
                 return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
             }
         }
@@ -217,6 +221,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
                         "Пользователь не найден!"));
                 return RedirectToAction("Index");
             }
+
             var transaction = await _appDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
             try
             {
@@ -224,7 +229,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
                 {
                     _appDb.UserPermissions.RemoveRange(user.UserPermissions);
                 }
-                
+
                 _appDb.Users.Remove(user);
                 await _appDb.SaveChangesAsync();
                 transaction.Commit();
