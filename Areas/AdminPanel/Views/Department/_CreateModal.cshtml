@@ -1,0 +1,52 @@
+﻿@model DepartmentViewModel
+
+@{
+    List<User> users = ViewBag.Users;
+}
+
+<div class="modal fade" data-backdrop="static" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModal" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Добавление отеделния</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                @using (Html.BeginForm(
+                    "Create",
+                    "Department",
+                    null,
+                    FormMethod.Post,
+                    true,
+                    new {@class = "form-horizontal needs-validation", id = "modalForm", onsubmit = "saveModalForm(event)", novalidate = "", role = "form"}))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.HiddenFor(m => m.Id)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ShortName, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.ShortName, new {@class = "form-control", autocomplete="off", @readonly="true", onfocus="this.removeAttribute('readonly')"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Name, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.Name, new {@class = "form-control", autocomplete="off", @readonly="true", onfocus="this.removeAttribute('readonly')"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.HeadUserId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.HeadUserId,
+                            new SelectList(users, "Id", "FullName"), "Выберите начальника отделения",
+                            new {@class = "form-control"})
+                    </div>
+                    <input type="submit" hidden="hidden" id="saveBtn"/>
+                }
+            </div>
+            <div class="modal-footer d-flex justify-content-sm-between">
+                <button class="btn btn btn-success" onclick="document.getElementById('saveBtn').click()">Добавить</button>
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>

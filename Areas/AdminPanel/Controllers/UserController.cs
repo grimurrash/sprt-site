@@ -136,6 +136,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
             var user = await _appDb.Users
                 .Include(m => m.UserPermissions)
                 .AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
+            if (user == null) throw new NullReferenceException();
             var viewModel = new UserViewModel
             {
                 Login = user.Login,
