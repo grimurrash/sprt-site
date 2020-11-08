@@ -12,7 +12,7 @@
         columns.Add(model => model.FullName).Titled("ФИО").Sortable(true);
         columns.Add(model => model.BirthYear).Titled("Год рождения").Css("w-px-100");
         columns.Add(model => model.MilitaryComissariat.ShortName).Titled("Военный комиссариат");
-        columns.Add(model => model.MilitaryUnitInfo).Titled("в/ч").Css("w-px-120");
+        columns.Add(model => model.MilitaryUnitInfo).Titled("в/ч").Css("w-px-120").Sortable(true);
         columns.Add(model => model.RequirementInfo).Titled("Требование").Css("w-px-180");
         columns.Add(model => model.SendDateString).Titled("Дата отправки").Css("w-px-m-200").Filterable(true);
         columns.Add(model =>

@@ -1,0 +1,42 @@
+﻿@model ConscriptionPeriodViewModel
+
+<div class="modal fade" data-backdrop="static" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModal" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактирование периода призыва</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                @using (Html.BeginForm(
+                    "Edit",
+                    "СonscriptionPeriod",
+                    null,
+                    FormMethod.Post,
+                    true,
+                    new {@class = "form-horizontal needs-validation", id = "modalForm", onsubmit = "saveModalForm(event)", novalidate = "", role = "form"}))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.HiddenFor(m => m.Id)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Name, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.Name, new {@class = "form-control", autocomplete = "off", @readonly = "true", onfocus = "this.removeAttribute('readonly')"})
+                    </div>
+                    <div class="custom-control custom-switch mt-2">
+                        @Html.CheckBoxFor(m => m.IsArchive, new {autocomplete = "off", @class = "custom-control-input"})
+                        @Html.LabelFor(m => m.IsArchive, "Находиться в архиве", new {@class = "custom-control-label cursor-pointer"})
+                    </div>
+                    <input type="submit" hidden="hidden" id="saveBtn"/>
+                }
+            </div>
+            <div class="modal-footer d-flex justify-content-sm-between">
+                <button class="btn btn btn-success" onclick="document.getElementById('saveBtn').click()">Сохранить</button>
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>

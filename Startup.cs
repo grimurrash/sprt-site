@@ -71,7 +71,7 @@ namespace NewSprt
             services.AddMvc().AddRazorOptions(options => options.AllowRecompilingViewsOnFileChange = true);
             // services.AddMvc(o => o.EnableEndpointRouting = false);
             services.AddDistributedMemoryCache();
-            services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(1));
+            services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(10));
 
             services.Configure<RequestLocalizationOptions>(opts =>
             {

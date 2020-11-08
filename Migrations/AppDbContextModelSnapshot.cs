@@ -19,6 +19,20 @@ namespace NewSprt.Migrations
                 .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            modelBuilder.Entity("NewSprt.Data.App.Models.ConscriptionPeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("IsArchive");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConscriptionPeriods");
+                });
+
             modelBuilder.Entity("NewSprt.Data.App.Models.Department", b =>
                 {
                     b.Property<int>("Id")

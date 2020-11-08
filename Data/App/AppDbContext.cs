@@ -21,6 +21,7 @@ namespace NewSprt.Data.App
         public DbSet<Department> Departments { get; set; }
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<WorkTask> WorkTasks { get; set; }
+        public DbSet<ConscriptionPeriod> ConscriptionPeriods { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
