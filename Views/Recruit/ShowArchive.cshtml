@@ -1,0 +1,44 @@
+﻿@model NewSprt.Data.Zarnica.Models.Recruit
+
+<section class="container">
+    <h2>Информация о призывнике</h2>
+    <div class="mt-2">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.LastName, new {@class = "control-label"})
+                    @Html.TextBoxFor(m => m.LastName, new {@class = "form-control", disabled = "true"})
+                    @Html.ValidationMessageFor(m => m.LastName)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FirstName, new {@class = "control-label"})
+                    @Html.TextBoxFor(m => m.FirstName, new {@class = "form-control", disabled = "true"})
+                    @Html.ValidationMessageFor(m => m.FirstName)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Patronymic, new {@class = "control-label"})
+                    @Html.TextBoxFor(m => m.Patronymic, new {@class = "form-control", disabled = "true"})
+                    @Html.ValidationMessageFor(m => m.Patronymic)
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.MilitaryComissariat.Name, new {@class = "control-label"})
+                    @Html.TextBoxFor(m => m.MilitaryComissariat.Name, new {@class = "form-control", disabled = "true"})
+                    @Html.ValidationMessageFor(m => m.MilitaryComissariat.Name)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.BirthDate.ToShortDateString(), new {@class = "control-label"})
+                    @Html.TextBoxFor(m => m.BirthDate.ToShortDateString(), new {@class = "form-control", disabled = "true"})
+                    @Html.ValidationMessageFor(m => m.BirthDate.ToShortDateString())
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
