@@ -98,7 +98,7 @@
         </div>
         @if (User.IsPermission(Permission.Dactyloscopy))
         {
-            <div class="col-md-6 d-flex align-items-baseline justify-content-center">
+            <div class="col-md-6 d-flex align-items-center justify-content-start">
                 @if (Model.DactyloscopyStatusId != 1)
                 {
                     <a class="btn btn-secondary mx-1"
@@ -124,13 +124,16 @@
                     </a>
                 }
             </div>
-            <div class="col-md-3">
-                <a class="btn btn-info"
-                   asp-controller="Dactyloscopy" asp-action="PrintDactyloscopyCard"
-                   asp-route-recruitId="@Model.Id" asp-route-editStatus="2">
-                    <i class="fas fa-print"></i> Печать Дактокарты
-                </a>
-            </div>
+            @if (!Model.ConscriptionPeriod.IsArchive)
+            {
+                <div class="col-md-3 d-flex align-items-center justify-content-start">
+                    <a class="btn btn-info"
+                       asp-controller="Dactyloscopy" asp-action="PrintDactyloscopyCard"
+                       asp-route-recruitId="@Model.Id">
+                        <i class="fas fa-print"></i> Печать Дактокарты
+                    </a>
+                </div>
+            }
         }
     </div>
     <hr>

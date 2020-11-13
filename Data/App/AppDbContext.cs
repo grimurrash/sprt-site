@@ -15,13 +15,16 @@ namespace NewSprt.Data.App
 
         //database update command:
         //dotnet ef database update --context NewSprt.Data.App.AppDbContext
-        
+
         public DbSet<User> Users { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Department> Departments { get; set; }
         public DbSet<UserPermission> UserPermissions { get; set; }
         public DbSet<WorkTask> WorkTasks { get; set; }
         public DbSet<ConscriptionPeriod> ConscriptionPeriods { get; set; }
+        public DbSet<MilitaryComissariat> MilitaryComissariats { get; set; }
+        public DbSet<DactyloscopyStatus> DactyloscopyStatuses { get; set; }
+        public DbSet<Recruit> Recruits { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

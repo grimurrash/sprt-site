@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.App;
 using NewSprt.Data.Zarnica;
+using NewSprt.Models.Extensions;
 using NewSprt.Models.Managers;
 using NewSprt.ViewModels;
 
@@ -19,18 +20,21 @@ namespace NewSprt.Controllers
         {
             _appDb = appDb;
             _zarnicaDb = zarnicaDb;
-            _recruitManager = new RecruitManager(zarnicaDb, appDb);
+            _recruitManager = new RecruitManager(appDb, zarnicaDb);
         }
 
         // GET
         public async Task<IActionResult> Index()
         {
-            ViewBag.MilitaryComissariats = await _appDb.MilitaryComissariats.ToListAsync();
-            var conscriptionPeriods = await _appDb.ConscriptionPeriods.ToListAsync();
+            ViewBag.MilitaryComissariats = await _appDb.MilitaryComissariats.AsNoTracking().ToListAsync();
+            var conscriptionPeriods = await _appDb.ConscriptionPeriods.AsNoTracking().ToListAsync();
             ViewBag.ConscriptionPeriods = conscriptionPeriods;
             ViewData["recruitsCount"] = await _appDb.Recruits.CountAsync(m =>
                 m.ConscriptionPeriodId == conscriptionPeriods.FirstOrDefault(c => !c.IsArchive).Id);
             await _recruitManager.SynchronizationOfDatabases();
+            if (!HttpContext.Session.Keys.Contains("alert")) return View();
+            ViewBag.Alert = HttpContext.Session.Get<AlertViewModel>("alert");
+            HttpContext.Session.Remove("alert");
             return View();
         }
 
@@ -56,7 +60,8 @@ namespace NewSprt.Controllers
             }
 
             var appRecruits = await query.OrderByDescending(m => m.DeliveryDate)
-                .ThenBy(m => m.MilitaryComissariatCode).ThenBy(m => m.LastName).ToListAsync();
+                .ThenBy(m => m.MilitaryComissariatCode).ThenBy(m => m.LastName)
+                .AsNoTracking().ToListAsync();
 
             if (string.IsNullOrEmpty(search)) return PartialView("Grid/_IndexGrid", appRecruits);
 
@@ -85,10 +90,13 @@ namespace NewSprt.Controllers
 
         public async Task<IActionResult> Show(int id)
         {
-            var appRecruit = await _appDb.Recruits.Include(m => m.DactyloscopyStatus)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var appRecruit = await _appDb.Recruits
+                .Include(m => m.ConscriptionPeriod)
+                .Include(m => m.DactyloscopyStatus)
+                .AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
             var currentConscriptionPeriod =
-                await _appDb.ConscriptionPeriods.FirstOrDefaultAsync(m => m.Id == appRecruit.ConscriptionPeriodId);
+                await _appDb.ConscriptionPeriods.AsNoTracking()
+                    .FirstOrDefaultAsync(m => m.Id == appRecruit.ConscriptionPeriodId);
             if (currentConscriptionPeriod.IsArchive) return RedirectToAction("ShowArchive", id);
             var recruit = await _zarnicaDb.Recruits
                 .Include(m => m.MilitaryComissariat)
@@ -99,7 +107,7 @@ namespace NewSprt.Controllers
                 .ThenInclude(m => m.ArmyType)
                 .Include(m => m.Team)
                 .ThenInclude(m => m.MilitaryUnit)
-                .FirstOrDefaultAsync(m =>
+                .AsNoTracking().FirstOrDefaultAsync(m =>
                     m.Id == appRecruit.RecruitId && m.Code == appRecruit.UniqueRecruitNumber);
             appRecruit.ZRecruit = recruit;
             return View(appRecruit);

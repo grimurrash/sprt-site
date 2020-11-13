@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using zModels = NewSprt.Data.Zarnica.Models;
@@ -16,8 +17,10 @@ namespace NewSprt.Data.App.Models
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string Patronymic { get; set; }
+        public DateTime BirthDate { get; set; }
         public string MilitaryComissariatCode { get; set; }
         
+        [DefaultValue(1)]
         public int DactyloscopyStatusId { get; set; }
         
         [ForeignKey(nameof(DactyloscopyStatusId))]

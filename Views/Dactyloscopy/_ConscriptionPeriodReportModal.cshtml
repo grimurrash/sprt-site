@@ -1,0 +1,45 @@
+﻿@{
+    List<ConscriptionPeriod> conscriptionPeriods = ViewBag.ConscriptionPeriods;
+    int selectedConscriptionPeriodId = ViewBag.SelectedConscriptionPeriodId;
+}
+
+<div class="modal fade" data-backdrop="static" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModal" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Журнал учета военослужащих</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                @using (Html.BeginForm(
+                    "PrintConscriptionPeriodReport",
+                    "Dactyloscopy",
+                    null,
+                    FormMethod.Get,
+                    true,
+                    new {@class = "form-horizontal needs-validation", id = "modalForm", novalidate = "", role = "form"}))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.Label("dateAndOutgoingNumber","Дата и исходящий номер направления материальных носителей в МВД России", 
+                            new {@class = "control-label"})
+                        @Html.TextBox("dateAndOutgoingNumber","", new {@class = "form-control", autocomplete="off"})
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("conscriptionPeriodId","Призыв", new {@class = "control-label"})
+                        @Html.DropDownList("conscriptionPeriodId",
+                            new SelectList(conscriptionPeriods, "Id", "Name", selectedConscriptionPeriodId), "Выберите период призыва",
+                            new {@class = "form-control"})
+                    </div>
+                    <input type="submit" hidden="hidden" id="saveBtn"/>
+                }
+            </div>
+            <div class="modal-footer d-flex justify-content-sm-between">
+                <button class="btn btn btn-info" onclick="document.getElementById('saveBtn').click()">Печать</button>
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>

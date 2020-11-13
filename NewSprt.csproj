@@ -7,6 +7,9 @@
 
 
     <ItemGroup>
+        <PackageReference Include="ClosedXML" Version="0.95.3" />
+        <PackageReference Include="ClosedXML.Report" Version="0.2.1" />
+        <PackageReference Include="DocumentFormat.OpenXml" Version="2.11.3" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -18,5 +21,6 @@
     <ItemGroup>
         <Folder Include="wwwroot\" />
         <Folder Include="Migrations\" />
+        <Folder Include="wwwroot\Temp" />
     </ItemGroup>
 </Project>

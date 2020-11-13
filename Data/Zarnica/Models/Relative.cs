@@ -12,5 +12,7 @@ namespace NewSprt.Data.Zarnica.Models
         [Column("fio")] public string Fio { get; set; }
 
         [ForeignKey(nameof(RecruitId))] public Recruit Recruit { get; set; }
+        
+        public const string TempRelative = "01";
     }
 }

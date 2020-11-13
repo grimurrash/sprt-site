@@ -29,6 +29,10 @@ function reloadTable() {
         select = document.getElementById('MilitaryComissariatIdFilter')
         grid.url.searchParams.set('militaryComissariatId', select.value)
     }
+    if (document.getElementById('ConscriptionPeriodIdFilter')) {
+        select = document.getElementById('ConscriptionPeriodIdFilter')
+        grid.url.searchParams.set('conscriptionPeriodId', select.value)
+    }
 
     if (document.getElementById('Search')) {
         select = document.getElementById('Search')

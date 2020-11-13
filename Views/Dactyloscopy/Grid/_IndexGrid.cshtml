@@ -7,16 +7,16 @@
 @(Html.Grid(Model)
     .Build(columns =>
     {
+        columns.Add(model => model.Id).Titled("Номер").Named("id").Hidden();
         columns.Add().RenderedAs((model, row) => paging.Rows * paging.CurrentPage - paging.Rows + row + 1).Titled("#");
-        columns.Add(model => model.Id).Titled("Id на сайте");
-        columns.Add(model => model.RecruitId).Titled("Id в Зарнице");
-        columns.Add(model => model.UniqueRecruitNumber).Titled("Уникальный номер призывника").Css("w-px-170");
         columns.Add(model => model.FullName).Titled("ФИО");
         columns.Add(model => model.BirthDate.ToShortDateString()).RenderedAs(m => m.BirthDate.ToShortDateString())
-            .Titled("Дата рождения");
-        columns.Add(model => model.MilitaryComissariat.ShortName).Titled("Военный комиссариат");
+            .Titled("Дата рождения").Css("w-px-120");
+        columns.Add(model => model.MilitaryComissariat.ShortName).Titled("Военный комиссариат").Css("w-px-250");
         columns.Add(model => model.DeliveryDate.ToShortDateString()).RenderedAs(m => m.DeliveryDate.ToShortDateString())
-            .Titled("Дата доставки").Filterable(true).UsingFilterOptions();
+            .Titled("Дата доставки").Css("w-px-150").Filterable(true).UsingFilterOptions();
+        columns.Add(model => model.DactyloscopyStatus.Name).Titled("Статус Дактилоскопии").Css("w-px-200")
+            .Filterable(true).UsingFilterOptions();
         columns.Add(model =>
             $"<a class='btn btn-info' href='{Url.Action("Show", "Recruit", new {id = model.Id})}'" +
             " data-placement='top' data-toggle='tooltip' title='Открыть окно с информацией о призывнике'>" +

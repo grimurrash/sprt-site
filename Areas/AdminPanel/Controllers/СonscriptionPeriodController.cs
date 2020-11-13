@@ -68,6 +68,15 @@ namespace NewSprt.Areas.AdminPanel.Controllers
                     Name = model.Name,
                     IsArchive = model.IsArchive
                 };
+                if (!model.IsArchive)
+                {
+                    var allConscriptionPeriods = await _appDb.ConscriptionPeriods.ToListAsync();
+                    foreach (var cPeriod in allConscriptionPeriods)
+                    {
+                        cPeriod.IsArchive = true;
+                    }
+                    _appDb.ConscriptionPeriods.UpdateRange(allConscriptionPeriods);
+                }
                 await _appDb.ConscriptionPeriods.AddAsync(conscriptionPeriod);
                 await _appDb.SaveChangesAsync();
                 transaction.Commit();
@@ -113,6 +122,15 @@ namespace NewSprt.Areas.AdminPanel.Controllers
                 if (conscriptionPeriod == null) throw new NullReferenceException();
                 conscriptionPeriod.Name = model.Name;
                 conscriptionPeriod.IsArchive = model.IsArchive;
+                if (!model.IsArchive)
+                {
+                    var allConscriptionPeriods = await _appDb.ConscriptionPeriods.ToListAsync();
+                    foreach (var cPeriod in allConscriptionPeriods)
+                    {
+                        cPeriod.IsArchive = true;
+                    }
+                    _appDb.ConscriptionPeriods.UpdateRange(allConscriptionPeriods);
+                }
                 _appDb.ConscriptionPeriods.Update(conscriptionPeriod);
                 await _appDb.SaveChangesAsync();
                 transaction.Commit();

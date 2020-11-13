@@ -14,7 +14,7 @@ namespace NewSprt.Models.Managers
         private readonly AppDbContext _appDb;
         private readonly ZarnicaDbContext _zarnicaDb;
 
-        public RecruitManager(ZarnicaDbContext zarnicaDb, AppDbContext appDb)
+        public RecruitManager(AppDbContext appDb, ZarnicaDbContext zarnicaDb)
         {
             _zarnicaDb = zarnicaDb;
             _appDb = appDb;
@@ -46,7 +46,8 @@ namespace NewSprt.Models.Managers
                         m.LastName,
                         m.FirstName,
                         m.Patronymic,
-                        m.MilitaryComissariatId
+                        m.MilitaryComissariatId,
+                        m.BirthDate
                     }).ToListAsync();
 
                 var newAppRecruits = zarnicaRecruits
@@ -56,9 +57,11 @@ namespace NewSprt.Models.Managers
                         ConscriptionPeriodId = currentConscriptionsPeriod.Id,
                         DeliveryDate = zarnicaRecruit.DelivaryDate,
                         UniqueRecruitNumber = zarnicaRecruit.Code,
+                        DactyloscopyStatusId = 1,
                         LastName = zarnicaRecruit.LastName,
                         FirstName = zarnicaRecruit.FirstName,
                         Patronymic = zarnicaRecruit.Patronymic,
+                        BirthDate = zarnicaRecruit.BirthDate,
                         MilitaryComissariatCode = zarnicaRecruit.MilitaryComissariatId
                     }).ToList();
                 await SynchrinizationACovidResultNumber(newAppRecruits);

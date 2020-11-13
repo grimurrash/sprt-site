@@ -6,6 +6,7 @@ namespace NewSprt.Data.Zarnica
     public sealed class ZarnicaDbContext : DbContext
     {
         public DbSet<Recruit> Recruits { get; set; }
+        public DbSet<ArchiveRecruit> ArchiveRecruits { get; set; }
         public DbSet<AdditionalData> AdditionalDatas { get; set; }
         public DbSet<Settlement> Settlements { get; set; }
         public DbSet<Relative> Relatives { get; set; }

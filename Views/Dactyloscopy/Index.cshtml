@@ -1,0 +1,91 @@
+﻿@using MilitaryComissariat = NewSprt.Data.App.Models.MilitaryComissariat
+@{
+    List<MilitaryComissariat> militaryComissariats = ViewBag.MilitaryComissariats;
+    List<ConscriptionPeriod> conscriptionPeriods = ViewBag.ConscriptionPeriods;
+}
+
+<section class="container">
+    <h2>Дактилоскопия</h2>
+    <div class="row mt-2">
+        <div class="col-lg-3">
+            @Html.Label("ConscriptionPeriodIdFilter", "Призыв:", new {@class = "col-form-label"})
+            @Html.DropDownList("ConscriptionPeriodIdFilter",
+                new SelectList(conscriptionPeriods, "Id", "Name", conscriptionPeriods.FirstOrDefault(m => !m.IsArchive)?.Id),
+                "Все",
+                new {id = "ConscriptionPeriodIdFilter", @class = "form-control border-info"})
+        </div>
+        <div class="col-lg-4">
+            @Html.Label("MilitaryComissariatIdFilter", "Военный комиссариат (районный):", new {@class = "col-form-label"})
+            @Html.DropDownList("MilitaryComissariatIdFilter",
+                new SelectList(militaryComissariats, "Id", "ShortName", 0),
+                "Все",
+                new {id = "MilitaryComissariatIdFilter", @class = "form-control border-info"})
+        </div>
+        <div class="col-lg-5">
+            @Html.Label("Search", "Поиск (учитываются ранее выбранные фильтры):", new {@class = "col-form-label"})
+            @Html.TextBox("Search", "", new {id = "Search", @class = "form-control border-info", placeholder = "Поиск", autocomplete = "off"})
+        </div>
+    </div>
+</section>
+
+<section class="container mt-4">
+    <div class="row align-items-end">
+        <div class="col-md-6">
+            <h5>Всего призывников: <b>@ViewData["recruitsCount"]</b> чел.</h5>
+        </div>
+        <div class="col-lg-6 text-right">
+            <a asp-controller="Dactyloscopy" asp-action="PrintMilitaryComissariatReport" id="btnPrintMilitaryComissariatReport" class="btn btn-info">
+               <i class="fas fa-print"></i> Печать районного списка
+            </a>
+            <a asp-controller="Dactyloscopy" asp-action="ConscriptionPeriodReport" class="btn btn-info"
+               onclick="showModal(event)" data-alert-text="Не удалось открыть окно печати журнала учета военослужащих">
+                 <i class="fas fa-print"></i> Печать журнала учета
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="container mt-2">
+    @Html.AjaxGrid(Url.Action("IndexGrid", new {exitMode = true}))
+</section>
+
+<div id="modalContainer"></div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (localStorage.getItem('MilitaryComissariatIdFilter')){
+                document.getElementById('MilitaryComissariatIdFilter').value = localStorage.getItem('MilitaryComissariatIdFilter')
+            }
+            document.getElementById("Search").addEventListener('keyup', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+            document.getElementById("ConscriptionPeriodIdFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+            document.getElementById("MilitaryComissariatIdFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                let select = document.getElementById('MilitaryComissariatIdFilter')
+                localStorage.setItem('MilitaryComissariatIdFilter',select.value)
+                reloadTable()
+            })
+            $("#btnPrintMilitaryComissariatReport").on('click', function (e) {
+                e.preventDefault()
+                let militaryComissariatId = document.getElementById('MilitaryComissariatIdFilter').value
+                if (militaryComissariatId == null && militaryComissariatId === "") {
+                    alert("Выберите район для печати")
+                    return false
+                }
+                let conscriptionPeriodId = document.getElementById('ConscriptionPeriodIdFilter').value
+                if (conscriptionPeriodId == null && conscriptionPeriodId === "" && conscriptionPeriodId === 0) {
+                    alert("Выберите призыв для печати")
+                    return false
+                }
+                let url = $(e.currentTarget).prop("href");
+                window.location.href = `${url}?militaryComissariatId=${militaryComissariatId}&conscriptionPeriodId=${conscriptionPeriodId}`;
+            })
+        })      
+    </script>
+}
