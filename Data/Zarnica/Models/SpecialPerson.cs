@@ -68,8 +68,6 @@ namespace NewSprt.Data.Zarnica.Models
             }
         }
 
-        [NotMapped] public bool IsDmo => Notice.IndexOf("ДМО", StringComparison.OrdinalIgnoreCase) > -1;
-        
         [NotMapped]
         public DateTime? SendDate
         {
@@ -110,8 +108,10 @@ namespace NewSprt.Data.Zarnica.Models
         [NotMapped] public string MilitaryUnitInfo => Requirement == null ? "-" : Requirement.MilitaryUnit.ToString();
 
         [NotMapped] public string RequirementInfo => Requirement == null ? "-" : Requirement.ToString();
-
+        
+        [NotMapped] public bool IsDmo => Notice.IndexOf("ДМО", StringComparison.OrdinalIgnoreCase) > -1;
         [NotMapped] public bool IsMark { get; set; }
+        [NotMapped] public bool IsDelivered { get; set; }
 
         public string GetRecruitStatus()
         {

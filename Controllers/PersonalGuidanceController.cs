@@ -86,16 +86,7 @@ namespace NewSprt.Controllers
                 var teamPersons = persons.Where(m => m.Requirement.MilitaryUnitCode == mainTeam.MilitaryUnitCode)
                     .ToList();
 
-                foreach (var person in teamPersons.Where(person => person.Recruit != null).Where(person =>
-                    person.Recruit.LastEvent.EventCode == 125 ||
-                    person.Recruit.LastEvent.EventCode == 120 ||
-                    person.Recruit.LastEvent.EventCode == 106 ||
-                    person.Recruit.LastEvent.EventCode == 107 ||
-                    person.Recruit.LastEvent.EventCode == 106 ||
-                    person.Recruit.LastEvent.EventCode == 124))
-                {
-                    person.IsMark = true;
-                }
+                
 
                 var childrenTeams = allTeams
                     .Where(m => m.MilitaryUnitCode == mainTeam.MilitaryUnitCode && m.Id != mainTeam.Id)
@@ -103,7 +94,23 @@ namespace NewSprt.Controllers
                 var childrenTeamsSendDates = childrenTeams.Select(m => m.SendDate).Distinct().ToList();
 
                 teamWithSpecialPerson.MainTeam = mainTeam;
-
+                
+                foreach (var person in teamPersons.Where(person => person.Recruit != null))
+                {
+                    if (person.Recruit.LastEvent.EventCode == 125 ||
+                        person.Recruit.LastEvent.EventCode == 120 ||
+                        person.Recruit.LastEvent.EventCode == 106 ||
+                        person.Recruit.LastEvent.EventCode == 107 ||
+                        person.Recruit.LastEvent.EventCode == 106 ||
+                        person.Recruit.LastEvent.EventCode == 124)
+                        person.IsMark = true;
+                    
+                    if (person.Recruit.TeamId != null &&
+                        childrenTeams.Select(m => m.Id).Contains(person.Recruit.TeamId.Value))
+                    {
+                        person.IsDelivered = true;
+                    }
+                }
                 foreach (var tsd in childrenTeamsSendDates)
                 {
                     if (tsd == null) continue;
