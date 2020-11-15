@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.App;
@@ -12,6 +13,7 @@ using NewSprt.ViewModels;
 
 namespace NewSprt.Controllers
 {
+    [Authorize(Policy = Permission.Dactyloscopy)]
     public class DactyloscopyController : Controller
     {
         private readonly AppDbContext _appDb;
@@ -66,7 +68,7 @@ namespace NewSprt.Controllers
                 .OrderByDescending(m => m.DeliveryDate)
                 .ThenBy(m => m.MilitaryComissariatCode).ThenBy(m => m.LastName).ToListAsync();
 
-            if (string.IsNullOrEmpty(search)) return PartialView("Grid/_IndexGrid", appRecruits);
+            if (string.IsNullOrEmpty(search)) return PartialView("_IndexGrid", appRecruits);
 
             var searchArr = search.Split(" ");
             switch (searchArr.Length)
@@ -88,7 +90,7 @@ namespace NewSprt.Controllers
                     break;
             }
 
-            return PartialView("Grid/_IndexGrid", appRecruits);
+            return PartialView("_IndexGrid", appRecruits);
         }
 
         public async Task<IActionResult> EditDactyloscopyStatus(int recruitId, int editStatus)
@@ -135,7 +137,7 @@ namespace NewSprt.Controllers
                 .OrderBy(m => m.LastName).AsNoTracking().ToListAsync();
             return File(ExcelDocumentHelper.GenerateMilitaryComissariatReport(recruits, militaryComissariat),
                 ExcelDocumentHelper.OutputFormatType,
-                $"Именной список.xlsx");
+                "Именной список.xlsx");
         }
 
         public async Task<IActionResult> ConscriptionPeriodReport()
@@ -156,7 +158,7 @@ namespace NewSprt.Controllers
                 .AsNoTracking().ToListAsync();
             return File(ExcelDocumentHelper.GenerateConscriptionPeriodReport(recruits, dateAndOutgoingNumber),
                 ExcelDocumentHelper.OutputFormatType,
-                $"Журнал учета военослужащих.xlsx");
+                "Журнал учета военослужащих.xlsx");
         }
     }
 }

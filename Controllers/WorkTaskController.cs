@@ -54,7 +54,7 @@ namespace NewSprt.Controllers
                 .ThenByDescending(m => m.Id).AsNoTracking().ToListAsync();
             ViewBag.Pagination = new Pagination(rows, page);
             ViewBag.UserId = user?.Id;
-            return PartialView("Grid/_IndexGrid", tasks);
+            return PartialView("_IndexGrid", tasks);
         }
 
         [Authorize(Policy = "Secretary")]
@@ -77,7 +77,7 @@ namespace NewSprt.Controllers
                 .Include(t => t.TaskResponsibleUser)
                 .OrderBy(m => m.Id)
                 .AsNoTracking().Where(t => t.IsArchive).ToListAsync();
-            return PartialView("Grid/_ArchiveGrid", tasks);
+            return PartialView("_ArchiveGrid", tasks);
         }
 
         public async Task<IActionResult> ShowModal(int id)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using NewSprt.Models;
 
 namespace NewSprt.Data.Zarnica.Models
 {
@@ -48,9 +49,27 @@ namespace NewSprt.Data.Zarnica.Models
         public EventControl LastEvent => Events.OrderBy(m => m.Id).Last();
         public string MobilePhone => $"({MobilePhoneCode}) {MobilePhoneNumber}";
         public string HomePhone => $"({HomePhoneCode}) {HomePhoneNumber}";
+        public string FullName => $"{LastName} {FirstName} {Patronymic}";
 
-        public string FullAddress => $"{Settlement.Name}, + ��. {AdditionalData.Street}, �. {AdditionalData.House}"
-                                     + (AdditionalData.Building != null ? ", ����. " + AdditionalData.Building : "")
-                                     + (AdditionalData.Apartment != null ? ", ��. " + AdditionalData.Apartment : "");
+        public string FullAddress => $"{Settlement.Name}, + ул. {AdditionalData.Street}, д. {AdditionalData.House}"
+                                     + (AdditionalData.Building != null ? ", корп. " + AdditionalData.Building : "")
+                                     + (AdditionalData.Apartment != null ? ", кв. " + AdditionalData.Apartment : "");
+        
+        public string Status
+        {
+            get
+            {
+                var lastEvent = Events.FirstOrDefault(m => m.Date == Events.Max(e => e.Date));
+                if (lastEvent == null) return "Отсутствуют события у призывника";
+                if (lastEvent.EventCode != 113 && lastEvent.EventCode != 112)
+                    return EventType.GetName(lastEvent.EventCode);
+                
+                if (Team == null) return "Нет информации о коменде";
+                return
+                    $"{EventType.GetName(lastEvent.EventCode)}: " +
+                    $"{Team.TeamNumber} (в/ч {Team.MilitaryUnitCode} ({Team.MilitaryUnit.Name}) " +
+                    $"на {Team.SendDate?.ToShortDateString()})";
+            }
+        }
     }
 }

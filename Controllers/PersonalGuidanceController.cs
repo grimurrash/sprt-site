@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using appModels = NewSprt.Data.App.Models;
 using NewSprt.Data.Zarnica;
 using NewSprt.Data.Zarnica.Models;
 using NewSprt.Models.Extensions;
@@ -13,13 +14,14 @@ using NewSprt.ViewModels;
 using NewSprt.ViewModels.SpecialGuidance;
 using NewSprt.ViewModels.FormModels;
 using Npgsql;
+using MilitaryComissariat = NewSprt.Data.Zarnica.Models.MilitaryComissariat;
 
 namespace NewSprt.Controllers
 {
     /// <summary>
     /// Контроллер для работы с персональщиками
     /// </summary>
-    [Authorize(Policy = "PersonalGuidance")]
+    [Authorize(Policy = appModels.Permission.PersonalGuidance)]
     public class PersonalGuidanceController : Controller
     {
         /// <summary>
@@ -255,7 +257,7 @@ namespace NewSprt.Controllers
             bool exitMode = false)
         {
             ViewBag.Pagination = new Pagination(rows, page);
-            if (exitMode) return PartialView("Grid/_ListGrid", new List<SpecialPerson>());
+            if (exitMode) return PartialView("_ListGrid", new List<SpecialPerson>());
 
             var query = _zarnicaDb.SpecialPersons
                 .Include(m => m.MilitaryComissariat)
@@ -335,7 +337,7 @@ namespace NewSprt.Controllers
             if (isMark) persons = persons.Where(m => m.IsMark).ToList();
             if (isDmo) persons = persons.Where(m => m.IsDmo).ToList();
 
-            return PartialView("Grid/_ListGrid", persons);
+            return PartialView("_ListGrid", persons);
         }
 
         /// <summary>
@@ -856,7 +858,7 @@ namespace NewSprt.Controllers
                 person.IsMark = true;
             }
 
-            return PartialView("Grid/_RemovingTheDepartingSpecialPersonGrid", persons);
+            return PartialView("_RemovingTheDepartingSpecialPersonGrid", persons);
         }
 
         /// <summary>

@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NewSprt.Data.App;
+using NewSprt.Data.App.Models;
 using NewSprt.Data.Zarnica;
 using NewSprt.Models.Extensions;
 using NewSprt.Models.Managers;
@@ -10,6 +12,7 @@ using NewSprt.ViewModels;
 
 namespace NewSprt.Controllers
 {
+    [Authorize]
     public class RecruitController : Controller
     {
         private readonly AppDbContext _appDb;
@@ -23,7 +26,7 @@ namespace NewSprt.Controllers
             _recruitManager = new RecruitManager(appDb, zarnicaDb);
         }
 
-        // GET
+        [Authorize(Policy = Permission.Admin)]
         public async Task<IActionResult> Index()
         {
             ViewBag.MilitaryComissariats = await _appDb.MilitaryComissariats.AsNoTracking().ToListAsync();
@@ -37,7 +40,8 @@ namespace NewSprt.Controllers
             HttpContext.Session.Remove("alert");
             return View();
         }
-
+        
+        [Authorize(Policy = Permission.Admin)]
         public async Task<IActionResult> IndexGrid(
             string militaryComissariatId = "",
             int conscriptionPeriodId = 0,
@@ -63,7 +67,7 @@ namespace NewSprt.Controllers
                 .ThenBy(m => m.MilitaryComissariatCode).ThenBy(m => m.LastName)
                 .AsNoTracking().ToListAsync();
 
-            if (string.IsNullOrEmpty(search)) return PartialView("Grid/_IndexGrid", appRecruits);
+            if (string.IsNullOrEmpty(search)) return PartialView("_IndexGrid", appRecruits);
 
             var searchArr = search.Split(" ");
             switch (searchArr.Length)
@@ -85,7 +89,7 @@ namespace NewSprt.Controllers
                     break;
             }
 
-            return PartialView("Grid/_IndexGrid", appRecruits);
+            return PartialView("_IndexGrid", appRecruits);
         }
 
         public async Task<IActionResult> Show(int id)
