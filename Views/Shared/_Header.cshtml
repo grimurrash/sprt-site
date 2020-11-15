@@ -53,6 +53,15 @@
                                 <a class="dropdown-item" asp-controller="Recruit" asp-action="Index">Список призывников</a>
                             </li>
                         }
+                        @if (User.IsPermission(Permission.Dismissals))
+                        {
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="Dismissal" asp-action="Index">Увольнительные</a>
+                            </li>
+                        }
                         @if (User.IsPermission(Permission.Dactyloscopy))
                         {
                             <li>

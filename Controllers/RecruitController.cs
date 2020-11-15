@@ -121,5 +121,55 @@ namespace NewSprt.Controllers
         {
             return View();
         }
+        
+        public async Task<IActionResult> GetRecruitsBySearch(int conscriptionPeriodId, string q)
+        {
+            var recruits = await _appDb.Recruits
+                .Where(m => m.ConscriptionPeriodId == conscriptionPeriodId)
+                .OrderBy(m => m.LastName).AsNoTracking().ToListAsync();
+
+            if (string.IsNullOrEmpty(q))
+                return new JsonResult(recruits.Select(m => new
+                {
+                    id = m.Id,
+                    text = m.FullName,
+                }).ToList());
+            
+            var searchArr = q.Split(" ");
+            switch (searchArr.Length)
+            {
+                case 1:
+                    recruits = recruits.Where(m => m.LastName.ToLower().StartsWith(q.ToLower())).ToList();
+                    break;
+                case 2:
+                    recruits = recruits.Where(m =>
+                        m.LastName.ToLower().StartsWith(searchArr[0].ToLower()) &&
+                        m.FirstName.ToLower().StartsWith(searchArr[1].ToLower())).ToList();
+                    break;
+                case 3:
+                    recruits = recruits.Where(m =>
+                        m.LastName.ToLower().StartsWith(searchArr[0].ToLower()) &&
+                        m.FirstName.ToLower().StartsWith(searchArr[1].ToLower()) &&
+                        m.Patronymic.ToLower().StartsWith(searchArr[2].ToLower())).ToList();
+                    break;
+            }
+
+            return new JsonResult(recruits.Select(m => new
+            {
+                id = m.Id,
+                text = m.FullName,
+            }).ToList());
+        }
+
+        public async Task<IActionResult> GetRecruitStatus(int recruitId)
+        {
+            var appRecruit = await _appDb.Recruits.FirstOrDefaultAsync(m => m.Id == recruitId);
+            var zRecruit = await _zarnicaDb.Recruits
+                .Include(m => m.Team)
+                .ThenInclude(m => m.MilitaryUnit)
+                .Include(m => m.Events)
+                .FirstOrDefaultAsync(m => m.Id == appRecruit.RecruitId);
+            return new JsonResult(zRecruit.Status);
+        }
     }
 }

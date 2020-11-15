@@ -43,6 +43,14 @@ function reloadTable() {
         select = document.getElementById('IsDmoFilter')
         grid.url.searchParams.set('isDmo', select.checked)
     }
+    if (document.getElementById('IsReturn')) {
+        select = document.getElementById('IsReturn')
+        grid.url.searchParams.set('isReturn', select.checked)
+    }
+    if (document.getElementById('IsReturnToday')) {
+        select = document.getElementById('IsReturnToday')
+        grid.url.searchParams.set('isReturnToday', select.checked)
+    }
     if (document.getElementById('IsMarkFilter')) {
         select = document.getElementById('IsMarkFilter')
         grid.url.searchParams.set('isMark', select.checked)

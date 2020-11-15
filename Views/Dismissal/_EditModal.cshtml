@@ -1,0 +1,91 @@
+﻿@model DismissalViewModel
+
+@{
+    var recruits = ViewBag.Recruits;
+}
+
+<div class="modal fade" data-backdrop="static" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModal" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Редактирование увольнительной</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                @using (Html.BeginForm(
+                    "Edit",
+                    "Dismissal",
+                    null,
+                    FormMethod.Post,
+                    true,
+                    new {@class = "form-horizontal needs-validation", id = "modalForm", onsubmit = "saveModalForm(event)", novalidate = "", role = "form"}))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.HiddenFor(m => m.Id)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RecruitId, new {@class = "control-label"})
+                        @Html.DropDownListFor(m => m.RecruitId,
+                            new SelectList(recruits, "Id", "FullName"), "Выберите призывника",
+                            new {@class = "form-control"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SendDismissalDate, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.SendDismissalDate, "{0:yyyy-MM-dd}",new {@class = "form-control", type="date", autocomplete="off"})
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ReturnDate, new {@class = "control-label"})
+                        @Html.TextBoxFor(m => m.ReturnDate, "{0:yyyy-MM-dd}", new {@class = "form-control", type="date", autocomplete="off"})
+                    </div>
+                    <div class="form-group">
+                        @Html.TextAreaFor(m => m.Notice, new {@class = "form-control", placeholder="Примечание", autocomplete="off"})
+                    </div>
+                    <input type="submit" hidden="hidden" id="saveBtn"/>
+                }
+            </div>
+            <div class="modal-footer d-flex justify-content-sm-between">
+                <button class="btn btn btn-success" onclick="document.getElementById('saveBtn').click()">Сохранить</button>
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        let modalElement = $('#showModal');
+        $("#RecruitId").select2({
+            theme: 'bootstrap4',
+            placeholder: $(this).data('placeholder'),
+            dropdownParent: modalElement,
+            minimumInputLength: 3,
+            ajax: {
+                url: '@Url.Action("GetRecruitsBySearch","Recruit", new {conscriptionPeriodId = ViewBag.ConscriptionPeriodId})',
+                dataType: 'JSON',
+                delay: 300,
+                processResults: function(data) {
+                    return {
+                        results : data
+                    }
+                }
+            }
+        })
+        
+        $('#RecruitId').on('change', function () {
+            let value = $(this).val();
+            $.ajax({
+                url: '@Url.Action("GetRecruitStatus", "Recruit")',
+                data: {
+                    recruitId: value    
+                },
+                success: function(data) {
+                    document.getElementById("Notice").value = data;
+                }
+            })
+       }) 
+    })
+</script>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ClosedXML.Report;
@@ -32,7 +33,7 @@ namespace NewSprt.Models.Helper.Documents
                 m.Patronymic,
                 m.BirthDate
             });
-            
+
             const string templateFile = TemplatePath + "Dactyloscopy/comissariat_report.xlsx";
             const string tempFile = TempPath + "comissariat_report.xlsx";
             CopyTemplateFileToTempDirectory(templateFile, tempFile);
@@ -45,11 +46,12 @@ namespace NewSprt.Models.Helper.Documents
             document.AddVariable("Recruits", recruitsList);
             document.Generate();
             document.SaveAs(tempFile);
-            
+
             return new FileStream(tempFile, FileMode.Open);
         }
-        
-        public static FileStream GenerateConscriptionPeriodReport(IEnumerable<Recruit> recruits, string dateAndOutgoingNumber)
+
+        public static FileStream GenerateConscriptionPeriodReport(IEnumerable<Recruit> recruits,
+            string dateAndOutgoingNumber)
         {
             var index = 1;
             var recruitsList = recruits.Select(m => new
@@ -60,7 +62,7 @@ namespace NewSprt.Models.Helper.Documents
                 OutText = dateAndOutgoingNumber,
                 Notice = m.MilitaryComissariat.ShortName
             });
-            
+
             const string templateFile = TemplatePath + "Dactyloscopy/conscription_report.xlsx";
             const string tempFile = TempPath + "conscription_report.xlsx";
             CopyTemplateFileToTempDirectory(templateFile, tempFile);
@@ -68,7 +70,53 @@ namespace NewSprt.Models.Helper.Documents
             document.AddVariable("Recruits", recruitsList);
             document.Generate();
             document.SaveAs(tempFile);
-            
+
+            return new FileStream(tempFile, FileMode.Open);
+        }
+
+        public static FileStream GenerateDismissalRecruitsList(IEnumerable<Dismissal> dismissals)
+        {
+            var index = 1;
+            var dismissalList = dismissals.Select(m => new
+            {
+                Index = index++,
+                m.Recruit.FullName,
+                MilitaryComissariat = m.Recruit.MilitaryComissariat.ShortName,
+                m.SendDismissalDate,
+                m.ReturnDate,
+                m.Notice
+            });
+            const string templateFile = TemplatePath + "Dismissals/send_recruits.xlsx";
+            const string tempFile = TempPath + "send_recruits.xlsx";
+            CopyTemplateFileToTempDirectory(templateFile, tempFile);
+            var document = new XLTemplate(tempFile);
+            document.AddVariable("CurrentDate", DateTime.Now.ToShortDateString());
+            document.AddVariable("Dismissals", dismissalList);
+            document.Generate();
+            document.SaveAs(tempFile);
+            return new FileStream(tempFile, FileMode.Open);
+        }
+        
+        public static FileStream GenerateReturnTodayDismissalRrcruitsList(IEnumerable<Dismissal> dismissals)
+        {
+            var index = 1;
+            var dismissalList = dismissals.Select(m => new
+            {
+                Index = index++,
+                m.Recruit.FullName,
+                m.Recruit.BirthDate,
+                MilitaryComissariat = m.Recruit.MilitaryComissariat.ShortName,
+                m.SendDismissalDate,
+                m.Notice
+            });
+            const string templateFile = TemplatePath + "Dismissals/returning_recruits.xlsx";
+            const string tempFile = TempPath + "returning_recruits.xlsx";
+            CopyTemplateFileToTempDirectory(templateFile, tempFile);
+            var document = new XLTemplate(tempFile);
+            document.AddVariable("ReturnDate", DateTime.Now.ToShortDateString());
+            document.AddVariable("Dismissals", dismissalList);
+            document.Generate();
+            document.SaveAs(tempFile);
             return new FileStream(tempFile, FileMode.Open);
         }
     }

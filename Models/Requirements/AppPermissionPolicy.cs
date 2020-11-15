@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NewSprt.Data.App.Models;
 
 namespace NewSprt.Models.Requirements
 {
@@ -6,7 +7,7 @@ namespace NewSprt.Models.Requirements
     {
         private static readonly List<string> PermissionPolicyName = new List<string>
         {
-            "VVK", "Dactyloscopy", "PersonalGuidance", "Secretary", "Admin"
+            Permission.Admin, Permission.Dactyloscopy, Permission.PersonalGuidance, Permission.Secretary, Permission.Dismissals, Permission.Vvk
         };
 
         public static IEnumerable<string> PolicyNameList()

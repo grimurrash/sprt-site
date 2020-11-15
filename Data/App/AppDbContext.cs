@@ -25,6 +25,8 @@ namespace NewSprt.Data.App
         public DbSet<MilitaryComissariat> MilitaryComissariats { get; set; }
         public DbSet<DactyloscopyStatus> DactyloscopyStatuses { get; set; }
         public DbSet<Recruit> Recruits { get; set; }
+        public DbSet<Dismissal> Dismissals { get; set; }
+        
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
