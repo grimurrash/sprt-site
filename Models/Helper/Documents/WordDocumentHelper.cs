@@ -144,5 +144,97 @@ namespace NewSprt.Models.Helper.Documents
 
             return new FileStream(tempFile, FileMode.Open);
         }
+
+        public static FileStream GenerateMedicalTestProtocol(List<Recruit> recruits, string teamNumber,
+            DateTime sendDate)
+        {
+            const string templateFile = TemplatePath + "MedicalTest/Protocol.docx";
+            const string tempFile = TempPath + "Protocol.docx";
+            CopyTemplateFileToTempDirectory(templateFile, tempFile);
+            var replaceTextDictionary = new Dictionary<string, string>
+            {
+                {"TEAMNUM", teamNumber},
+                {"CURRENTDATE", sendDate.Day.ToString()},
+                {"CURRENTMONTH", sendDate.GetMonthName()},
+                {"CURRENTYEAR", sendDate.Year.ToString()},
+                {
+                    "RESULT",
+                    $"в {recruits.Count} исследуемых пробах из {recruits.Count} не обнаружены антитела SARS-CoV-2."
+                }
+            };
+            using (var document = WordprocessingDocument.Open(tempFile, true))
+            {
+                // try
+                // {
+                var bookMarks = FindBookmarks(document.MainDocumentPart.Document);
+                RemoveBookMarkContent(bookMarks);
+                var runFonts = new RunFonts() {Ascii = "Times New Roman", HighAnsi = "Times New Roman"};
+                var fontSize = new FontSize() {Val = "24"};
+                var fontSizeComplexScript = new FontSizeComplexScript() {Val = "24"};
+                var runProperties = new RunProperties(new Bold(), runFonts, fontSize, fontSizeComplexScript);
+                foreach (var (bookmarkStart, bookmarkEnd) in bookMarks)
+                {
+                    if (!replaceTextDictionary.Select(m => m.Key).Contains<string>(bookmarkStart.Name))
+                        continue;
+                    var replaceText = replaceTextDictionary.First(m => m.Key == bookmarkStart.Name).Value;
+
+
+                    var run = new Run();
+
+                    var text = new Text(replaceText);
+                    run.Append(runProperties.CloneNode(true), text);
+                    bookmarkEnd.InsertAfterSelf(run);
+                }
+
+                var body = document.MainDocumentPart.Document.Body;
+                var index = 1;
+                var runFontsTable = new RunFonts() {Ascii = "Times New Roman", HighAnsi = "Times New Roman"};
+                var fontSizeTable = new FontSize() {Val = "22"};
+                var fontSizeComplexScriptTable = new FontSizeComplexScript() {Val = "22"};
+                var runPropertiesTable = new RunProperties(runFontsTable, fontSizeTable, fontSizeComplexScriptTable);
+                var paragraphProperties = new ParagraphProperties(new SpacingBetweenLines() {After = "0"});
+
+                foreach (var table in body.Descendants<Table>())
+                {
+                    foreach (var recruit in recruits)
+                    {
+                        var tableCellIndex = new TableCell(new Paragraph(paragraphProperties.CloneNode(true),
+                            new Run(runPropertiesTable.CloneNode(true), new Text(index.ToString()))));
+                        var tableCellFullName = new TableCell(new Paragraph(paragraphProperties.CloneNode(true),
+                            new Run(runPropertiesTable.CloneNode(true), new Text(recruit.FullName))));
+                        var tableCellDisc = new TableCell(new Paragraph(paragraphProperties.CloneNode(true),
+                            new Run(runPropertiesTable.CloneNode(true), new Text("антитела SARS-CoV-2"))));
+                        var tableCellTestNum = new TableCell(new Paragraph(paragraphProperties.CloneNode(true),
+                            new Run(runPropertiesTable.CloneNode(true), new Text(
+                                $"{recruit.AdditionalData.TestNum} от {recruit.AdditionalData.TestDate?.ToShortDateString()}"))));
+                        var tableCellResult = new TableCell(new Paragraph(paragraphProperties.CloneNode(true),
+                            new Run(runPropertiesTable.CloneNode(true), new Text("не обнаружены"))));
+                        var tableRow = new TableRow();
+                        tableRow.Append(tableCellIndex, tableCellFullName, tableCellDisc, tableCellTestNum,
+                            tableCellResult);
+                        table.AppendChild(tableRow);
+                        index++;
+                    }
+
+                    var nullTCell = new TableCell(new Paragraph(paragraphProperties.CloneNode(true),
+                        new Run(new Text(""))));
+                    var nullTRow = new TableRow(nullTCell.CloneNode(true),
+                        nullTCell.CloneNode(true), nullTCell.CloneNode(true),
+                        nullTCell.CloneNode(true), nullTCell.CloneNode(true));
+                    table.AppendChild(nullTRow.CloneNode(true));
+                    table.AppendChild(nullTRow.CloneNode(true));
+                    table.AppendChild(nullTRow.CloneNode(true));
+                }
+
+                // }
+                // catch
+                // {
+                //     document.Close();
+                //     throw new Exception("Неизвестная ошибка");
+                // }
+            }
+
+            return new FileStream(tempFile, FileMode.Open);
+        }
     }
 }

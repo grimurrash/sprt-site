@@ -71,6 +71,15 @@
                                 <a class="dropdown-item" asp-controller="Dactyloscopy" asp-action="Index">Дактилоскопия</a>
                             </li>
                         }
+                        @if (User.IsPermission(Permission.Vvk))
+                        {
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="MedicalTest" asp-action="Index">COVID-19</a>
+                            </li>
+                        }
                     </ul>
                 </li>
                 @if (User.IsPermission(Permission.PersonalGuidance))

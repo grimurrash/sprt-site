@@ -32,7 +32,6 @@ namespace NewSprt.Controllers
             ViewBag.MilitaryComissariats = await _appDb.MilitaryComissariats.AsNoTracking().ToListAsync();
             var conscriptionPeriods = await _appDb.ConscriptionPeriods.AsNoTracking().ToListAsync();
             ViewBag.ConscriptionPeriods = conscriptionPeriods;
-            ViewBag.DactyloscopyStatuses = await _appDb.DactyloscopyStatuses.AsNoTracking().ToListAsync();
             ViewData["recruitsCount"] = await _appDb.Recruits.AsNoTracking().CountAsync(m =>
                 m.ConscriptionPeriodId == conscriptionPeriods.FirstOrDefault(c => !c.IsArchive).Id);
             await _recruitManager.SynchronizationOfDatabases();
@@ -53,7 +52,7 @@ namespace NewSprt.Controllers
             var query = _appDb.Recruits
                 .Include(m => m.DactyloscopyStatus)
                 .Include(m => m.MilitaryComissariat)
-                .Include(m => m.ConscriptionPeriod).AsQueryable();
+                .Include(m => m.ConscriptionPeriod).AsNoTracking().AsQueryable();
             if (!string.IsNullOrEmpty(militaryComissariatId))
             {
                 query = query.Where(m => m.MilitaryComissariatCode == militaryComissariatId);
@@ -95,7 +94,7 @@ namespace NewSprt.Controllers
 
         public async Task<IActionResult> EditDactyloscopyStatus(int recruitId, int editStatus)
         {
-            var recruit = await _appDb.Recruits.FirstOrDefaultAsync(m => m.Id == recruitId);
+            var recruit = await _appDb.Recruits.AsNoTracking().FirstOrDefaultAsync(m => m.Id == recruitId);
             if (editStatus == recruit.DactyloscopyStatusId)
                 return RedirectToAction("Show", "Recruit", new {id = recruitId});
             recruit.DactyloscopyStatusId = editStatus;
