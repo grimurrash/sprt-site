@@ -52,10 +52,8 @@
             @Html.Label("IsDmoFilter", "ДМО", new {@class="custom-control-label cursor-pointer"})
         </div>
     </div>
-</section>
 
-<section class="container mt-4">
-    <div class="row align-items-end">
+    <div class="row align-items-end mt-4 mb-2">
         <div class="col-lg-8">
             <h5>Всего по директивным указаниям: <b>@ViewData["personsCount"]</b> чел.</h5>
         </div>
@@ -66,9 +64,7 @@
             </a>
         </div>
     </div>
-</section>
 
-<section class="container mt-2">
     @Html.AjaxGrid(Url.Action("ListGrid", new {exitMode = true}))
 </section>
 

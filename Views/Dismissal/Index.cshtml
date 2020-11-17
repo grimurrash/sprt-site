@@ -30,10 +30,8 @@
             @Html.Label("IsReturnTodayFilter", "Возвращается сегодня", new {@class = "custom-control-label cursor-pointer"})
         </div>
     </div>
-</section>
 
-<section class="container mt-4">
-    <div class="d-flex justify-content-start">
+    <div class="d-flex justify-content-start mt-4">
         <a asp-controller="Dismissal" asp-action="PrintDismissalRecruitsList" class="btn btn-info">
             <i class="fas fa-print"></i> Печать списка призывников в увольнении
         </a>
@@ -41,7 +39,8 @@
             <i class="fas fa-print"></i> Печать списка призывников, возвращающихся с увольнения
         </a>
     </div>
-    <div class="row align-items-end mt-1">
+    
+    <div class="row align-items-end mt-1 mb-2">
         <div class="col-lg-8">
             <h5>Всего призывников, временно убывших со сборного пункта: <b>@ViewData["dismissalsCount"]</b> чел.</h5>
         </div>
@@ -52,9 +51,6 @@
             </a>
         </div>
     </div>
-</section>
-
-<section class="container mt-2">
     @Html.AjaxGrid(Url.Action("IndexGrid", new {exitMode = true}))
 </section>
 

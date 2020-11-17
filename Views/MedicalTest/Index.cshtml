@@ -24,10 +24,8 @@
         </div>
     </div>
     @Html.Hidden("ConscriptionPeriodIdFilter", conscriptionPeriodId)
-</section>
 
-<section class="container mt-4">
-    <div class="row align-items-end">
+    <div class="row align-items-end mt-4 mb-2">
         <div class="col-md-6">
             <h5>Всего призывников: <b>@ViewData["recruitsCount"]</b> чел.</h5>
         </div>
@@ -38,9 +36,7 @@
             </a>
         </div>
     </div>
-</section>
-
-<section class="container mt-2">
+    
     @Html.AjaxGrid(Url.Action("IndexGrid", new {exitMode = true}))
 </section>
 

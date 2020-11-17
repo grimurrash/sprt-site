@@ -1,0 +1,57 @@
+﻿@{
+    var startDate = new DateTime(2020, 11, 18).DayOfYear;
+    var targetDate = new DateTime(2020, 12, 22).DayOfYear - startDate;
+    var today = DateTime.Now.DayOfYear - startDate;
+    var wValue = 100 / targetDate * today;
+    startDate = 0;
+}
+<section class="container mt-2">
+    <h2 class="text-center">Планы по сайту (до дембеля @(targetDate-today) дней)</h2>
+
+    <div class="row mt-4">
+        <div class="col-md-1">
+            <b data-placement="top" data-toggle="tooltip" title="18.11.2020">Запуск</b>
+        </div>
+        <div class="progress col-md-10">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"
+                 aria-valuenow="@today" aria-valuemin="@startDate" aria-valuemax="@targetDate" style="width: @wValue%">
+            </div>
+        </div>
+        <div class="col-md-1">
+            <b data-placement="top" data-toggle="tooltip" title="22.12.2020">Дембель</b>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-6">
+            <h4>Сделано</h4>
+            <div class="list-group">
+                <div class="list-group-item list-group-item-success">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6><i class="far fa-check-circle"></i> Полностью переписан весь функционал кроме спец. документов</h6>
+                        <small>18.11.2020</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-5">
+            <h4>Планы</h4>
+            <div class="list-group">
+                <div class="list-group-item">
+                    <h6><i class="fas fa-calendar"></i> Добавление коментариев(описание) кода. Для следующего вцшника</h6>
+                </div>
+                <div class="list-group-item">
+                    <h6><i class="fas fa-calendar"></i> Добавление печати список персональщиков для районнов</h6>
+                </div>
+                <div class="list-group-item">
+                    <h6> <i class="fas fa-calendar"></i> Добавление печати контроля выполнения</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="alert alert-info mt-4" role="alert">
+        В случае обноружения ошибок или при наличии предложений по улучшению, сообщите ВЦшникам!
+    </div>
+</section>

@@ -32,7 +32,7 @@ namespace NewSprt.Models.Helper.Documents
                 m.FirstName,
                 m.Patronymic,
                 m.BirthDate
-            });
+            }).ToList();
 
             const string templateFile = TemplatePath + "Dactyloscopy/comissariat_report.xlsx";
             const string tempFile = TempPath + "comissariat_report.xlsx";
@@ -61,7 +61,7 @@ namespace NewSprt.Models.Helper.Documents
                 DactyloscopyDate = m.DeliveryDate,
                 OutText = dateAndOutgoingNumber,
                 Notice = m.MilitaryComissariat.ShortName
-            });
+            }).ToList();
 
             const string templateFile = TemplatePath + "Dactyloscopy/conscription_report.xlsx";
             const string tempFile = TempPath + "conscription_report.xlsx";

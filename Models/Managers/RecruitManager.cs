@@ -80,7 +80,7 @@ namespace NewSprt.Models.Managers
             try
             {
                 var updateAdditionalDatas = new List<zModels.AdditionalData>();
-                var recruitIds = recruits.Select(m => m.RecruitId);
+                var recruitIds = recruits.Select(m => m.RecruitId).ToList();
                 var relatives = await _zarnicaDb.Relatives.Where(m => recruitIds.Contains(m.RecruitId)).ToListAsync();
                 var additionalDatas = await _zarnicaDb.AdditionalDatas.Where(m => recruitIds.Contains(m.Id)).ToListAsync();
                 foreach (var recruit in recruits)
