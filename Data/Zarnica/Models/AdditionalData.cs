@@ -20,5 +20,7 @@ namespace NewSprt.Data.Zarnica.Models
         [Column("vagon")] public string Note { get; set; }
         [Column("num_spr")] public string TestNum { get; set; }
         [Column("date_spr")] public DateTime? TestDate { get; set; }
+        
+        [NotMapped] public bool IsNotTest { get; set; }
     }
 }

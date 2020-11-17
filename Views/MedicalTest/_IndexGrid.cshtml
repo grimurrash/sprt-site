@@ -11,7 +11,8 @@
         columns.Add().RenderedAs((model, row) => paging.Rows * paging.CurrentPage - paging.Rows + row + 1).Titled("#");
         columns.Add(model => model.FullName).Titled("ФИО");
         columns.Add(model => model.MilitaryComissariat.ShortName).Titled("Военный комиссариат").Css("w-px-200");
-        columns.Add(model => model.ZRecruit.AdditionalData.TestDate.Value.ToShortDateString())
+        columns.Add(model => model.ZRecruit.AdditionalData.TestDate != null 
+            ? model.ZRecruit.AdditionalData.TestDate.Value.ToShortDateString() : "")
             .RenderedAs(m => m.ZRecruit.AdditionalData.TestDate?.ToShortDateString())
             .Titled("Дата тестирования").Css("w-px-150").Filterable(true).UsingFilterOptions();
         columns.Add(model => model.ZRecruit.AdditionalData.TestNum).Titled("№ справки").Css("w-px-150")

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,7 +49,7 @@ namespace NewSprt.Controllers
             string militaryComissariatId = "",
             int conscriptionPeriodId = 0,
             int page = 1,
-            int rows = 10,
+            int rows = 20,
             bool isNotNumber = false,
             string search = "")
         {
@@ -97,17 +98,20 @@ namespace NewSprt.Controllers
                 .Include(m => m.MilitaryComissariat)
                 .Where(m => recruitsIds.Contains(m.Id))
                 .AsNoTracking().ToListAsync();
-
             foreach (var recruit in zRecruits)
             {
                 appRecruits.First(m => m.RecruitId == recruit.Id).ZRecruit = recruit;
+                if (string.IsNullOrEmpty(recruit.AdditionalData.TestNum) ||
+                    recruit.AdditionalData.TestDate == null ||
+                    !Regex.IsMatch(recruit.AdditionalData.TestNum, @"^\d{1,2}/\d{1,4}",
+                        RegexOptions.Compiled | RegexOptions.IgnoreCase))
+                {
+                    recruit.AdditionalData.IsNotTest = true;
+                }
             }
-            
-            if (isNotNumber)
-            {
-                appRecruits = appRecruits.Where(m => string.IsNullOrEmpty(m.ZRecruit.AdditionalData.TestNum)).ToList();
-            }
-            
+
+            if (isNotNumber) appRecruits = appRecruits.Where(m => m.ZRecruit.AdditionalData.IsNotTest).ToList();
+
             return PartialView("_IndexGrid", appRecruits);
         }
 
