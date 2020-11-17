@@ -69,7 +69,6 @@ namespace NewSprt
                 options.SerializerSettings.DateFormatString = "dd.MM.yyyy";
             });
             services.AddMvc().AddRazorOptions(options => options.AllowRecompilingViewsOnFileChange = true);
-            // services.AddMvc(o => o.EnableEndpointRouting = false);
             services.AddDistributedMemoryCache();
             services.AddSession();
 

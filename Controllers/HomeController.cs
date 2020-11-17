@@ -14,6 +14,11 @@ namespace NewSprt.Controllers
             return View();
         }
 
+        public IActionResult Task()
+        {
+            return RedirectToAction("Index", "WorkTask");
+        }
+        
         /// <summary>
         /// Страница ошибки
         /// </summary>

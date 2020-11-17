@@ -39,7 +39,7 @@ namespace NewSprt.Controllers
         {
             var token = User.GetToken();
             var user = await _appDb.Users.AsNoTracking().FirstOrDefaultAsync(m => m.AuthorizationToken == token);
-            if (user == null) RedirectToAction("Logout", "Account");
+            if (user == null) return RedirectToAction("Logout", "Account");
 
             var tasks = await _appDb.WorkTasks.Where(t =>
                     (t.TaskManagerId == user.Id
@@ -115,7 +115,7 @@ namespace NewSprt.Controllers
                 .FirstOrDefaultAsync(u => u.Id == model.TaskResponsibleId);
 
             if (taskManagerUser == null)
-                RedirectToAction("Logout", "Account");
+                return RedirectToAction("Logout", "Account");
             if (taskResponsibleUser == null)
                 ModelState.AddModelError("TaskResponsibleId", "Не выбран исполнитель");
             if (!ModelState.IsValid)
@@ -177,7 +177,7 @@ namespace NewSprt.Controllers
             if (taskResponsibleUser == null)
                 ModelState.AddModelError("TaskResponsibleId", "Не выбран исполнитель");
             if (user == null)
-                RedirectToAction("Logout", "Account");
+                return RedirectToAction("Logout", "Account");
 
             var task = await _appDb.WorkTasks
                 .Include(t => t.Department)
