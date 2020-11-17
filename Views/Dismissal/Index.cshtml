@@ -12,13 +12,22 @@
                 "Все",
                 new {id = "MilitaryComissariatIdFilter", @class = "form-control border-info"})
         </div>
-        <div class="col-lg-5">
-            @Html.Label("Search", "Поиск (учитываются ранее выбранные фильтры):", new {@class = "col-form-label"})
+        <div class="col-lg-4">
+            @Html.Label("Search", "Поиск (по ФИО):", new {@class = "col-form-label"})
             @Html.TextBox("Search", "", new {id = "Search", @class = "form-control border-info", placeholder = "Поиск", autocomplete = "off"})
+        </div>
+
+        <div class="col-lg-1 custom-control custom-switch custom-switch-warning">
+            @Html.CheckBox("IsSendFilter", false, new {id = "IsSendFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
+            @Html.Label("IsSendFilter", "Вернулся", new {@class = "custom-control-label cursor-pointer"})
+        </div>
+        <div class="col-lg-1 custom-control custom-switch custom-switch-warning">
+            @Html.CheckBox("IsReturnFilter", false, new {id = "IsReturnFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
+            @Html.Label("IsReturnFilter", "Вернулся", new {@class = "custom-control-label cursor-pointer"})
         </div>
         <div class="col-lg-2 custom-control custom-switch custom-switch-warning">
             @Html.CheckBox("IsReturnTodayFilter", false, new {id = "IsReturnTodayFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
-            @Html.Label("IsReturnTodayFilter", "Возврат сегодня", new {@class = "custom-control-label cursor-pointer"})
+            @Html.Label("IsReturnTodayFilter", "Возвращается сегодня", new {@class = "custom-control-label cursor-pointer"})
         </div>
     </div>
 </section>
@@ -29,7 +38,7 @@
             <i class="fas fa-print"></i> Печать списка призывников в увольнении
         </a>
         <a asp-controller="Dismissal" asp-action="PrintReturnTodayDismissalRrcruitsList" class="btn btn-info ml-2">
-        <i class="fas fa-print"></i> Печать списка призывников, возвращающихся с увольнения
+            <i class="fas fa-print"></i> Печать списка призывников, возвращающихся с увольнения
         </a>
     </div>
     <div class="row align-items-end mt-1">
@@ -63,6 +72,14 @@
                 reloadTable()
             })
             document.getElementById("IsReturnToday").addEventListener('change', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+            document.getElementById("IsSendFilter").addEventListener('change', function(e) {
+                e.preventDefault()
+                reloadTable()
+            })
+            document.getElementById("IsReturnFilter").addEventListener('change', function(e) {
                 e.preventDefault()
                 reloadTable()
             })

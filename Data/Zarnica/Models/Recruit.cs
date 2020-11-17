@@ -54,19 +54,18 @@ namespace NewSprt.Data.Zarnica.Models
         public string FullAddress => $"{Settlement.Name}, + ул. {AdditionalData.Street}, д. {AdditionalData.House}"
                                      + (AdditionalData.Building != null ? ", корп. " + AdditionalData.Building : "")
                                      + (AdditionalData.Apartment != null ? ", кв. " + AdditionalData.Apartment : "");
-        
+
         public string Status
         {
             get
             {
-                var lastEvent = Events.FirstOrDefault(m => m.Date == Events.Max(e => e.Date));
-                if (lastEvent == null) return "Отсутствуют события у призывника";
-                if (lastEvent.EventCode != 113 && lastEvent.EventCode != 112)
-                    return EventType.GetName(lastEvent.EventCode);
-                
+                if (LastEvent == null) return "Отсутствуют события у призывника";
+                if (LastEvent.EventCode != 113 && LastEvent.EventCode != 112)
+                    return EventType.GetName(LastEvent.EventCode);
+
                 if (Team == null) return "Нет информации о коменде";
                 return
-                    $"{EventType.GetName(lastEvent.EventCode)}: " +
+                    $"{EventType.GetName(LastEvent.EventCode)}: " +
                     $"{Team.TeamNumber} (в/ч {Team.MilitaryUnitCode} ({Team.MilitaryUnit.Name}) " +
                     $"на {Team.SendDate?.ToShortDateString()})";
             }

@@ -39,6 +39,8 @@ namespace NewSprt.Controllers
         public async Task<IActionResult> IndexGrid(string militaryComissariatId = "",
             string search = "",
             bool isReturnToday = false,
+            bool isReturn = false,
+            bool isSend = false,
             int page = 1,
             int rows = 10,
             bool exitMode = false)
@@ -92,11 +94,25 @@ namespace NewSprt.Controllers
                 .Include(m => m.Events)
                 .Where(m => dismissalsIds.Contains(m.Id))
                 .ToListAsync();
-            
-            foreach (var dismissal in dismissals)
+            foreach (var zRecruit in zRecruits)
             {
-                dismissal.Recruit.ZRecruit = zRecruits.First(m => m.Id == dismissal.Recruit.RecruitId);
+                var dismissal = dismissals.First(m => m.RecruitId == zRecruit.Id);
+                dismissal.Recruit.ZRecruit = zRecruit;
+                if ((zRecruit.LastEvent.EventCode == 113 || zRecruit.LastEvent.EventCode == 112) 
+                    && zRecruit.Team?.SendDate != null && zRecruit.Team.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear)
+                {
+                    dismissal.IsSend = true;
+                }
+                else if (dismissal.LastEventCode != zRecruit.LastEvent.EventCode 
+                         && dismissal.LastEventDate.DayOfYear != zRecruit.LastEvent.Date.DayOfYear)
+                {
+                    dismissal.IsReturn = true;
+                }
             }
+
+            if (isReturn) dismissals = dismissals.Where(m => m.IsReturn).ToList();
+            if (isSend) dismissals = dismissals.Where(m => m.IsSend).ToList();
+            
             return PartialView("_IndexGrid", dismissals);
         }
 
@@ -120,12 +136,19 @@ namespace NewSprt.Controllers
             }
             try
             {
+                var appRecruit = await _appDb.Recruits.FirstOrDefaultAsync(m => m.Id == model.RecruitId);
+                var zRecruit = await _zarnicaDb.Recruits
+                    .Include(m => m.Events)
+                    .FirstOrDefaultAsync(m => m.Id == appRecruit.RecruitId);
+                
                 var dismissal = new Dismissal
                 {
                     RecruitId = model.RecruitId,
                     SendDismissalDate = model.SendDismissalDate,
                     ReturnDate = model.ReturnDate,
-                    Notice = model.Notice
+                    Notice = model.Notice,
+                    LastEventCode = zRecruit.LastEvent.EventCode,
+                    LastEventDate = zRecruit.LastEvent.Date
                 };
                 await _appDb.Dismissals.AddAsync(dismissal);
                 await _appDb.SaveChangesAsync();
@@ -149,7 +172,7 @@ namespace NewSprt.Controllers
                 RecruitId = dismissal.RecruitId,
                 SendDismissalDate = dismissal.SendDismissalDate,
                 ReturnDate = dismissal.ReturnDate,
-                Notice = dismissal.Notice
+                Notice = dismissal.Notice,
             });
         }
 
@@ -162,10 +185,16 @@ namespace NewSprt.Controllers
             try
             {
                 var dismissal = await _appDb.Dismissals.FirstOrDefaultAsync(m => m.Id == model.Id);
+                var appRecruit = await _appDb.Recruits.FirstOrDefaultAsync(m => m.Id == model.RecruitId);
+                var zRecruit = await _zarnicaDb.Recruits
+                    .Include(m => m.Events)
+                    .FirstOrDefaultAsync(m => m.Id == appRecruit.RecruitId);
                 dismissal.RecruitId = model.RecruitId;
                 dismissal.SendDismissalDate = model.SendDismissalDate;
                 dismissal.ReturnDate = model.ReturnDate;
                 dismissal.Notice = model.Notice;
+                dismissal.LastEventCode = zRecruit.LastEvent.EventCode;
+                dismissal.LastEventDate = zRecruit.LastEvent.Date;
                 _appDb.Dismissals.Update(dismissal);
                 await _appDb.SaveChangesAsync();
                 return new JsonResult(new {isSucceeded = true});

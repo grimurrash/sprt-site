@@ -51,6 +51,14 @@ function reloadTable() {
         select = document.getElementById('IsReturnTodayFilter')
         grid.url.searchParams.set('isReturnTodayFilter', select.checked)
     }
+    if (document.getElementById('IsSendFilter')) {
+        select = document.getElementById('IsSendFilter')
+        grid.url.searchParams.set('isSend', select.checked)
+    }
+    if (document.getElementById('IsReturnFilter')) {
+        select = document.getElementById('IsReturnFilter')
+        grid.url.searchParams.set('isReturn', select.checked)
+    }
     if (document.getElementById('IsMarkFilter')) {
         select = document.getElementById('IsMarkFilter')
         grid.url.searchParams.set('isMark', select.checked)

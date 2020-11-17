@@ -28,6 +28,7 @@
     })
     .Css("table-striped")
     .AppendCss("table-hover")
+    .RowAttributed(model => new {@class = (model.IsReturn ? "table-warning" : null) + (model.IsSend ? "table-danger" : null) })
     .Empty("Призывников, временно убывших со сборного пункта")
     .Pageable(pager =>
     {
