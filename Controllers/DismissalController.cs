@@ -87,16 +87,16 @@ namespace NewSprt.Controllers
                 }
             }
 
-            var dismissalsIds = dismissals.Select(d => d.Recruit.RecruitId);
+            var recruitsIds = dismissals.Select(d => d.Recruit.RecruitId).ToList();
             var zRecruits = await _zarnicaDb.Recruits
                 .Include(m => m.Team)
                 .ThenInclude(m => m.MilitaryUnit)
                 .Include(m => m.Events)
-                .Where(m => dismissalsIds.Contains(m.Id))
+                .Where(m => recruitsIds.Contains(m.Id))
                 .ToListAsync();
             foreach (var zRecruit in zRecruits)
             {
-                var dismissal = dismissals.First(m => m.RecruitId == zRecruit.Id);
+                var dismissal = dismissals.First(m => m.Recruit.RecruitId == zRecruit.Id);
                 dismissal.Recruit.ZRecruit = zRecruit;
                 if ((zRecruit.LastEvent.EventCode == 113 || zRecruit.LastEvent.EventCode == 112) 
                     && zRecruit.Team?.SendDate != null && zRecruit.Team.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear)

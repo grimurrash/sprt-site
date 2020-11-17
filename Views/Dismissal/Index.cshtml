@@ -19,7 +19,7 @@
 
         <div class="col-lg-1 custom-control custom-switch custom-switch-warning">
             @Html.CheckBox("IsSendFilter", false, new {id = "IsSendFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
-            @Html.Label("IsSendFilter", "Вернулся", new {@class = "custom-control-label cursor-pointer"})
+            @Html.Label("IsSendFilter", "Отправлен", new {@class = "custom-control-label cursor-pointer"})
         </div>
         <div class="col-lg-1 custom-control custom-switch custom-switch-warning">
             @Html.CheckBox("IsReturnFilter", false, new {id = "IsReturnFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
@@ -71,7 +71,7 @@
                 e.preventDefault()
                 reloadTable()
             })
-            document.getElementById("IsReturnToday").addEventListener('change', function(e) {
+            document.getElementById("IsReturnTodayFilter").addEventListener('change', function(e) {
                 e.preventDefault()
                 reloadTable()
             })
