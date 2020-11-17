@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NewSprt.Data.App.Models
@@ -11,8 +12,12 @@ namespace NewSprt.Data.App.Models
         public string Name { get; set; }
         
         public bool IsArchive { get; set; }
-        
-        [NotMapped] 
-        public int RecruitsCount { get; set; }
+
+        public List<Recruit> Recruits { get; set; }
+
+        public ConscriptionPeriod()
+        {
+            Recruits = new List<Recruit>();
+        }
     }
 }

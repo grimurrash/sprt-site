@@ -40,6 +40,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
         {
             ViewBag.Pagination = new Pagination(rows, page);
             var conscriptionPeriods = await _appDb.ConscriptionPeriods
+                .Include(m => m.Recruits)
                 .OrderBy(m => m.IsArchive)
                 .ThenByDescending(m => m.Id).ToListAsync();
             return PartialView("_IndexGrid", conscriptionPeriods);
@@ -148,6 +149,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var conscriptionPeriod = await _appDb.ConscriptionPeriods
+                .Include(m => m.Recruits)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (conscriptionPeriod == null)
             {
@@ -160,7 +162,7 @@ namespace NewSprt.Areas.AdminPanel.Controllers
             var transaction = await _appDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
             try
             {
-                if (conscriptionPeriod.RecruitsCount > 0)
+                if (conscriptionPeriod.Recruits.Count > 0)
                 {
                     HttpContext.Session.Set("alert",
                         new AlertViewModel(AlertType.Error,

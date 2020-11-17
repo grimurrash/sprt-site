@@ -13,7 +13,7 @@
             .RenderedAs(m => m.IsArchive ? "<i class='fas fa-lock-alt'></i>" : "<i class='fas fa-lock-open-alt'></i>")
             .Encoded(false).Css("w-px-50 text-center").Sortable(false);
         columns.Add(model => model.Name).Titled("Наименование");
-        columns.Add(model => model.RecruitsCount).Titled("Кол-во призывников").Css("w-px-160");
+        columns.Add(model => model.Recruits.Count).Titled("Кол-во призывников").Css("w-px-160");
         columns.Add(model =>
             $"<a class='btn btn-success' href='{Url.Action("EditModal", "СonscriptionPeriod", new {id = model.Id})}'" +
             " data-placement='top' data-toggle='tooltip' title='Редактировать период призыва' " +

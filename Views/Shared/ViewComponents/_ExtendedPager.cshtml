@@ -9,7 +9,7 @@
 <div class="mvc-grid-pager mvc-grid-extended-pager @Model.CssClasses" data-show-page-sizes="@Model.ShowPageSizes">
     @if (totalPages > 0)
     {
-        <div class="mvc-grid-pager-extension">Показано @((currentPage - 1) * Model.RowsPerPage + 1)-@(Math.Min(currentPage * Model.RowsPerPage, Model.TotalRows)) из @Model.TotalRows</div>
+        <div class="mvc-grid-pager-extension">Показано @((currentPage - 1) * Model.RowsPerPage + 1)-@(Math.Min(currentPage * Model.RowsPerPage, Model.TotalRows)) из <span id="tableTotalRow">@Model.TotalRows</span></div>
 
         <div>
             @if (currentPage > 1)

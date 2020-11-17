@@ -36,8 +36,11 @@ $(function () {
     })
 
     $('[data-toggle="tooltip"]').tooltip()
-    document.addEventListener("reloadend", e => {
+    document.addEventListener("reloadend", () => {
         $('[data-toggle="tooltip"]').tooltip()
+        if (document.getElementById('tableTotalRow')) {
+            $("#listCount").html($("#tableTotalRow").html())
+        }
     });
     reloadTable()
 })

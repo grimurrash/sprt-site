@@ -101,7 +101,7 @@ namespace NewSprt.Controllers
                 .Where(u => u.AuthorizationToken != User.GetToken()).Select(u => new
                 {
                     u.Id,
-                    FullName = $"{u.FullName} ({u.Department.Name})"
+                    FullName = $"{u.FullName} ({u.Department.ShortName})"
                 }).AsNoTracking().ToListAsync();
             ViewBag.Users = users;
             return PartialView("_CreateModal", new WorkTaskViewModel());
@@ -156,7 +156,7 @@ namespace NewSprt.Controllers
                 .Where(u => u.AuthorizationToken != User.GetToken()).Select(u => new
                 {
                     u.Id,
-                    FullName = $"{u.FullName} ({u.Department.Name})"
+                    FullName = $"{u.FullName} ({u.Department.ShortName})"
                 }).AsNoTracking().ToListAsync();
             ViewBag.Users = users;
             var workTask = await _appDb.WorkTasks.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);

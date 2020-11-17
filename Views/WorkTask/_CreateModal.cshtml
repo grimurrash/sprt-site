@@ -46,7 +46,7 @@
                     </div>
                     <div class="form-check form-check-inline">
                         @Html.RadioButtonFor(m => m.IsRepeat, "false", new {@class = "form-check-input isRepeat", id = "IsNotRepeat"})
-                        @Html.LabelFor(m => m.IsRepeat, "Срок исполнения (один раз)",new {@class = "form-check-label"})
+                        @Html.Label("IsNotRepeat", "Срок исполнения (один раз)",new {@class = "form-check-label curson-pointer"})
                     </div>
                     <div class="form-group">
                         @Html.TextBoxFor(m => m.CompletionDate, "{0:yyyy-MM-dd}", new {@class = "form-control", type="date", autocomplete="off"})
@@ -54,7 +54,7 @@
                     
                     <div class="form-check form-check-inline">
                         @Html.RadioButtonFor(m => m.IsRepeat, "true", new {@class = "form-check-input isRepeat", id = "IsRepeat"})
-                        @Html.LabelFor(m => m.IsRepeat, "Срок исполнения (переодично)",new {@class = "form-check-label"})
+                        @Html.LabelFor(m => m.IsRepeat, "Срок исполнения (переодично)",new {@class = "form-check-label curson-pointer"})
                     </div>
                     <div class="form-group">
                         @Html.TextAreaFor(m => m.AdditionToDeadlines, new {@class = "form-control", placeholder="Текст с описанием частоты исполенния", autocomplete="off"})

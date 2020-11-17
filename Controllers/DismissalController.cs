@@ -62,7 +62,10 @@ namespace NewSprt.Controllers
             {
                 query = query.Where(m => m.ReturnDate.DayOfYear == DateTime.Now.DayOfYear);
             }
-            var dismissals = await query.OrderBy(m => m.Recruit.LastName).ToListAsync();
+            var dismissals = await query
+                .OrderBy(m => m.ReturnDate.DayOfYear)
+                .ThenBy(m => m.Recruit.LastName)
+                .ToListAsync();
 
             if (!string.IsNullOrEmpty(search))
             {
