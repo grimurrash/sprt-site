@@ -6,7 +6,7 @@
     startDate = 0;
 }
 <section class="container mt-2">
-    <h2 class="text-center">Планы по сайту (до дембеля @(targetDate - today) дней)</h2>
+    <h2 class="text-center">Планы по сайту (до дембеля @(targetDate - today) дн.)</h2>
 
     <div class="row mt-4">
         <div class="col-md-1">
@@ -27,15 +27,40 @@
             <h4>Сделано</h4>
             <div class="list-group">
                 <div class="list-group-item list-group-item-success">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6><i class="fas fa-check-circle"></i> Полностью переписан весь функционал кроме спец. документов</h6>
-                        <small class="text-right">17.11.2020 21:40</small>
+                    <div class="row">
+                        <h6 class="col-md-10"><i class="fas fa-check-circle"></i> Полностью переписан весь функционал кроме спец. документов</h6>
+                        <small class="text-right col-md-2">17.11.2020 21:40</small>
                     </div>
                 </div>
                 <div class="list-group-item list-group-item-success">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6><i class="fas fa-check-circle"></i> Сихронизация номера справки. Изменение визуальной части окна призывника и Дактилоскопии.</h6>
-                        <small class="text-right">18.11.2020 11:40</small>
+                    <div class="row">
+                        
+                        <h6 class="col-md-10">
+                            <i class="fas fa-check-circle"></i> Сихронизация номера справки<br>
+                            <i class="fas fa-check-circle"></i> Измение визуальной части сайта: кнопки, макеты таблиц, окна призывника и дактилоскопии<br>
+                            <i class="fas fa-check-circle"></i> Добавление призывников из базы "Весна 2020"<br>
+                            <i class="fas fa-check-circle"></i> Исправлений ошибок
+                        </h6>
+                        <small class="text-right col-md-2">18.11.2020 15:20</small>
+                    </div>
+                </div>
+                <div class="list-group-item list-group-item-success">
+                    <div class="row">
+                        <h6 class="col-md-10">
+                            <i class="fas fa-check-circle"></i> Исправление ошибки с изменением статуса дактилоскопии на "отправлен ранее"<br>
+                            <i class="fas fa-check-circle"></i> Добавления сохранения страниц при переходе на другую страницу<br>
+                        </h6>
+                        <small class="text-right col-md-2">18.11.2020 17:21</small>
+                    </div>
+                </div>
+                <div class="list-group-item list-group-item-success">
+                    <div class="row">
+                        <h6 class="col-md-10">
+                            <i class="fas fa-check-circle"></i> Добавление сохранения страницы-таблицы при выходе из модального окна (добавление, редактирование, удаление)<br>
+                            <i class="fas fa-check-circle"></i> Исправление ошибок с неверным выводом кол-ва строк в таблицах<br>
+                            
+                        </h6>
+                        <small class="text-right col-md-2">18.11.2020 18:58</small>
                     </div>
                 </div>
             </div>
@@ -44,28 +69,30 @@
         <div class="col-md-5">
             <h4>Планы</h4>
             <div class="list-group">
-                <div class="list-group-item list-group-item-warning">
-                    <h6> <i class="fas fa-calendar"></i> Исправить ошибку при печати районного списка дактилоскопии при отсутствии выбронного районна</h6>
-                </div>
-                <div class="list-group-item list-group-item-warning">
-                    <h6> <i class="fas fa-calendar"></i> Исправить ошибку в работе checkBox "Вернулись сегодня" в окне "Увольнительные"</h6>
-                </div>
                 <div class="list-group-item">
                     <h6><i class="fas fa-calendar"></i> Добавление коментариев(описание) кода. Для следующего вцшника</h6>
                 </div>
                 <div class="list-group-item">
-                    <h6><i class="fas fa-calendar"></i> Добавление печати списока персональщиков для районнов</h6>
+                    <h6><i class="fas fa-calendar"></i> Добавление печати списка персональщиков для районнов (Хуснуллин)</h6>
                 </div>
                 <div class="list-group-item">
-                    <h6> <i class="fas fa-calendar"></i> Добавление печати контроля выполнения</h6>
+                    <h6><i class="fas fa-calendar"></i> Добавление печати списка персональщиков по видам директивных указаний (Сауленко)</h6>
                 </div>
                 <div class="list-group-item">
-                    <h6> <i class="fas fa-calendar"></i> Добавление редактирования номера справки и даты тестирования на сайте</h6>
+                    <h6> <i class="fas fa-calendar"></i> Добавление печати контроля выполнения (Хайрутдинов)</h6>
                 </div>
                 <div class="list-group-item">
-                    <h6> <i class="fas fa-calendar"></i> Добавление поиска и удаления дубликатов призывников</h6>
+                    <h6> <i class="fas fa-calendar"></i> Добавление редактирования номера справки и даты тестирования на сайте (Хасанов)</h6>
                 </div>
-
+                <div class="list-group-item">
+                    <h6> <i class="fas fa-calendar"></i> Добавление поиска и удаления дубликатов призывников (Львов, Могелевец, Хуснуллин)</h6>
+                </div>
+                <div class="list-group-item">
+                    <h6> <i class="fas fa-calendar"></i> Добавление печати списка призывников (ФИО и Телефон) с выбором промежутка доставки (Газеева)</h6>
+                </div>
+                <div class="list-group-item">
+                    <h6> <i class="fas fa-calendar"></i> Добавление "планы по сайту" как отдельный функционал на сайте</h6>
+                </div>
             </div>
         </div>
     </div>

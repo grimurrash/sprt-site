@@ -30,7 +30,7 @@
 </section>
 
 <section class="container mt-2">
-    @Html.AjaxGrid(Url.Action("IndexGrid"))
+    @Html.AjaxGrid(Url.Action("IndexGrid", new {exitMode = true}))
 </section>
 
 <div id="modalContainer"></div>

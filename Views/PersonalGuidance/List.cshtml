@@ -55,7 +55,8 @@
 
     <div class="row align-items-end mt-4 mb-2">
         <div class="col-lg-8">
-            <h5>Всего по директивным указаниям: <b>@ViewData["personsCount"]</b> чел.</h5>
+            <h6>Всего по директивным указаниям: <b>@ViewData["personsCount"]</b> чел. </h6>
+            <h5 >Всего в списке: <b id="listCount"></b> чел.</h5>
         </div>
         <div class="col-lg-4 text-right">
             <a asp-controller="PersonalGuidance" asp-action="CreateModal" class="btn btn-success"
@@ -64,7 +65,7 @@
             </a>
         </div>
     </div>
-
+    <input type="hidden" id="currentPage" value="1">
     @Html.AjaxGrid(Url.Action("ListGrid", new {exitMode = true}))
 </section>
 
@@ -72,18 +73,19 @@
 
 @section Scripts {
     <script>
+        IsSaveCurrentPage(true, "persCurrentPage")
         document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('DirectiveTypeIdFilter')){
-                document.getElementById('DirectiveTypeIdFilter').value = localStorage.getItem('DirectiveTypeIdFilter')
+            if (localStorage.getItem('persDirectiveTypeIdFilter')){
+                document.getElementById('DirectiveTypeIdFilter').value = localStorage.getItem('persDirectiveTypeIdFilter')
             }
-            if (localStorage.getItem('RequirementTypeIdFilter')){
-                document.getElementById('RequirementTypeIdFilter').value = localStorage.getItem('RequirementTypeIdFilter')
+            if (localStorage.getItem('persRequirementTypeIdFilter')){
+                document.getElementById('RequirementTypeIdFilter').value = localStorage.getItem('persRequirementTypeIdFilter')
             }
-            if (localStorage.getItem('MilitaryUnitIdFilter')){
-                document.getElementById('MilitaryUnitIdFilter').value = localStorage.getItem('MilitaryUnitIdFilter')
+            if (localStorage.getItem('persMilitaryUnitIdFilter')){
+                document.getElementById('MilitaryUnitIdFilter').value = localStorage.getItem('persMilitaryUnitIdFilter')
             }
-            if (localStorage.getItem('MilitaryComissariatIdFilter')){
-                document.getElementById('MilitaryComissariatIdFilter').value = localStorage.getItem('MilitaryComissariatIdFilter')
+            if (localStorage.getItem('persMilitaryComissariatIdFilter')){
+                document.getElementById('MilitaryComissariatIdFilter').value = localStorage.getItem('persMilitaryComissariatIdFilter')
             }
             document.getElementById("Search").addEventListener('keyup', function(e) {
                 e.preventDefault()
@@ -92,25 +94,25 @@
             document.getElementById("DirectiveTypeIdFilter").addEventListener('change', function(e) {
                 e.preventDefault()
                 let select = document.getElementById('DirectiveTypeIdFilter')
-                localStorage.setItem('DirectiveTypeIdFilter',select.value)
+                localStorage.setItem('persDirectiveTypeIdFilter',select.value)
                 reloadTable()
             })
             document.getElementById("RequirementTypeIdFilter").addEventListener('change', function(e) {
                 e.preventDefault()
                 let select = document.getElementById('RequirementTypeIdFilter')
-                localStorage.setItem('RequirementTypeIdFilter',select.value)
+                localStorage.setItem('persRequirementTypeIdFilter',select.value)
                 reloadTable()
             })
             document.getElementById("MilitaryUnitIdFilter").addEventListener('change', function(e) {
                 e.preventDefault()
                 let select = document.getElementById('MilitaryUnitIdFilter')
-                localStorage.setItem('MilitaryUnitIdFilter',select.value)
+                localStorage.setItem('persMilitaryUnitIdFilter',select.value)
                 reloadTable()
             })
             document.getElementById("MilitaryComissariatIdFilter").addEventListener('change', function(e) {
                 e.preventDefault()
                 let select = document.getElementById('MilitaryComissariatIdFilter')
-                localStorage.setItem('MilitaryComissariatIdFilter',select.value)
+                localStorage.setItem('persMilitaryComissariatIdFilter',select.value)
                 reloadTable()
             })
             document.getElementById('IsMarkFilter').addEventListener('change', function(e) {

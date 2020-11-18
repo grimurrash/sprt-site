@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,8 +37,10 @@ namespace NewSprt.Areas.AdminPanel.Controllers
 
         public async Task<IActionResult> IndexGrid(
             int page = 1,
-            int rows = 10)
+            int rows = 10,
+            bool exitMode = true)
         {
+            if (exitMode) return PartialView("_IndexGrid", new List<ConscriptionPeriod>());
             ViewBag.Pagination = new Pagination(rows, page);
             var conscriptionPeriods = await _appDb.ConscriptionPeriods
                 .Include(m => m.Recruits)

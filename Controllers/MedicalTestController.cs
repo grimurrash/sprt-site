@@ -51,9 +51,11 @@ namespace NewSprt.Controllers
             int page = 1,
             int rows = 20,
             bool isNotNumber = false,
-            string search = "")
+            string search = "", 
+            bool exitMode = true)
         {
             ViewBag.Pagination = new Pagination(rows, page);
+            if (exitMode) return PartialView("_IndexGrid", new List<Recruit>());
             var query = _appDb.Recruits.Include(m => m.MilitaryComissariat).AsNoTracking().AsQueryable();
             if (!string.IsNullOrEmpty(militaryComissariatId))
             {

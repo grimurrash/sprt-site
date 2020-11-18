@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -26,17 +27,17 @@ namespace NewSprt.Controllers
         }
 
         // GET
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            ViewData["taskCount"] = await _appDb.WorkTasks.AsNoTracking().CountAsync(m => !m.IsArchive);
             if (!HttpContext.Session.Keys.Contains("alert")) return View();
             ViewBag.Alert = HttpContext.Session.Get<AlertViewModel>("alert");
             HttpContext.Session.Remove("alert");
             return View();
         }
 
-        public async Task<IActionResult> IndexGrid(int page = 1, int rows = 10)
+        public async Task<IActionResult> IndexGrid(int page = 1, int rows = 10, bool exitMode = true)
         {
+            if (exitMode) return PartialView("_IndexGrid", new List<WorkTask>());
             var token = User.GetToken();
             var user = await _appDb.Users.AsNoTracking().FirstOrDefaultAsync(m => m.AuthorizationToken == token);
             if (user == null) return RedirectToAction("Logout", "Account");
@@ -53,7 +54,7 @@ namespace NewSprt.Controllers
                 .OrderByDescending(m => m.IsUrgent)
                 .ThenByDescending(m => m.Id).AsNoTracking().ToListAsync();
             ViewBag.Pagination = new Pagination(rows, page);
-            ViewBag.UserId = user?.Id;
+            ViewBag.UserId = user.Id;
             return PartialView("_IndexGrid", tasks);
         }
 
@@ -125,7 +126,7 @@ namespace NewSprt.Controllers
             
             try
             {
-                if (taskManagerUser == null || taskResponsibleUser == null) throw new NullReferenceException();
+                if (taskResponsibleUser == null) throw new NullReferenceException();
                 var workTask = new WorkTask()
                 {
                     Name = model.DocumentName,
@@ -189,8 +190,8 @@ namespace NewSprt.Controllers
                 ModelState.AddModelError("Id", "Не удалось найти задачу по Id. Обновите страницу.");
             else if (! (User.IsAdmin()
                        || User.IsPermission(Permission.Secretary)
-                       || user?.Id == task.TaskManagerId
-                       || task.Department.HeadUserId == user?.Id))
+                       || user.Id == task.TaskManagerId
+                       || task.Department.HeadUserId == user.Id))
                 ModelState.AddModelError("Id", "Недостаточно прав для изменения задачи");
 
             if (!ModelState.IsValid) return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});

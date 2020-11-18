@@ -4,7 +4,8 @@
 jQuery.fn.exists = function () {
     return $(this).length;
 }
-
+var saveCurrentPage = false
+var saveCurrentPageName = ''
 function reloadTable() {
     if (!$('.mvc-grid:not(.not-reload)').exists()) return false;
     var grid = new MvcGrid(document.querySelector('.mvc-grid'))
@@ -49,7 +50,7 @@ function reloadTable() {
     }
     if (document.getElementById('IsReturnTodayFilter')) {
         select = document.getElementById('IsReturnTodayFilter')
-        grid.url.searchParams.set('isReturnTodayFilter', select.checked)
+        grid.url.searchParams.set('isReturnToday', select.checked)
     }
     if (document.getElementById('IsSendFilter')) {
         select = document.getElementById('IsSendFilter')
@@ -73,10 +74,18 @@ function reloadTable() {
         grid.url.searchParams.set('departmentId', select.value)
     }
 
-    grid.url.searchParams.set('page', '1')
+    if (document.getElementById('currentPage')) {
+        select = document.getElementById('currentPage')
+        grid.url.searchParams.set('page', select.value)
+    }
+    
     grid.reload();
 }
 
+function IsSaveCurrentPage(isSave, name) {
+    saveCurrentPage = isSave
+    saveCurrentPageName = name
+}
 
 function showModal(e) {
     e.preventDefault()

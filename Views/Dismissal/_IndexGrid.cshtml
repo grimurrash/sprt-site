@@ -11,8 +11,10 @@
         columns.Add().RenderedAs((model, row) => paging.Rows * paging.CurrentPage - paging.Rows + row + 1).Titled("#");
         columns.Add(model => model.Recruit.ZRecruit.FullName).Titled("ФИО").Sortable(true);
         columns.Add(model => model.Recruit.MilitaryComissariat.ShortName).Titled("Военный комиссариат").Css("w-px-200");
-        columns.Add(model => model.SendDismissalDate.ToShortDateString()).Titled("Убытие").Css("w-px-120").Filterable(true).UsingFilterOptions();
-        columns.Add(model => model.ReturnDate.ToShortDateString()).Titled("Прибытие").Css("w-px-120").Filterable(true).UsingFilterOptions();
+        columns.Add(model => model.SendDismissalDate).Titled("Убытие").Css("w-px-120")
+            .Filterable(true).UsingFilterOptions().Formatted("{0:d}");
+        columns.Add(model => model.ReturnDate).Titled("Прибытие").Css("w-px-120")
+            .Filterable(true).UsingFilterOptions().Formatted("{0:d}");
         columns.Add(model => model.Notice).Titled("Примечание");
         columns.Add(model => model.ZRecruitStatus).Titled("Статус");
         columns.Add(model =>

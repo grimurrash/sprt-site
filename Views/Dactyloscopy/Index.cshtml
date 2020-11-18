@@ -29,18 +29,19 @@
     
     <div class="row align-items-end mt-4 mb-2">
         <div class="col-md-6">
-            <h5>Всего призывников: <b>@ViewData["recruitsCount"]</b> чел.</h5>
+            <h5 id="listCount"></h5>
         </div>
         <div class="col-lg-6 text-right">
             <a asp-controller="Dactyloscopy" asp-action="PrintMilitaryComissariatReport" id="btnPrintMilitaryComissariatReport" class="btn btn-danger">
-               <i class="fas fa-print"></i> Печать районного списка
+                <i class="fas fa-print"></i> Печать районного списка
             </a>
             <a asp-controller="Dactyloscopy" asp-action="ConscriptionPeriodReport" class="btn btn-danger"
                onclick="showModal(event)" data-alert-text="Не удалось открыть окно печати журнала учета военослужащих">
-                 <i class="fas fa-print"></i> Печать журнала учета
+                <i class="fas fa-print"></i> Печать журнала учета
             </a>
         </div>
     </div>
+    <input type="hidden" id="currentPage" value="1">
     @Html.AjaxGrid(Url.Action("IndexGrid", new {exitMode = true}))
 </section>
 
@@ -48,37 +49,48 @@
 
 @section Scripts {
     <script>
+        IsSaveCurrentPage(true, "dactCurrentPage")
         document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('MilitaryComissariatIdFilter')){
-                document.getElementById('MilitaryComissariatIdFilter').value = localStorage.getItem('MilitaryComissariatIdFilter')
+            if (localStorage.getItem('dactMilitaryComissariatIdFilter')){
+                document.getElementById('MilitaryComissariatIdFilter').value = localStorage.getItem('dactMilitaryComissariatIdFilter')
+            }
+            if (localStorage.getItem('dactConscriptionPeriodIdFilter')){
+                document.getElementById('ConscriptionPeriodIdFilter').value = localStorage.getItem('dactConscriptionPeriodIdFilter')
+            }
+            if (localStorage.getItem('dactSearch')){
+                document.getElementById('Search').value = localStorage.getItem('dactSearch')
             }
             document.getElementById("Search").addEventListener('keyup', function(e) {
                 e.preventDefault()
+                let select = document.getElementById('Search')
+                localStorage.setItem('dactSearch',select.value)
                 reloadTable()
             })
             document.getElementById("ConscriptionPeriodIdFilter").addEventListener('change', function(e) {
                 e.preventDefault()
+                let select = document.getElementById('ConscriptionPeriodIdFilter')
+                localStorage.setItem('dactConscriptionPeriodIdFilter',select.value)
                 reloadTable()
             })
             document.getElementById("MilitaryComissariatIdFilter").addEventListener('change', function(e) {
                 e.preventDefault()
                 let select = document.getElementById('MilitaryComissariatIdFilter')
-                localStorage.setItem('MilitaryComissariatIdFilter',select.value)
+                localStorage.setItem('dactMilitaryComissariatIdFilter',select.value)
                 reloadTable()
             })
-            $("#btnPrintMilitaryComissariatReport").on('click', function (e) {
+            document.getElementById("btnPrintMilitaryComissariatReport").addEventListener('click', function (e) {
                 e.preventDefault()
                 let militaryComissariatId = document.getElementById('MilitaryComissariatIdFilter').value
-                if (militaryComissariatId == null && militaryComissariatId === "") {
+                if (militaryComissariatId == null || militaryComissariatId === "") {
                     alert("Выберите район для печати")
                     return false
                 }
                 let conscriptionPeriodId = document.getElementById('ConscriptionPeriodIdFilter').value
-                if (conscriptionPeriodId == null && conscriptionPeriodId === "" && conscriptionPeriodId === 0) {
+                if (conscriptionPeriodId == null || conscriptionPeriodId === "" || conscriptionPeriodId === 0) {
                     alert("Выберите призыв для печати")
                     return false
                 }
-                let url = $(e.currentTarget).prop("href");
+                let url = document.querySelector(`${e.currentTarget}`)[0].getAttribute("href");
                 window.location.href = `${url}?militaryComissariatId=${militaryComissariatId}&conscriptionPeriodId=${conscriptionPeriodId}`;
             })
         })      

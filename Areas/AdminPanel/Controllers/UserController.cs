@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -43,10 +44,11 @@ namespace NewSprt.Areas.AdminPanel.Controllers
             int page = 1,
             int permissionId = 0,
             int departmentId = 0,
-            int rows = 10)
+            int rows = 10,
+            bool exitMode = true)
         {
             ViewBag.Pagination = new Pagination(rows, page);
-
+            if (exitMode) return PartialView("_IndexGrid", new List<User>());
             var query = _appDb.Users
                 .Include(u => u.Department)
                 .Include(u => u.UserPermissions)

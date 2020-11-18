@@ -29,7 +29,8 @@
 
     <div class="row align-items-end mt-4 mb-2">
         <div class="col-lg-8">
-            <h5>Всего призывников: <b>@ViewData["recruitsCount"]</b> чел.</h5>
+            <h6>Всего призывников: <b>@ViewData["recruitsCount"]</b> чел. </h6>
+            <h5>Всего призывников в списке: <b id="listCount"></b> чел.</h5>
         </div>
     </div>
 
@@ -58,6 +59,7 @@
                 localStorage.setItem('MilitaryComissariatIdFilter',select.value)
                 reloadTable()
             })
+            reloadTable()
         })      
     </script>
 }

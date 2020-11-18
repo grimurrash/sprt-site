@@ -1,6 +1,6 @@
 ﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
-const toogleTr = '.toogle-tr[data-toggle="toggle"]';
+const toogleTr = '.toogle-tr[data-toggle="toggle"]'
 
 $(function () {
     $(toogleTr).on('change', function () {
@@ -36,10 +36,23 @@ $(function () {
     })
 
     $('[data-toggle="tooltip"]').tooltip()
+    
+    if (localStorage.getItem(saveCurrentPageName)){
+        document.getElementById('currentPage').value = localStorage.getItem(saveCurrentPageName)
+    }
+    
     document.addEventListener("reloadend", () => {
         $('[data-toggle="tooltip"]').tooltip()
-        if (document.getElementById('tableTotalRow')) {
-            $("#listCount").html($("#tableTotalRow").html())
+        if (document.getElementById('listCount') && document.getElementById('mvcGridCount')) {
+            $("#listCount").html($("#mvcGridCount").html())
+        }
+        if (document.getElementById("dactCount")) {
+            $("#listCount").html($("#dactCount").html())
+        }
+        if (document.getElementById("saveCurrentPage") && document.getElementById("currentPage")) {
+            let select = document.getElementById("saveCurrentPage")
+            if (saveCurrentPage) localStorage.setItem(saveCurrentPageName, select.value)
+            document.getElementById('currentPage').value = select.value
         }
     });
     reloadTable()

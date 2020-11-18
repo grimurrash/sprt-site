@@ -27,8 +27,8 @@ namespace NewSprt.Models.Managers
                 var currentConscriptionsPeriod =
                     await _appDb.ConscriptionPeriods.FirstOrDefaultAsync(m => !m.IsArchive);
 
-                var appCount = _appDb.Recruits.Count(m => m.ConscriptionPeriodId == currentConscriptionsPeriod.Id);
-                var zarnicaCount = _zarnicaDb.Recruits.Count();
+                var appCount = await _appDb.Recruits.CountAsync(m => m.ConscriptionPeriodId == currentConscriptionsPeriod.Id);
+                var zarnicaCount = await _zarnicaDb.Recruits.CountAsync();
                 if (zarnicaCount != appCount)
                 {
                     var appRecruits = await _appDb.Recruits
@@ -81,6 +81,7 @@ namespace NewSprt.Models.Managers
                 var updateAdditionalDatas = new List<zModels.AdditionalData>();
                 var additionalDatas = await _zarnicaDb.AdditionalDatas.Where(m => string.IsNullOrEmpty(m.TestNum))
                     .ToListAsync();
+                if (additionalDatas.Count == 0) return true;
                 var recruitIds = additionalDatas.Select(m => m.Id).ToList();
                 var relatives = await _zarnicaDb.Relatives.Where(m => recruitIds.Contains(m.RecruitId) && 
                                                                       m.RelativeType == zModels.Relative.TempRelative).ToListAsync();

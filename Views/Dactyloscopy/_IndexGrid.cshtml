@@ -35,3 +35,6 @@
     })
     .Sortable()
     .Using(GridFilterMode.Excel))
+    
+<input type="hidden" id="saveCurrentPage" value="@paging.CurrentPage">
+<div id="dactCount" style="display: none">Всего: @Model.Count() призывников <br>(Отработано - @Model.Count(m => m.DactyloscopyStatusId == DactyloscopyStatus.Selected); Отправлено ранее - @Model.Count(m => m.DactyloscopyStatusId == DactyloscopyStatus.SentEarlier))</div>

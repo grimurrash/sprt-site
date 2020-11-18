@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +48,10 @@ namespace NewSprt.Controllers
             int conscriptionPeriodId = 0,
             int page = 1,
             int rows = 10,
-            string search = "")
+            string search = "",
+            bool exitMode = true)
         {
+            if (exitMode) return PartialView("_IndexGrid", new List<Recruit>());
             ViewBag.Pagination = new Pagination(rows, page);
             var query = _appDb.Recruits
                 .Include(m => m.MilitaryComissariat)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -38,8 +39,10 @@ namespace NewSprt.Areas.AdminPanel.Controllers
 
         public async Task<IActionResult> IndexGrid(
             int page = 1,
-            int rows = 10)
+            int rows = 10,
+            bool exitMode = true)
         {
+            if (exitMode) return PartialView("_IndexGrid", new List<Department>());
             ViewBag.Pagination = new Pagination(rows, page);
             var departments = await _appDb.Departments
                 .Include(m => m.HeadUser).ToListAsync();

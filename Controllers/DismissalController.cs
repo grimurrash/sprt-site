@@ -32,7 +32,6 @@ namespace NewSprt.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.MilitaryComissariats = await _appDb.MilitaryComissariats.AsNoTracking().ToListAsync();
-            ViewData["dismissalsCount"] = await _appDb.Dismissals.CountAsync();
             return View();
         }
 
@@ -43,7 +42,7 @@ namespace NewSprt.Controllers
             bool isSend = false,
             int page = 1,
             int rows = 10,
-            bool exitMode = false)
+            bool exitMode = true)
         {
             ViewBag.Pagination = new Pagination(rows, page);
             if (exitMode) return PartialView("_IndexGrid", new List<Dismissal>());
@@ -240,6 +239,8 @@ namespace NewSprt.Controllers
             var dismissals = await _appDb.Dismissals
                 .Include(m => m.Recruit)
                 .ThenInclude(m => m.MilitaryComissariat)
+                .OrderBy(m => m.Recruit.MilitaryComissariat.ShortName)
+                .ThenBy(m => m.Recruit.FullName)
                 .ToListAsync();
             return File(ExcelDocumentHelper.GenerateDismissalRecruitsList(dismissals),
                 ExcelDocumentHelper.OutputFormatType,
@@ -252,6 +253,8 @@ namespace NewSprt.Controllers
                 .Include(m => m.Recruit)
                 .ThenInclude(m => m.MilitaryComissariat)
                 .Where(m => m.ReturnDate.DayOfYear == DateTime.Now.DayOfYear)
+                .OrderBy(m => m.Recruit.MilitaryComissariat.ShortName)
+                .ThenBy(m => m.Recruit.FullName)
                 .ToListAsync();
             return File(ExcelDocumentHelper.GenerateReturnTodayDismissalRrcruitsList(dismissals),
                 ExcelDocumentHelper.OutputFormatType,

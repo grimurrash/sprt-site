@@ -18,15 +18,15 @@
         </div>
 
         <div class="col-lg-1 custom-control custom-switch custom-switch-warning">
-            @Html.CheckBox("IsSendFilter", false, new {id = "IsSendFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
+            @Html.CheckBox("IsSendFilter", new {id = "IsSendFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
             @Html.Label("IsSendFilter", "Отправлен", new {@class = "custom-control-label cursor-pointer"})
         </div>
         <div class="col-lg-1 custom-control custom-switch custom-switch-warning">
-            @Html.CheckBox("IsReturnFilter", false, new {id = "IsReturnFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
+            @Html.CheckBox("IsReturnFilter", new {id = "IsReturnFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
             @Html.Label("IsReturnFilter", "Вернулся", new {@class = "custom-control-label cursor-pointer"})
         </div>
         <div class="col-lg-2 custom-control custom-switch custom-switch-warning">
-            @Html.CheckBox("IsReturnTodayFilter", false, new {id = "IsReturnTodayFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
+            @Html.CheckBox("IsReturnTodayFilter", new {id = "IsReturnTodayFilter", autocomplete = "off", @class = "custom-control-input input-warning"})
             @Html.Label("IsReturnTodayFilter", "Возвращается сегодня", new {@class = "custom-control-label cursor-pointer"})
         </div>
     </div>
@@ -40,9 +40,10 @@
         </a>
     </div>
     
-    <div class="row align-items-end mt-1 mb-2">
+    <div class="row align-items-end mt-2 mb-2">
         <div class="col-lg-8">
-            <h5>Всего призывников, временно убывших со сборного пункта: <b>@ViewData["dismissalsCount"]</b> чел.</h5>
+            <h6>Всего призывников, временно убывших со сборного пункта: <b>@ViewData["dismissalsCount"]</b> чел.</h6>
+            <h5>Призывников в списке: <b id="listCount"></b> чел.</h5>
         </div>
         <div class="col-lg-4 text-right">
             <a asp-controller="Dismissal" asp-action="CreateModal" class="btn btn-success"
@@ -51,6 +52,7 @@
             </a>
         </div>
     </div>
+    <input type="hidden" id="currentPage" value="1">
     @Html.AjaxGrid(Url.Action("IndexGrid", new {exitMode = true}))
 </section>
 
@@ -58,6 +60,7 @@
 
 @section Scripts {
     <script>
+        IsSaveCurrentPage(true, "dismCurrentPage")
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById("Search").addEventListener('keyup', function(e) {
                 e.preventDefault()

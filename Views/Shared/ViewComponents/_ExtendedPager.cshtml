@@ -9,7 +9,7 @@
 <div class="mvc-grid-pager mvc-grid-extended-pager @Model.CssClasses" data-show-page-sizes="@Model.ShowPageSizes">
     @if (totalPages > 0)
     {
-        <div class="mvc-grid-pager-extension">Показано @((currentPage - 1) * Model.RowsPerPage + 1)-@(Math.Min(currentPage * Model.RowsPerPage, Model.TotalRows)) из <span id="tableTotalRow">@Model.TotalRows</span></div>
+        <div class="mvc-grid-pager-extension">Показано @((currentPage - 1) * Model.RowsPerPage + 1)-@(Math.Min(currentPage * Model.RowsPerPage, Model.TotalRows)) из @Model.TotalRows</div>
 
         <div>
             @if (currentPage > 1)
@@ -67,3 +67,7 @@
         <input class="mvc-grid-pager-rows" type="hidden" value="@Model.RowsPerPage"/>
     }
 </div>
+
+<div id="mvcGridCountView" style="display: none">Показано @((currentPage - 1) * Model.RowsPerPage + 1)-@(Math.Min(currentPage * Model.RowsPerPage, Model.TotalRows)) из @Model.TotalRows</div>
+<div id="mvcGridCount" style="display: none">@Model.TotalRows</div>
+<input type="hidden" id="saveCurrentPage" value="@Model.CurrentPage">
