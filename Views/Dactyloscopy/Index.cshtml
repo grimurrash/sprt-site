@@ -32,10 +32,10 @@
             <h5>Всего призывников: <b>@ViewData["recruitsCount"]</b> чел.</h5>
         </div>
         <div class="col-lg-6 text-right">
-            <a asp-controller="Dactyloscopy" asp-action="PrintMilitaryComissariatReport" id="btnPrintMilitaryComissariatReport" class="btn btn-info">
+            <a asp-controller="Dactyloscopy" asp-action="PrintMilitaryComissariatReport" id="btnPrintMilitaryComissariatReport" class="btn btn-danger">
                <i class="fas fa-print"></i> Печать районного списка
             </a>
-            <a asp-controller="Dactyloscopy" asp-action="ConscriptionPeriodReport" class="btn btn-info"
+            <a asp-controller="Dactyloscopy" asp-action="ConscriptionPeriodReport" class="btn btn-danger"
                onclick="showModal(event)" data-alert-text="Не удалось открыть окно печати журнала учета военослужащих">
                  <i class="fas fa-print"></i> Печать журнала учета
             </a>

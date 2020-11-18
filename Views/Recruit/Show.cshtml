@@ -127,7 +127,7 @@
             @if (!Model.ConscriptionPeriod.IsArchive)
             {
                 <div class="col-md-3 d-flex align-items-center justify-content-start">
-                    <a class="btn btn-info"
+                    <a class="btn btn-danger"
                        asp-controller="Dactyloscopy" asp-action="PrintDactyloscopyCard"
                        asp-route-recruitId="@Model.Id">
                         <i class="fas fa-print"></i> Печать Дактокарты
@@ -136,6 +136,35 @@
             }
         }
     </div>
+        <hr>
+        <h4>Паспорт гражданина РФ</h4>
+        <div class="row">
+            <div class="form-group col-md-1">
+                @Html.LabelFor(m => m.ZRecruit.AdditionalData.PassportSeries, "Серия", new {@class = "control-label"})
+                @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.PassportSeries, new {@class = "form-control", disabled = "true"})
+                @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.PassportSeries)
+            </div>
+            <div class="form-group col-md-2">
+                @Html.LabelFor(m => m.ZRecruit.AdditionalData.PassportNumber, "Номер", new {@class = "control-label"})
+                @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.PassportNumber, new {@class = "form-control", disabled = "true"})
+                @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.PassportNumber)
+            </div>
+            <div class="form-group col-md-2">
+                @Html.LabelFor(m => m.ZRecruit.AdditionalData.PassportIssueDate, "Дата выдачи", new {@class = "control-label"})
+                @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.PassportIssueDate, "{0:dd.MM.yyyy}", new {@class = "form-control", disabled = "true"})
+                @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.PassportIssueDate)
+            </div>
+            <div class="form-group col-md-3">
+                @Html.LabelFor(m => m.ZRecruit.AdditionalData.PassportIssueOrganization, "Кем выдан", new {@class = "control-label"})
+                @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.PassportIssueOrganization, new {@class = "form-control", disabled = "true"})
+                @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.PassportIssueOrganization)
+            </div>
+            <div class="form-group col-md-4">
+                @Html.LabelFor(m => m.ZRecruit.AdditionalData.BirthPlace, "Место рождения", new {@class = "control-label"})
+                @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.BirthPlace, new {@class = "form-control", disabled = "true"})
+                @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.BirthPlace)
+            </div>
+        </div>
     <hr>
     <h4>Справка тестирования</h4>
     <div class="row">
@@ -150,33 +179,5 @@
             @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.TestDate)
         </div>
     </div>
-    <hr>
-    <h4>Паспорт гражданина РФ</h4>
-    <div class="row">
-        <div class="form-group col-md-1">
-            @Html.LabelFor(m => m.ZRecruit.AdditionalData.PassportSeries, "Серия", new {@class = "control-label"})
-            @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.PassportSeries, new {@class = "form-control", disabled = "true"})
-            @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.PassportSeries)
-        </div>
-        <div class="form-group col-md-2">
-            @Html.LabelFor(m => m.ZRecruit.AdditionalData.PassportNumber, "Номер", new {@class = "control-label"})
-            @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.PassportNumber, new {@class = "form-control", disabled = "true"})
-            @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.PassportNumber)
-        </div>
-        <div class="form-group col-md-2">
-            @Html.LabelFor(m => m.ZRecruit.AdditionalData.PassportIssueDate, "Дата выдачи", new {@class = "control-label"})
-            @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.PassportIssueDate, "{0:dd.MM.yyyy}", new {@class = "form-control", disabled = "true"})
-            @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.PassportIssueDate)
-        </div>
-        <div class="form-group col-md-3">
-            @Html.LabelFor(m => m.ZRecruit.AdditionalData.PassportIssueOrganization, "Кем выдан", new {@class = "control-label"})
-            @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.PassportIssueOrganization, new {@class = "form-control", disabled = "true"})
-            @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.PassportIssueOrganization)
-        </div>
-        <div class="form-group col-md-4">
-            @Html.LabelFor(m => m.ZRecruit.AdditionalData.BirthPlace, "Место рождения", new {@class = "control-label"})
-            @Html.TextBoxFor(m => m.ZRecruit.AdditionalData.BirthPlace, new {@class = "form-control", disabled = "true"})
-            @Html.ValidationMessageFor(m => m.ZRecruit.AdditionalData.BirthPlace)
-        </div>
-    </div>
+
 </section>

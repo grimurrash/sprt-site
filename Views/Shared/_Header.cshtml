@@ -48,34 +48,37 @@
                         Призыв
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="RecruitMenuLink">
-                        @if (User.IsAdmin())
+                        @if (User.IsPermission(Permission.Dismissals) || User.IsPermission(Permission.Dactyloscopy) || User.IsPermission(Permission.Vvk))
                         {
-                            <li>
-                                <a class="dropdown-item" asp-controller="Recruit" asp-action="Index">Список призывников</a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                        }
-                        @if (User.IsPermission(Permission.Dismissals))
-                        {
-                            
-                            <li>
-                                <a class="dropdown-item" asp-controller="Dismissal" asp-action="Index">Увольнительные</a>
-                            </li>
-                        }
-                        @if (User.IsPermission(Permission.Dactyloscopy))
-                        {
-                            
-                            <li>
-                                <a class="dropdown-item" asp-controller="Dactyloscopy" asp-action="Index">Дактилоскопия</a>
-                            </li>
-                        }
-                        @if (User.IsPermission(Permission.Vvk))
-                        {
-                            <li>
-                                <a class="dropdown-item" asp-controller="MedicalTest" asp-action="Index">COVID-19</a>
-                            </li>
+                            @if (User.IsAdmin())
+                            {
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Recruit" asp-action="Index">Список призывников</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                            }
+                            @if (User.IsPermission(Permission.Dismissals))
+                            {
+
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Dismissal" asp-action="Index">Увольнительные</a>
+                                </li>
+                            }
+                            @if (User.IsPermission(Permission.Dactyloscopy))
+                            {
+
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Dactyloscopy" asp-action="Index">Дактилоскопия</a>
+                                </li>
+                            }
+                            @if (User.IsPermission(Permission.Vvk))
+                            {
+                                <li>
+                                    <a class="dropdown-item" asp-controller="MedicalTest" asp-action="Index">COVID-19</a>
+                                </li>
+                            }
                         }
                     </ul>
                 </li>
