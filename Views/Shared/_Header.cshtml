@@ -18,10 +18,11 @@
                         <li>
                             <a class="dropdown-item" asp-area="AdminPanel" asp-controller="User" asp-action="Index">Админ панель</a>
                         </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                     }
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
+                  
                     <a asp-controller="Account" asp-action="Logout" class="dropdown-item">Выход</a>
                 </ul>
             </div>
@@ -52,30 +53,26 @@
                             <li>
                                 <a class="dropdown-item" asp-controller="Recruit" asp-action="Index">Список призывников</a>
                             </li>
-                        }
-                        @if (User.IsPermission(Permission.Dismissals))
-                        {
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                        }
+                        @if (User.IsPermission(Permission.Dismissals))
+                        {
+                            
                             <li>
                                 <a class="dropdown-item" asp-controller="Dismissal" asp-action="Index">Увольнительные</a>
                             </li>
                         }
                         @if (User.IsPermission(Permission.Dactyloscopy))
                         {
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
+                            
                             <li>
                                 <a class="dropdown-item" asp-controller="Dactyloscopy" asp-action="Index">Дактилоскопия</a>
                             </li>
                         }
                         @if (User.IsPermission(Permission.Vvk))
                         {
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
                             <li>
                                 <a class="dropdown-item" asp-controller="MedicalTest" asp-action="Index">COVID-19</a>
                             </li>

@@ -16,7 +16,7 @@ using NewSprt.ViewModels;
 
 namespace NewSprt.Controllers
 {
-    [Authorize(Policy = Permission.Dactyloscopy)]
+    [Authorize(Policy = Permission.Vvk)]
     public class MedicalTestController : Controller
     {
         private readonly AppDbContext _appDb;

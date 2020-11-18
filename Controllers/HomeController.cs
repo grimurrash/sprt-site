@@ -14,7 +14,7 @@ namespace NewSprt.Controllers
             return View();
         }
 
-        public IActionResult Task()
+        public IActionResult Tasks()
         {
             return RedirectToAction("Index", "WorkTask");
         }
