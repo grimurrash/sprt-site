@@ -69,9 +69,6 @@ namespace NewSprt
                 options.SerializerSettings.DateFormatString = "dd.MM.yyyy";
             });
             services.AddMvc().AddRazorOptions(options => options.AllowRecompilingViewsOnFileChange = true);
-            services.AddDistributedMemoryCache();
-            services.AddSession();
-
             services.Configure<RequestLocalizationOptions>(opts =>
             {
                 var supportedCultures = new[]
@@ -86,6 +83,8 @@ namespace NewSprt
 
             CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("ru-RU");
             CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("ru-RU");
+            services.AddDistributedMemoryCache();
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -102,13 +101,13 @@ namespace NewSprt
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
+            app.UseSession();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
             app.UseAuthentication();
-            app.UseSession();
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

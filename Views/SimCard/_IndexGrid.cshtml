@@ -1,0 +1,38 @@
+﻿@model IEnumerable<NewSprt.Data.App.Models.Recruit>
+
+@{
+    Pagination paging = ViewBag.Pagination;
+}
+
+@(Html.Grid(Model)
+    .Build(columns =>
+    {
+        columns.Add().RenderedAs((model, row) => paging.Rows * paging.CurrentPage - paging.Rows + row + 1).Titled("#");
+        columns.Add(model => model.Id).Titled("Id").Hidden();
+        columns.Add(model => model.FullName).Titled("ФИО");
+        columns.Add(model => model.BirthDate.ToShortDateString()).RenderedAs(m => m.BirthDate.ToShortDateString())
+            .Titled("Дата рождения");
+        columns.Add(model => model.MilitaryComissariat.ShortName).Titled("Военный комиссариат");
+        columns.Add(model => model.DeliveryDate.ToShortDateString()).RenderedAs(m => m.DeliveryDate.ToShortDateString())
+            .Titled("Дата доставки").Filterable(true).UsingFilterOptions();
+        columns.Add(model => model.ZRecruit.MobilePhone).Titled("Мобильный телефон").Filterable(false);
+        columns.Add(model => model.ZRecruit.HomePhone).Titled("Домашний телефон").Filterable(false);
+        columns.Add(model =>
+            $"<a class='btn btn-info' href='{Url.Action("Show", "Recruit", new {id = model.Id})}'" +
+            " data-placement='top' data-toggle='tooltip' title='Открыть окно с информацией о призывнике'>" +
+            "<i class='fas fa-external-link-alt'></i></a>").Css("w-px-60 button").Encoded(false);
+    })
+    .Css("table-striped")
+    .AppendCss("table-hover")
+    .Empty("Призывники не найдены")
+    .Pageable(pager =>
+    {
+        pager.PartialViewName = "ViewComponents/_ExtendedPager";
+        pager.PageSizes = new Dictionary<int, string> {{0, "Все"}, {10, "10"}, {20, "20"}, {50, "50"}, {100, "100"}};
+        pager.ShowPageSizes = true;
+        pager.PagesToDisplay = 5;
+        pager.CurrentPage = paging.CurrentPage;
+        pager.RowsPerPage = paging.Rows;
+    })
+    .Sortable()
+    .Using(GridFilterMode.Excel))

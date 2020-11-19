@@ -1,7 +1,27 @@
 ﻿@model NewSprt.Data.App.Models.Recruit
 
 <section class="container">
-    <h2>Информация о призывнике</h2>
+    <div>
+        <div class="row">
+            <div class="col-md-7">
+                <h2>Информация о призывнике</h2>
+            </div>
+            <div class="col-md-5 text-right">
+                @if (User.IsAdmin())
+                {
+                    <a class="btn btn-danger"
+                       data-placement="top" data-toggle="tooltip" title="Очистка событий и связей с персональщиком"
+                       onclick="actionWarning(event)"
+                       data-alert-text="Вы уверены что хотите очистить события и связи призывника (подготовка к удалению)? ПОСЛЕ УДАЛЕНИЯ ОБЯЗАТЕЛЬНО УДАЛИТЕ ПРИЗЫНИКА ИЗ ЗАРНИЦЫ!!!!"
+                       asp-controller="Recruit"
+                       asp-action="СlearEventsAndPersonal"
+                       asp-route-recruitId="@Model.Id">
+                        <i class="fas fa-trash-alt"></i> Подготовить призывника к удалению
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
     <hr>
     <h4>Общие сведения</h4>
     <div class="row">

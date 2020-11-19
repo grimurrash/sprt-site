@@ -48,6 +48,10 @@ function reloadTable() {
         select = document.getElementById('IsNotNumberFilter')
         grid.url.searchParams.set('isNotNumber', select.checked)
     }
+    if (document.getElementById('IsNotPhoneFilter')) {
+        select = document.getElementById('IsNotPhoneFilter')
+        grid.url.searchParams.set('isNotPhone', select.checked)
+    }
     if (document.getElementById('IsReturnTodayFilter')) {
         select = document.getElementById('IsReturnTodayFilter')
         grid.url.searchParams.set('isReturnToday', select.checked)

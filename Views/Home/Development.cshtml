@@ -1,7 +1,7 @@
 ﻿@{
     var startDate = new DateTime(2020, 11, 18).DayOfYear;
     var targetDate = new DateTime(2020, 12, 22).DayOfYear - startDate;
-    var today = DateTime.Now.DayOfYear - startDate;
+    var today = DateTime.Now.DayOfYear - startDate + 1;
     var wValue = 100 / targetDate * today;
     startDate = 0;
 }
@@ -29,7 +29,7 @@
                 <div class="list-group-item list-group-item-success">
                     <div class="row">
                         <h6 class="col-md-10"><i class="fas fa-check-circle"></i> Полностью переписан весь функционал кроме спец. документов</h6>
-                        <small class="text-right col-md-2">17.11.2020 21:40</small>
+                        <small class="text-right col-md-2">17.11.2020</small>
                     </div>
                 </div>
                 <div class="list-group-item list-group-item-success">
@@ -39,30 +39,23 @@
                             <i class="fas fa-check-circle"></i> Сихронизация номера справки<br>
                             <i class="fas fa-check-circle"></i> Измение визуальной части сайта: кнопки, макеты таблиц, окна призывника и дактилоскопии<br>
                             <i class="fas fa-check-circle"></i> Добавление призывников из базы "Весна 2020"<br>
-                            <i class="fas fa-check-circle"></i> Исправлений ошибок
-                        </h6>
-                        <small class="text-right col-md-2">18.11.2020 15:20</small>
-                    </div>
-                </div>
-                <div class="list-group-item list-group-item-success">
-                    <div class="row">
-                        <h6 class="col-md-10">
-                            <i class="fas fa-check-circle"></i> Исправление ошибки с изменением статуса дактилоскопии на "отправлен ранее"<br>
+                            <i class="fas fa-check-circle"></i> Исправление ошибок<br>
                             <i class="fas fa-check-circle"></i> Добавления сохранения страниц при переходе на другую страницу<br>
+                            <i class="fas fa-check-circle"></i> Добавление сохранения страницы-таблицы при выходе из модального окна (добавление, редактирование, удаление)<br>
                         </h6>
-                        <small class="text-right col-md-2">18.11.2020 17:21</small>
+                        <small class="text-right col-md-2">18.11.2020</small>
                     </div>
                 </div>
                 <div class="list-group-item list-group-item-success">
-                    <div class="row">
-                        <h6 class="col-md-10">
-                            <i class="fas fa-check-circle"></i> Добавление сохранения страницы-таблицы при выходе из модального окна (добавление, редактирование, удаление)<br>
-                            <i class="fas fa-check-circle"></i> Исправление ошибок с неверным выводом кол-ва строк в таблицах<br>
-                            
-                        </h6>
-                        <small class="text-right col-md-2">18.11.2020 18:58</small>
-                    </div>
-                </div>
+                     <div class="row">
+                         <h6 class="col-md-10">
+                             <i class="fas fa-check-circle"></i> Добавление очистки событий и связей с Персональщиком (перед удалением)<br>
+                             <i class="fas fa-check-circle"></i> Добавление редактирования номера справки и даты тестирования на сайте<br>
+                             <i class="fas fa-check-circle"></i> Добавление печати списка призывников (ФИО и Телефон) с выбором промежутка доставки
+                         </h6>
+                         <small class="text-right col-md-2">19.11.2020</small>
+                     </div>
+                 </div>
             </div>
         </div>
         <div class="col-md-1"></div>
@@ -82,13 +75,7 @@
                     <h6> <i class="fas fa-calendar"></i> Добавление печати контроля выполнения (Хайрутдинов)</h6>
                 </div>
                 <div class="list-group-item">
-                    <h6> <i class="fas fa-calendar"></i> Добавление редактирования номера справки и даты тестирования на сайте (Хасанов)</h6>
-                </div>
-                <div class="list-group-item">
-                    <h6> <i class="fas fa-calendar"></i> Добавление поиска и удаления дубликатов призывников (Львов, Могелевец, Хуснуллин)</h6>
-                </div>
-                <div class="list-group-item">
-                    <h6> <i class="fas fa-calendar"></i> Добавление печати списка призывников (ФИО и Телефон) с выбором промежутка доставки (Газеева)</h6>
+                    <h6> <i class="fas fa-calendar"></i> Убрать из проекта Сессии (производительность + структура)</h6>
                 </div>
                 <div class="list-group-item">
                     <h6> <i class="fas fa-calendar"></i> Добавление "планы по сайту" как отдельный функционал на сайте</h6>

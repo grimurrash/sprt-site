@@ -40,6 +40,8 @@ namespace NewSprt.Data.Zarnica.Models
         public List<EventControl> Events { get; set; }
         public List<SpecialPersonToRecruit> RecruitFromSpecialPersons { get; set; }
 
+        [NotMapped] public bool IsNotPhone { get; set; }
+        
         public Recruit()
         {
             Events = new List<EventControl>();
@@ -47,8 +49,8 @@ namespace NewSprt.Data.Zarnica.Models
         }
 
         public EventControl LastEvent => Events.OrderBy(m => m.Id).Last();
-        public string MobilePhone => $"({MobilePhoneCode}) {MobilePhoneNumber}";
-        public string HomePhone => $"({HomePhoneCode}) {HomePhoneNumber}";
+        public string MobilePhone => !string.IsNullOrEmpty(MobilePhoneNumber) ? $"({MobilePhoneCode}) {MobilePhoneNumber}" : "";
+        public string HomePhone => !string.IsNullOrEmpty(HomePhoneNumber) ? $"({HomePhoneCode}) {HomePhoneNumber}" : "";
         public string FullName => $"{LastName} {FirstName} {Patronymic}";
 
         public string FullAddress => $"{Settlement.Name}, + ул. {AdditionalData.Street}, д. {AdditionalData.House}"

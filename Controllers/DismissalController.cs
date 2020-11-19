@@ -61,6 +61,7 @@ namespace NewSprt.Controllers
             {
                 query = query.Where(m => m.ReturnDate.DayOfYear == DateTime.Now.DayOfYear);
             }
+
             var dismissals = await query
                 .OrderBy(m => m.ReturnDate.DayOfYear)
                 .ThenBy(m => m.Recruit.LastName)
@@ -114,7 +115,7 @@ namespace NewSprt.Controllers
 
             if (isReturn) dismissals = dismissals.Where(m => m.IsReturn).ToList();
             if (isSend) dismissals = dismissals.Where(m => m.IsSend).ToList();
-            
+
             return PartialView("_IndexGrid", dismissals);
         }
 
@@ -128,7 +129,6 @@ namespace NewSprt.Controllers
             });
         }
 
-        
 
         public async Task<IActionResult> Create(DismissalViewModel model)
         {
@@ -136,13 +136,14 @@ namespace NewSprt.Controllers
             {
                 return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
             }
+
             try
             {
                 var appRecruit = await _appDb.Recruits.FirstOrDefaultAsync(m => m.Id == model.RecruitId);
                 var zRecruit = await _zarnicaDb.Recruits
                     .Include(m => m.Events)
                     .FirstOrDefaultAsync(m => m.Id == appRecruit.RecruitId);
-                
+
                 var dismissal = new Dismissal
                 {
                     RecruitId = model.RecruitId,
@@ -167,7 +168,8 @@ namespace NewSprt.Controllers
             ViewBag.ConscriptionPeriodId =
                 (await _appDb.ConscriptionPeriods.AsNoTracking().FirstOrDefaultAsync(m => !m.IsArchive)).Id;
             var dismissal = await _appDb.Dismissals.FirstOrDefaultAsync(m => m.Id == id);
-            ViewBag.Recruits = await _appDb.Recruits.Where(m => m.Id == dismissal.RecruitId).Select(m => new {m.Id, m.FullName}).ToListAsync();
+            ViewBag.Recruits = await _appDb.Recruits.Where(m => m.Id == dismissal.RecruitId)
+                .Select(m => new {m.Id, m.FullName}).ToListAsync();
             return PartialView("_EditModal", new DismissalViewModel
             {
                 Id = dismissal.Id,
@@ -184,6 +186,7 @@ namespace NewSprt.Controllers
             {
                 return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
             }
+
             try
             {
                 var dismissal = await _appDb.Dismissals.FirstOrDefaultAsync(m => m.Id == model.Id);

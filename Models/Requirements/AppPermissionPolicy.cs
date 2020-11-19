@@ -7,7 +7,7 @@ namespace NewSprt.Models.Requirements
     {
         private static readonly List<string> PermissionPolicyName = new List<string>
         {
-            Permission.Admin, Permission.Dactyloscopy, Permission.PersonalGuidance, Permission.Secretary, Permission.Dismissals, Permission.Vvk
+            Permission.Admin, Permission.Dactyloscopy, Permission.PersonalGuidance, Permission.Secretary, Permission.Dismissals, Permission.Vvk, Permission.SimCard
         };
 
         public static IEnumerable<string> PolicyNameList()

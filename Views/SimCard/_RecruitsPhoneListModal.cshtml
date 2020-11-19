@@ -1,0 +1,78 @@
+﻿@model List<NewSprt.Data.App.Models.MilitaryComissariat>
+
+<div class="modal fade" data-backdrop="static" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModal" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Список телефонов призывников</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                @using (Html.BeginForm(
+                    "PrintRecruitsPhoneList",
+                    "SimCard",
+                    null,
+                    FormMethod.Get,
+                    true,
+                    new {@class = "form-horizontal needs-validation", id = "modalForm", novalidate = "", role = "form"}))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        @Html.Label("militaryComissariatId", "Выберите район (необязательно)", new {@class = "control-label"})
+                        @Html.DropDownList(
+                            "militaryComissariatId",
+                            new SelectList(
+                                Model,
+                                "Id",
+                                "ShortName",
+                                0
+                                ),
+                            "Выберите район",
+                            new {@class = "form-control", id = "militaryComissariatId"})
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButton("printMode", "today", new {@class = "form-check-input isPrintMode", id = "printModeToday", @checked=true})
+                        @Html.Label("printModeToday", "Сегодня",new {@class = "form-check-label curson-pointer"})
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButton("printMode", "period", new {@class = "form-check-input isPrintMode", id = "printModePeriod"})
+                        @Html.Label("printModePeriod", "Выбрать промежуток",new {@class = "form-check-label curson-pointer"})
+                    </div>
+                    <div class="form-check form-check-inline">
+                        @Html.RadioButton("printMode", "full", new {@class = "form-check-input isPrintMode", id = "printModeFull"})
+                        @Html.Label("printModeFull", "Весь призыв",new {@class = "form-check-label curson-pointer"})
+                    </div>
+                    <div id="periodMode">
+                        <div class="form-group">
+                            @Html.Label("startDate", "Начало", new {@class = "control-label"})
+                            @Html.TextBox("startDate", "{0:yyyy-MM-dd}", new {@class = "form-control", type="date", autocomplete="off"})
+                        </div>
+                        <div class="form-group">
+                            @Html.Label("endDate","Конец", new {@class = "control-label"})
+                            @Html.TextBox("endDate", "{0:yyyy-MM-dd}", new {@class = "form-control", type="date", autocomplete="off"})
+                        </div>
+                    </div>
+                    <input type="submit" hidden="hidden" id="saveBtn"/>
+                }
+            </div>
+            <div class="modal-footer d-flex justify-content-sm-between">
+                <button class="btn btn btn-danger" onclick="document.getElementById('saveBtn').click()">Печать</button>
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Закрыть</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.isPrintMode').on('change', function () {
+        let value = $(this).val();
+        if (value === "period") {
+            $("#periodMode").removeClass("hide");
+        } else {
+            $("#periodMode").addClass("hide");
+        }
+    }) 
+    $(".isPrintMode:checked").change();
+</script>

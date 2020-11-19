@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -173,6 +174,39 @@ namespace NewSprt.Controllers
                 .Include(m => m.Events)
                 .FirstOrDefaultAsync(m => m.Id == appRecruit.RecruitId);
             return new JsonResult(zRecruit.Status);
+        }
+
+        [Authorize(Policy = Permission.Admin)]
+        public async Task<IActionResult> СlearEventsAndPersonal(int recruitId)
+        {
+            var transaction = await _zarnicaDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+            try
+            {
+                var recruit = await _appDb.Recruits.FirstOrDefaultAsync(m => m.Id == recruitId);
+                var zRecruit = await _zarnicaDb.Recruits
+                    .Include(m => m.Events)
+                    .FirstOrDefaultAsync(m => m.Id == recruit.RecruitId);
+                var personToRecruits = await _zarnicaDb.SpecialPersonToRecruits
+                    .Where(m => m.RecruitId == zRecruit.Id).ToListAsync();
+                if (personToRecruits.Any())
+                {
+                    _zarnicaDb.SpecialPersonToRecruits.RemoveRange(personToRecruits);
+                }
+            
+                _zarnicaDb.EventControls.RemoveRange(zRecruit.Events);
+                await _zarnicaDb.SaveChangesAsync();
+                transaction.Commit();
+                HttpContext.Session.Set("alert",
+                    new AlertViewModel(AlertType.Success, "Призывник успешно удалено!"));
+            }
+            catch
+            {
+                transaction.Rollback();
+                HttpContext.Session.Set("alert",
+                    new AlertViewModel(AlertType.Error, "Ошибка при удалении призывника!"));
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

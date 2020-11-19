@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ClosedXML.Report;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using NewSprt.Data.App.Models;
 
 namespace NewSprt.Models.Helper.Documents
@@ -92,6 +93,28 @@ namespace NewSprt.Models.Helper.Documents
             var document = new XLTemplate(tempFile);
             document.AddVariable("CurrentDate", DateTime.Now.ToShortDateString());
             document.AddVariable("Dismissals", dismissalList);
+            document.Generate();
+            document.SaveAs(tempFile);
+            return new FileStream(tempFile, FileMode.Open);
+        }
+        
+        public static FileStream GenerateRecruitsPhoneList(IEnumerable<Data.Zarnica.Models.Recruit> recruits, string header)
+        {
+            var index = 1;
+            var recruitsList = recruits.Select(m => new
+            {
+                Index = index++,
+                m.FullName,
+                m.BirthDate,
+                MilitaryComissariat = m.MilitaryComissariat.Name,
+                MobilePhone = $"8 ({m.MobilePhoneCode}) {m.MobilePhoneNumber}"
+            }).ToList();
+            const string templateFile = TemplatePath + "SimCards/recruits_phone_list.xlsx";
+            const string tempFile = TempPath + "recruits_phone_list.xlsx";
+            CopyTemplateFileToTempDirectory(templateFile, tempFile);
+            var document = new XLTemplate(tempFile);
+            document.AddVariable("Header", header);
+            document.AddVariable("Recruits", recruitsList);
             document.Generate();
             document.SaveAs(tempFile);
             return new FileStream(tempFile, FileMode.Open);

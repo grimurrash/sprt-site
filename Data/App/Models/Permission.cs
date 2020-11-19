@@ -25,5 +25,6 @@ namespace NewSprt.Data.App.Models
         public const string PersonalGuidance = "PersonalGuidance";
         public const string Secretary = "Secretary";
         public const string Dismissals = "Dismissals";
+        public const string SimCard = "SimCard";
     }
 }

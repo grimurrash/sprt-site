@@ -13,6 +13,7 @@ using NewSprt.Models.Extensions;
 using NewSprt.Models.Helper.Documents;
 using NewSprt.Models.Managers;
 using NewSprt.ViewModels;
+using NewSprt.ViewModels.FormModels;
 
 namespace NewSprt.Controllers
 {
@@ -97,26 +98,58 @@ namespace NewSprt.Controllers
             var recruitsIds = appRecruits.Select(r => r.RecruitId);
             var zRecruits = await _zarnicaDb.Recruits
                 .Include(m => m.AdditionalData)
-                .Include(m => m.MilitaryComissariat)
                 .Where(m => recruitsIds.Contains(m.Id))
                 .AsNoTracking().ToListAsync();
             foreach (var recruit in zRecruits)
             {
-                appRecruits.First(m => m.RecruitId == recruit.Id).ZRecruit = recruit;
                 if (string.IsNullOrEmpty(recruit.AdditionalData.TestNum) ||
                     recruit.AdditionalData.TestDate == null ||
                     !Regex.IsMatch(recruit.AdditionalData.TestNum, @"^\d{1,2}/\d{1,4}",
                         RegexOptions.Compiled | RegexOptions.IgnoreCase))
                 {
-                    recruit.AdditionalData.IsNotTest = true;
+                    recruit.AdditionalData.IsNotPhone = true;
                 }
+                appRecruits.First(m => m.RecruitId == recruit.Id).ZRecruit = recruit;
             }
 
-            if (isNotNumber) appRecruits = appRecruits.Where(m => m.ZRecruit.AdditionalData.IsNotTest).ToList();
+            if (isNotNumber) appRecruits = appRecruits.Where(m => m.ZRecruit.AdditionalData.IsNotPhone).ToList();
 
             return PartialView("_IndexGrid", appRecruits);
         }
 
+        public async Task<IActionResult> EditTestNumberModal(int id)
+        {
+            var recruit = await _zarnicaDb.Recruits.FirstOrDefaultAsync(m => m.Id == id);
+            var additionalData = await _zarnicaDb.AdditionalDatas.FirstOrDefaultAsync(m => m.Id == id);
+            return PartialView("_EditTestNumberModal", new MedicalTestNumberEditViewModel
+            {
+                Id = additionalData.Id,
+                TestNum = additionalData.TestNum,
+                TestDate = recruit.DelivaryDate
+            });
+        }
+
+        public async Task<IActionResult> EditTestNumber(MedicalTestNumberEditViewModel model)
+        {
+            if (!Regex.IsMatch(model.TestNum, @"^\d{1,2}/\d{1,4}",
+                    RegexOptions.Compiled | RegexOptions.IgnoreCase))
+            {
+                ModelState.AddModelError("TestNum", "Неверный формат номера справки");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return new JsonResult(new {isSucceeded = false, errors = ModelState.Errors()});
+            }
+            
+            var additionalData = await _zarnicaDb.AdditionalDatas.FirstOrDefaultAsync(m => m.Id == model.Id);
+            additionalData.TestNum = model.TestNum;
+            additionalData.TestDate = model.TestDate;
+            _zarnicaDb.AdditionalDatas.Update(additionalData);
+            await _zarnicaDb.SaveChangesAsync();
+            return new JsonResult(new {isSucceeded = true});
+        }
+        
         public async Task<IActionResult> MedicalTestProtocolModal()
         {
             var teams = await _zarnicaDb.Teams.Select(m => m.TeamNumber).Where(m => m != null).AsNoTracking()

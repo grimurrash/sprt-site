@@ -774,15 +774,15 @@ namespace NewSprt.Controllers
         /// <param name="requirementId">Id требования</param>
         /// <param name="personId">Id персональщика</param>
         /// <returns></returns>
-        public IActionResult DeleteRequirementFromPerson(int requirementId, int personId)
+        public async Task<IActionResult> DeleteRequirementFromPerson(int requirementId, int personId)
         {
-            var transaction = _zarnicaDb.Database.BeginTransaction(IsolationLevel.ReadCommitted);
+            var transaction = await _zarnicaDb.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
             try
             {
-                var specialPersonToRequirement = _zarnicaDb.SpecialPersonToRequirements
+                var specialPersonToRequirement = await _zarnicaDb.SpecialPersonToRequirements
                     .Include(m => m.Requirement)
                     .ThenInclude(m => m.SpecialPersonsInRequirement)
-                    .FirstOrDefault(m =>
+                    .FirstOrDefaultAsync(m =>
                         m.RequirementId == requirementId && m.SpecialPersonId == personId);
                 if (specialPersonToRequirement == null)
                 {
@@ -796,19 +796,19 @@ namespace NewSprt.Controllers
                     specialPersonToRequirement.Requirement.SpecialPersonsInRequirement.Count - 1;
                 _zarnicaDb.Requirements.Update(specialPersonToRequirement.Requirement);
                 _zarnicaDb.SpecialPersonToRequirements.Remove(specialPersonToRequirement);
-                _zarnicaDb.SaveChanges();
+                await _zarnicaDb.SaveChangesAsync();
                 transaction.Commit();
                 HttpContext.Session.Set("alert",
                     new AlertViewModel(AlertType.Success, "Требование персональщика успешно удалено!"));
-                return RedirectToAction("SearchForDuplicates");
             }
             catch
             {
                 transaction.Rollback();
                 HttpContext.Session.Set("alert",
                     new AlertViewModel(AlertType.Error, "Ошибка при удалении требования!"));
-                return RedirectToAction("SearchForDuplicates");
             }
+            
+            return RedirectToAction("SearchForDuplicates");
         }
 
         /// <summary>
