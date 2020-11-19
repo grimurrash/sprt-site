@@ -102,9 +102,11 @@ function showModal(e) {
             let modalElement = $('#showModal')
             modalElement.modal('toggle');
             modalElement.on('hidden.bs.modal', function () {
+                
                 if ($('.mvc-grid:not(.not-reload)').exists()) {
                     reloadTable()
                 } else {
+                    localStorage.setItem("scroll", window.pageYOffset);
                     window.location.reload()
                 }
                 $("#modalContainer").html("")

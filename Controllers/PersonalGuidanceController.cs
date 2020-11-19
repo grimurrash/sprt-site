@@ -10,6 +10,7 @@ using appModels = NewSprt.Data.App.Models;
 using NewSprt.Data.Zarnica;
 using NewSprt.Data.Zarnica.Models;
 using NewSprt.Models.Extensions;
+using NewSprt.Models.Helper.Documents;
 using NewSprt.ViewModels;
 using NewSprt.ViewModels.SpecialGuidance;
 using NewSprt.ViewModels.FormModels;
@@ -914,6 +915,37 @@ namespace NewSprt.Controllers
                     new AlertViewModel(AlertType.Error, "Ошибка при удалении персональщика!"));
                 return RedirectToAction("RemovingTheDepartingSpecialPerson");
             }
+        }
+
+        public async Task<IActionResult> PrintPersonalGuidanceReport(
+            string militaryComissariatId = "",
+            int directiveTypeId = 0)
+        {
+            var qPersons = _zarnicaDb.SpecialPersons
+                .Include(m => m.SpecialPersonToRequirements)
+                .ThenInclude(m => m.Requirement)
+                .ThenInclude(m => m.MilitaryUnit).AsNoTracking().AsQueryable();
+            if (!string.IsNullOrEmpty(militaryComissariatId))
+            {
+                qPersons = qPersons.Where(m => m.MilitaryComissariatCode == militaryComissariatId);
+            }
+
+            if (directiveTypeId != 0)
+            {
+                qPersons = qPersons.Where(m => m.Requirement.DirectiveTypeId == directiveTypeId);
+            }
+
+            var persons = await qPersons.OrderBy(m => m.LastName).ToListAsync();
+
+            if (!string.IsNullOrEmpty(militaryComissariatId))
+            {
+                var militaryComissariat = await _zarnicaDb.MilitaryComissariats.FirstOrDefaultAsync(m => m.Id == militaryComissariatId);
+                return File(WordDocumentHelper.GeneratePersonalGuidanceReport(persons, militaryComissariat.Name),
+                    WordDocumentHelper.OutputFormatType,
+                    $"{militaryComissariat.Name}.docx");
+            }
+
+            return RedirectToAction("List");
         }
     }
 }

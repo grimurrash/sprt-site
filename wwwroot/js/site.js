@@ -12,8 +12,8 @@ $(function () {
         } else {
             if (localStorage.getItem(elementId)) localStorage.removeItem(elementId)
         }
-        
     })
+    
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
     var forms = document.getElementsByClassName('needs-validation');
     // Loop over them and prevent submission
@@ -34,6 +34,10 @@ $(function () {
             element.trigger("change");
         }
     })
+    if (localStorage.getItem("scroll")) {
+        window.scrollTo(localStorage.getItem("scroll"), 0)
+        console.log(localStorage.getItem("scroll"))
+    }
 
     $('[data-toggle="tooltip"]').tooltip()
     

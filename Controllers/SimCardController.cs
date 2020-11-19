@@ -110,13 +110,13 @@ namespace NewSprt.Controllers
             return PartialView("_IndexGrid", appRecruits);
         }
         
-        public async Task<IActionResult> RecruitsPhoneListModal()
+        public async Task<IActionResult> RecruitsPhoneReportModal()
         {
             var militaryComissariats = await _appDb.MilitaryComissariats.AsNoTracking().ToListAsync();
             return PartialView("_RecruitsPhoneListModal", militaryComissariats);
         }
 
-        public async Task<IActionResult> PrintRecruitsPhoneList(
+        public async Task<IActionResult> PrintRecruitsPhoneReport(
             DateTime startDate, 
             DateTime endDate,
             string printMode = "today", 
@@ -149,7 +149,7 @@ namespace NewSprt.Controllers
             var recruits = await qRecruits.ToListAsync();
             if (!string.IsNullOrEmpty(militaryComissariatId))
                 header += " из " + recruits[0].MilitaryComissariat.ShortName;
-            return File(ExcelDocumentHelper.GenerateRecruitsPhoneList(recruits, header),
+            return File(ExcelDocumentHelper.GenerateRecruitsPhoneReport(recruits, header),
                 ExcelDocumentHelper.OutputFormatType,
                 $"Список призывников.xlsx");
         }

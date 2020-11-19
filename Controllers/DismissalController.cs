@@ -237,7 +237,7 @@ namespace NewSprt.Controllers
             }
         }
 
-        public async Task<IActionResult> PrintDismissalRecruitsList()
+        public async Task<IActionResult> PrintDismissalRecruitsReport()
         {
             var dismissals = await _appDb.Dismissals
                 .Include(m => m.Recruit)
@@ -245,12 +245,12 @@ namespace NewSprt.Controllers
                 .OrderBy(m => m.Recruit.MilitaryComissariat.ShortName)
                 .ThenBy(m => m.Recruit.FullName)
                 .ToListAsync();
-            return File(ExcelDocumentHelper.GenerateDismissalRecruitsList(dismissals),
+            return File(ExcelDocumentHelper.GenerateDismissalRecruitsReport(dismissals),
                 ExcelDocumentHelper.OutputFormatType,
                 "Списка призывников в увольнении.xlsx");
         }
 
-        public async Task<IActionResult> PrintReturnTodayDismissalRrcruitsList()
+        public async Task<IActionResult> PrintReturnTodayDismissalRecruitsReport()
         {
             var dismissals = await _appDb.Dismissals
                 .Include(m => m.Recruit)
@@ -259,7 +259,7 @@ namespace NewSprt.Controllers
                 .OrderBy(m => m.Recruit.MilitaryComissariat.ShortName)
                 .ThenBy(m => m.Recruit.FullName)
                 .ToListAsync();
-            return File(ExcelDocumentHelper.GenerateReturnTodayDismissalRrcruitsList(dismissals),
+            return File(ExcelDocumentHelper.GenerateReturnTodayDismissalRecruitsReport(dismissals),
                 ExcelDocumentHelper.OutputFormatType,
                 "Списка призывников, возвращающихся с увольнения.xlsx");
         }

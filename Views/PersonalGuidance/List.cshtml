@@ -54,14 +54,17 @@
     </div>
 
     <div class="row align-items-end mt-4 mb-2">
-        <div class="col-lg-8">
+        <div class="col-lg-5">
             <h6>Всего по директивным указаниям: <b>@ViewData["personsCount"]</b> чел. </h6>
             <h5 >Всего в списке: <b id="listCount"></b> чел.</h5>
         </div>
-        <div class="col-lg-4 text-right">
+        <div class="col-lg-7 text-right">
+            <a asp-controller="PersonalGuidance" asp-action="PrintPersonalGuidanceReport" id="btnPrintPersonalGuidanceReport" class="btn btn-danger">
+                <i class="fas fa-print"></i> Печать списка
+            </a>
             <a asp-controller="PersonalGuidance" asp-action="CreateModal" class="btn btn-success"
                onclick="showModal(event)" data-alert-text="Не удалось открыть окно добавления персональщика">
-                 <i class="fas fa-user-plus"></i> Добавить персональщика
+                <i class="fas fa-user-plus"></i> Добавить персональщика
             </a>
         </div>
     </div>
@@ -122,6 +125,14 @@
             document.getElementById('IsDmoFilter').addEventListener('change', function(e) {
                 e.preventDefault()
                 reloadTable()
+            })
+            
+            document.getElementById("btnPrintPersonalGuidanceReport").addEventListener('click', function (e) {
+                e.preventDefault()
+                let militaryComissariatId = document.getElementById('MilitaryComissariatIdFilter').value
+                let directiveTypeId = document.getElementById('DirectiveTypeIdFilter').value
+                let url = document.getElementById("btnPrintPersonalGuidanceReport").getAttribute("href");
+                window.location.href = `${url}?militaryComissariatId=${militaryComissariatId}&directiveTypeId=${directiveTypeId}`;
             })
         })
                

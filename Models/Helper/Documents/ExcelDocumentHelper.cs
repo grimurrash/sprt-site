@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ClosedXML.Report;
-using DocumentFormat.OpenXml.Drawing.Charts;
 using NewSprt.Data.App.Models;
 
 namespace NewSprt.Models.Helper.Documents
@@ -75,7 +74,7 @@ namespace NewSprt.Models.Helper.Documents
             return new FileStream(tempFile, FileMode.Open);
         }
 
-        public static FileStream GenerateDismissalRecruitsList(IEnumerable<Dismissal> dismissals)
+        public static FileStream GenerateDismissalRecruitsReport(IEnumerable<Dismissal> dismissals)
         {
             var index = 1;
             var dismissalList = dismissals.Select(m => new
@@ -98,7 +97,7 @@ namespace NewSprt.Models.Helper.Documents
             return new FileStream(tempFile, FileMode.Open);
         }
         
-        public static FileStream GenerateRecruitsPhoneList(IEnumerable<Data.Zarnica.Models.Recruit> recruits, string header)
+        public static FileStream GenerateRecruitsPhoneReport(IEnumerable<Data.Zarnica.Models.Recruit> recruits, string header)
         {
             var index = 1;
             var recruitsList = recruits.Select(m => new
@@ -120,7 +119,7 @@ namespace NewSprt.Models.Helper.Documents
             return new FileStream(tempFile, FileMode.Open);
         }
         
-        public static FileStream GenerateReturnTodayDismissalRrcruitsList(IEnumerable<Dismissal> dismissals)
+        public static FileStream GenerateReturnTodayDismissalRecruitsReport(IEnumerable<Dismissal> dismissals)
         {
             var index = 1;
             var dismissalList = dismissals.Select(m => new
