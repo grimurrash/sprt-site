@@ -27,9 +27,11 @@ namespace NewSprt.Models.Managers
                 var currentConscriptionsPeriod =
                     await _appDb.ConscriptionPeriods.FirstOrDefaultAsync(m => !m.IsArchive);
 
-                var appCount = await _appDb.Recruits.CountAsync(m => m.ConscriptionPeriodId == currentConscriptionsPeriod.Id);
+                var appCount =
+                    await _appDb.Recruits.CountAsync(m => m.ConscriptionPeriodId == currentConscriptionsPeriod.Id);
                 var zarnicaCount = await _zarnicaDb.Recruits.CountAsync();
-                if (zarnicaCount != appCount)
+                if (zarnicaCount < 5) return true;
+                if (zarnicaCount > appCount)
                 {
                     var appRecruits = await _appDb.Recruits
                         .Where(m => m.ConscriptionPeriodId == currentConscriptionsPeriod.Id)
@@ -64,7 +66,22 @@ namespace NewSprt.Models.Managers
                     await _appDb.Recruits.AddRangeAsync(newAppRecruits);
                     await _appDb.SaveChangesAsync();
                 }
-                
+                else if (zarnicaCount < appCount)
+                {
+                    var zarnicaRecruits = await _zarnicaDb.Recruits.Select(m => new
+                    {
+                        m.Id,
+                        m.Code
+                    }).ToListAsync();
+                    var appRecruits = await _appDb.Recruits
+                        .Where(m => m.ConscriptionPeriodId == currentConscriptionsPeriod.Id &&
+                                    !zarnicaRecruits.Select(z => z.Id).Contains(m.RecruitId) &&
+                                    !zarnicaRecruits.Select(z => z.Code).Contains(m.UniqueRecruitNumber)
+                        ).ToListAsync();
+                    _appDb.Recruits.RemoveRange(appRecruits);
+                    await _appDb.SaveChangesAsync();
+                }
+
                 await SynchrinizationACovidResultNumber();
                 return true;
             }
@@ -83,14 +100,15 @@ namespace NewSprt.Models.Managers
                     .ToListAsync();
                 if (additionalDatas.Count == 0) return true;
                 var recruitIds = additionalDatas.Select(m => m.Id).ToList();
-                var relatives = await _zarnicaDb.Relatives.Where(m => recruitIds.Contains(m.RecruitId) && 
-                                                                      m.RelativeType == zModels.Relative.TempRelative).ToListAsync();
+                var relatives = await _zarnicaDb.Relatives.Where(m => recruitIds.Contains(m.RecruitId) &&
+                                                                      m.RelativeType == zModels.Relative.TempRelative)
+                    .ToListAsync();
                 var recruits = await _appDb.Recruits.Where(m => recruitIds.Contains(m.RecruitId)).ToListAsync();
                 foreach (var recruit in recruits)
                 {
                     var relative = relatives.FirstOrDefault(m => m.RecruitId == recruit.RecruitId);
                     if (relative == null) continue;
-                
+
                     var additionalData = additionalDatas.FirstOrDefault(m => m.Id == recruit.RecruitId);
                     if (additionalData == null || !string.IsNullOrEmpty(additionalData.TestNum)) continue;
                     additionalData.TestDate = recruit.DeliveryDate;

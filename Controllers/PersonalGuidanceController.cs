@@ -10,6 +10,7 @@ using appModels = NewSprt.Data.App.Models;
 using NewSprt.Data.Zarnica;
 using NewSprt.Data.Zarnica.Models;
 using NewSprt.Models.Extensions;
+using NewSprt.Models.Helper;
 using NewSprt.Models.Helper.Documents;
 using NewSprt.ViewModels;
 using NewSprt.ViewModels.SpecialGuidance;
@@ -850,7 +851,8 @@ namespace NewSprt.Controllers
 
             persons = persons.Where(m => (m.SendDate != null && m.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear) ||
                                          (m.Recruit?.Team?.SendDate != null 
-                                          && m.Recruit.Team.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear))
+                                          && m.Recruit.Team.SendDate.Value.DayOfYear < DateTime.Now.DayOfYear)
+                                         || m.Requirement == null)
                 .ToList();
             foreach (var person in persons
                 .Where(person => person.Recruit?.Team != null &&
@@ -922,6 +924,7 @@ namespace NewSprt.Controllers
             int directiveTypeId = 0)
         {
             var qPersons = _zarnicaDb.SpecialPersons
+                .Where(m => m.SpecialPersonToRequirements.Any())
                 .Include(m => m.SpecialPersonToRequirements)
                 .ThenInclude(m => m.Requirement)
                 .ThenInclude(m => m.MilitaryUnit).AsNoTracking().AsQueryable();
@@ -932,20 +935,27 @@ namespace NewSprt.Controllers
 
             if (directiveTypeId != 0)
             {
-                qPersons = qPersons.Where(m => m.Requirement.DirectiveTypeId == directiveTypeId);
+                qPersons = qPersons.Where(m => m.SpecialPersonToRequirements.Any(t => t.Requirement.DirectiveTypeId == directiveTypeId));
             }
 
             var persons = await qPersons.OrderBy(m => m.LastName).ToListAsync();
 
             if (!string.IsNullOrEmpty(militaryComissariatId))
             {
-                var militaryComissariat = await _zarnicaDb.MilitaryComissariats.FirstOrDefaultAsync(m => m.Id == militaryComissariatId);
-                return File(WordDocumentHelper.GeneratePersonalGuidanceReport(persons, militaryComissariat.Name),
+                var militaryComissariat = await _zarnicaDb.MilitaryComissariats
+                    .FirstOrDefaultAsync(m => m.Id == militaryComissariatId && m.Region == MilitaryComissariat.CurrentRegion);
+                return File(WordDocumentHelper.GeneratePersonalGuidanceReport(persons, militaryComissariat),
                     WordDocumentHelper.OutputFormatType,
                     $"{militaryComissariat.Name}.docx");
             }
-
-            return RedirectToAction("List");
+            
+            var militaryComissariats = await _zarnicaDb.MilitaryComissariats
+                .Where(m => m.Region == MilitaryComissariat.CurrentRegion)
+                .OrderBy(m => m.ShortName)
+                .ToListAsync();
+            return File(ZipHelper.GeneratePersonalGuidanceReport(militaryComissariats, persons),
+                ZipHelper.OutputFormatType,
+                "Списки персональщиков по районам.zip");
         }
     }
 }

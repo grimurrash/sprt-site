@@ -106,7 +106,7 @@ function showModal(e) {
                 if ($('.mvc-grid:not(.not-reload)').exists()) {
                     reloadTable()
                 } else {
-                    localStorage.setItem("scroll", window.pageYOffset);
+                    localStorage.setItem("scroll", window.scrollY);
                     window.location.reload()
                 }
                 $("#modalContainer").html("")

@@ -34,10 +34,6 @@ $(function () {
             element.trigger("change");
         }
     })
-    if (localStorage.getItem("scroll")) {
-        window.scrollTo(localStorage.getItem("scroll"), 0)
-        console.log(localStorage.getItem("scroll"))
-    }
 
     $('[data-toggle="tooltip"]').tooltip()
     

@@ -140,6 +140,7 @@ namespace NewSprt.Models.Helper.Documents
                     document.Close();
                     throw new Exception("Неизвестная ошибка");
                 }
+                document.MainDocumentPart.Document.Save();
             }
 
             return new FileStream(tempFile, FileMode.Open);
@@ -226,10 +227,11 @@ namespace NewSprt.Models.Helper.Documents
                         table.AppendChild(nullTRow.CloneNode(true));
                         table.AppendChild(nullTRow.CloneNode(true));
                     }
+                    document.MainDocumentPart.Document.Save();
                 }
                 catch
                 {
-                    document.Close();
+                    document.MainDocumentPart.Document.Save();
                     throw new Exception("Неизвестная ошибка");
                 }
             }
@@ -238,14 +240,18 @@ namespace NewSprt.Models.Helper.Documents
         }
 
         public static FileStream GeneratePersonalGuidanceReport(List<SpecialPerson> persons,
-            string militaryComissariatName)
+            MilitaryComissariat militaryComissariat)
         {
             const string templateFile = TemplatePath + "PersonalGuidance/person_report.docx";
-            const string tempFile = TempPath + "person_report.docx";
+            var tempFile = TempPath + $"PersonalGuidance/{militaryComissariat.Name}.docx";
+            if (!Directory.Exists(TempPath + "PersonalGuidance"))
+            {
+                Directory.CreateDirectory(TempPath + "PersonalGuidance");
+            }
             CopyTemplateFileToTempDirectory(templateFile, tempFile);
             var replaceTextDictionary = new Dictionary<string, string>
             {
-                {"MilitaryComissariat", militaryComissariatName},
+                {"MilitaryComissariat", militaryComissariat.Name},
             };
             using (var document = WordprocessingDocument.Open(tempFile, true))
             {
@@ -307,10 +313,11 @@ namespace NewSprt.Models.Helper.Documents
                             index++;
                         }
                     }
+                    document.MainDocumentPart.Document.Save();
                 }
                 catch
                 {
-                    document.Close();
+                    document.MainDocumentPart.Document.Save();
                     throw new Exception("Неизвестная ошибка");
                 }
             }
